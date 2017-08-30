@@ -1,0 +1,3 @@
+com.holonplatform.vaadin.internal.DefaultViewComponentPropertyRenderer
+com.holonplatform.vaadin.internal.DefaultFieldPropertyRenderer
+com.holonplatform.vaadin.internal.DefaultInputPropertyRenderer

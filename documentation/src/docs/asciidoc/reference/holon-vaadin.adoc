@@ -1,0 +1,22 @@
+= Holon Vaadin UI
+:revnumber: {project-version}
+:apidir: ../api/holon-vaadin
+:linkattrs:
+:sectnums:
+:nofooter:
+:toc: left
+:toclevels: 3
+
+Copyright © 2016-2017
+
+_Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically._
+
+== Introduction
+
+The introduction goes here.
+
+== System requirements
+
+=== Java
+
+The Holon Platform Vaadin module requires https://www.java.com[Java] *8* or higher.
