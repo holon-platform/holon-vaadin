@@ -44,13 +44,22 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.components.grid.MultiSelectionModel;
+import com.vaadin.ui.components.grid.MultiSelectionModel.SelectAllCheckBoxVisibility;
 import com.vaadin.ui.renderers.Renderer;
 import com.vaadin.ui.renderers.TextRenderer;
 
 /**
- * TODO
+ * Default {@link ItemListing} implementation using a {@link Grid} as UI component.
+ * 
+ * @param <T> Item type
+ * @param <P> Property type
+ * 
+ * @since 5.0.0
  */
 public class DefaultItemListing<T, P> extends CustomComponent implements ItemListing<T, P> {
+
+	private static final long serialVersionUID = -4573359150260491496L;
 
 	/**
 	 * Property column definitions
@@ -81,6 +90,11 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	 * Auto commit on row remove
 	 */
 	private boolean commitOnRemove = false;
+
+	/**
+	 * Select all visibility
+	 */
+	private SelectAllCheckBoxVisibility selectAllCheckBoxVisibility = SelectAllCheckBoxVisibility.DEFAULT;
 
 	/**
 	 * Data source
@@ -641,6 +655,10 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		getGrid().getEditor().setCancelCaption(caption);
 	}
 
+	public void setRowHeight(double rowHeight) {
+		getGrid().setRowHeight(rowHeight);
+	}
+
 	public void setHeightMode(HeightMode heightMode) {
 		getGrid().setHeightMode(heightMode);
 	}
@@ -717,6 +735,9 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		switch (selectionMode) {
 		case MULTI:
 			getGrid().setSelectionMode(com.vaadin.ui.Grid.SelectionMode.MULTI);
+			((MultiSelectionModel<T>) getGrid().getSelectionModel())
+					.setSelectAllCheckBoxVisibility((selectAllCheckBoxVisibility != null) ? selectAllCheckBoxVisibility
+							: SelectAllCheckBoxVisibility.DEFAULT);
 			break;
 		case NONE:
 			getGrid().setSelectionMode(com.vaadin.ui.Grid.SelectionMode.NONE);
@@ -726,6 +747,15 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 			break;
 		default:
 			break;
+		}
+	}
+
+	public void setSelectAllCheckBoxVisibility(SelectAllCheckBoxVisibility selectAllCheckBoxVisibility) {
+		ObjectUtils.argumentNotNull(selectAllCheckBoxVisibility, "SelectAllCheckBoxVisibility must be not null");
+		this.selectAllCheckBoxVisibility = selectAllCheckBoxVisibility;
+		if (SelectionMode.MULTI == getSelectionMode()) {
+			((MultiSelectionModel<T>) getGrid().getSelectionModel())
+					.setSelectAllCheckBoxVisibility(selectAllCheckBoxVisibility);
 		}
 	}
 

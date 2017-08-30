@@ -26,6 +26,7 @@ import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.FooterRow;
 import com.vaadin.ui.components.grid.HeaderRow;
+import com.vaadin.ui.components.grid.MultiSelectionModel.SelectAllCheckBoxVisibility;
 
 /**
  * {@link BaseGridItemListingBuilder} implementation.
@@ -72,6 +73,17 @@ public abstract class AbstractGridItemListingBuilder<T, P, C extends ItemListing
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder#selectAllCheckBoxVisibility(com.vaadin.ui.
+	 * components.grid.MultiSelectionModel.SelectAllCheckBoxVisibility)
+	 */
+	@Override
+	public B selectAllCheckBoxVisibility(SelectAllCheckBoxVisibility selectAllCheckBoxVisibility) {
+		getInstance().setSelectAllCheckBoxVisibility(selectAllCheckBoxVisibility);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see
 	 * com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder#heightByContents()
 	 */
@@ -90,6 +102,16 @@ public abstract class AbstractGridItemListingBuilder<T, P, C extends ItemListing
 	public B heightByRows(double rows) {
 		getInstance().setHeightMode(HeightMode.ROW);
 		getInstance().setHeightByRows(rows);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder#rowHeight(double)
+	 */
+	@Override
+	public B rowHeight(double rowHeight) {
+		getInstance().setRowHeight(rowHeight);
 		return builder();
 	}
 
@@ -246,7 +268,8 @@ public abstract class AbstractGridItemListingBuilder<T, P, C extends ItemListing
 	 * holonframework.vaadin.components.ItemListing.GridFooterGenerator)
 	 */
 	@Override
-	public B footerGenerator(com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridFooterGenerator<T, P> footerGenerator) {
+	public B footerGenerator(
+			com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridFooterGenerator<T, P> footerGenerator) {
 		ObjectUtils.argumentNotNull(footerGenerator, "Generator must be not null");
 		this.footerGenerator = footerGenerator;
 		return builder();
@@ -295,7 +318,8 @@ public abstract class AbstractGridItemListingBuilder<T, P, C extends ItemListing
 		}
 	}
 
-	private final static class GridHeaderSection implements com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridSection<HeaderRow> {
+	private final static class GridHeaderSection
+			implements com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridSection<HeaderRow> {
 
 		private final Grid<?> grid;
 
@@ -395,7 +419,8 @@ public abstract class AbstractGridItemListingBuilder<T, P, C extends ItemListing
 
 	}
 
-	private final static class GridFooterSection implements com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridSection<FooterRow> {
+	private final static class GridFooterSection
+			implements com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridSection<FooterRow> {
 
 		private final Grid<?> grid;
 

@@ -35,7 +35,9 @@ import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontIcon;
 import com.vaadin.server.Setter;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.renderers.ComponentRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.renderers.ImageRenderer;
 import com.vaadin.ui.renderers.Renderer;
@@ -92,6 +94,9 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 	@Override
 	protected Optional<ValueProvider<?, ?>> getDefaultPropertyPresenter(Property property) {
 		if (property != null) {
+			if (Component.class.isAssignableFrom(property.getType())) {
+				return Optional.empty();
+			}
 			if (FontIcon.class.isAssignableFrom(property.getType())) {
 				return Optional.of(v -> ((FontIcon) v).getHtml());
 			}
@@ -102,6 +107,9 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 
 	@Override
 	protected Optional<Renderer<?>> getDefaultPropertyRenderer(Property property) {
+		if (Component.class.isAssignableFrom(property.getType())) {
+			return Optional.of(new ComponentRenderer());
+		}
 		if (FontIcon.class.isAssignableFrom(property.getType())) {
 			return Optional.of(new HtmlRenderer(""));
 		}

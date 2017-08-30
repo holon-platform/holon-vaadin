@@ -44,6 +44,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.FooterRow;
 import com.vaadin.ui.components.grid.HeaderRow;
+import com.vaadin.ui.components.grid.MultiSelectionModel.SelectAllCheckBoxVisibility;
 import com.vaadin.ui.renderers.Renderer;
 
 /**
@@ -106,6 +107,18 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 	 * @return this
 	 */
 	B commitHandler(CommitHandler<T> commitHandler);
+
+	/**
+	 * Sets the height of a row. If -1 (default), the row height is calculated based on the theme for an empty row
+	 * before the listing is displayed.
+	 * <p>
+	 * Note that all header, body and footer rows get the same height if explicitly set. In automatic mode, each section
+	 * is calculated separately based on an empty row of that type.
+	 * </p>
+	 * @param rowHeight The height of a row in pixels or -1 for automatic calculation
+	 * @return this
+	 */
+	B rowHeight(double rowHeight);
 
 	/**
 	 * Hides the table/grid column headers
@@ -217,6 +230,13 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 	 * @return this
 	 */
 	B selectionMode(SelectionMode selectionMode);
+
+	/**
+	 * Sets the select all checkbox visibility mode when the listing is in {@link SelectionMode#MULTI} mode.
+	 * @param selectAllCheckBoxVisibility the visiblity mode to use
+	 * @return this
+	 */
+	B selectAllCheckBoxVisibility(SelectAllCheckBoxVisibility selectAllCheckBoxVisibility);
 
 	/**
 	 * Add a {@link SelectionListener} to listen to items selection changes.
