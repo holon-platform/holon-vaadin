@@ -22,6 +22,7 @@ import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.vaadin.components.PropertyListing;
 import com.holonplatform.vaadin.data.ItemDataProvider;
 import com.holonplatform.vaadin.data.ItemDataSource.CommitHandler;
+import com.vaadin.data.HasValue;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
@@ -65,6 +66,14 @@ public interface PropertyListingBuilder<B extends PropertyListingBuilder<B, X>, 
 	public interface GridPropertyListingBuilder
 			extends PropertyListingBuilder<GridPropertyListingBuilder, Grid<PropertyBox>>,
 			BaseGridItemListingBuilder<PropertyBox, Property, PropertyListing, GridPropertyListingBuilder> {
+
+		/**
+		 * Set the field to use for given property in edit mode.
+		 * @param property Item property to set the editor for (not null)
+		 * @param editor Editor field (not null)
+		 * @return this
+		 */
+		<T, E extends HasValue<T> & Component> GridPropertyListingBuilder editor(Property<T> property, final E editor);
 
 		/**
 		 * Set a custom {@link Renderer} for given item property.

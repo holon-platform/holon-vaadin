@@ -302,19 +302,4 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, Component {
 
 	}
 
-	/**
-	 * Factory to provide an editor field to edit a specific property column.
-	 */
-	@FunctionalInterface
-	public interface PropertyEditorFactory<P> extends Serializable {
-
-		/**
-		 * Build an provide the editor field for given <code>property</code>.
-		 * @param property Property to which the column to edit is bound
-		 * @return Editor (not null)
-		 */
-		Field<?> getEditor(P property);
-
-	}
-
 }

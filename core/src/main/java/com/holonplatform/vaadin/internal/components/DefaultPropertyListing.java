@@ -27,7 +27,9 @@ import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.vaadin.components.Field;
 import com.holonplatform.vaadin.components.PropertyListing;
+import com.vaadin.data.HasValue;
 import com.vaadin.data.PropertyDefinition;
 import com.vaadin.data.PropertySet;
 import com.vaadin.data.ValueProvider;
@@ -118,6 +120,16 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 			return Optional.of(new ImageRenderer());
 		}
 		return super.getDefaultPropertyRenderer(property);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.internal.components.DefaultItemListing#getDefaultPropertyEditor(java.lang.Object)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	protected <E extends HasValue<?> & Component> Optional<E> getDefaultPropertyEditor(Property property) {
+		return property.renderIfAvailable(Field.class);
 	}
 
 	@SuppressWarnings("serial")

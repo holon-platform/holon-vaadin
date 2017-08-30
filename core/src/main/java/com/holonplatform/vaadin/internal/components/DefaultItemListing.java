@@ -34,12 +34,14 @@ import com.holonplatform.vaadin.data.ItemDataSource;
 import com.holonplatform.vaadin.data.ItemDataSource.ItemSort;
 import com.holonplatform.vaadin.internal.data.ItemDataProviderAdapter;
 import com.vaadin.data.SelectionModel.Multi;
+import com.vaadin.data.HasValue;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.DataProviderListener;
 import com.vaadin.data.provider.GridSortOrder;
 import com.vaadin.shared.Registration;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.Column;
@@ -421,13 +423,18 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		}
 
 		// editing
-		// TODO
-		/*
-		 * if (requireDataSource().getConfiguration().isPropertyReadOnly(property)) { column.setEditable(false); } else
-		 * { column.setEditable(propertyColumn.isEditable()); if (propertyColumn.isEditable() &&
-		 * propertyColumn.getEditorFactory() != null) {
-		 * column.setEditorField(propertyColumn.getEditorFactory().getEditor(property)); } }
-		 */
+		if (requireDataSource().getConfiguration().isPropertyReadOnly(property)) {
+			column.setEditable(false);
+		} else {
+			column.setEditable(propertyColumn.isEditable());
+			if (propertyColumn.isEditable()) {
+				if (propertyColumn.getEditor().isPresent()) {
+					((Column) column).setEditorComponent(propertyColumn.getEditor().get());
+				} else {
+					getDefaultPropertyEditor(property).ifPresent(e -> ((Column) column).setEditorComponent(e));
+				}
+			}
+		}
 
 		// hiding
 		if (columnHidingAllowed && propertyColumn.isHidable()) {
@@ -455,6 +462,10 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 			column.setRenderer(renderer);
 		}
 
+	}
+	
+	protected <E extends HasValue<?> & Component> Optional<E> getDefaultPropertyEditor(@SuppressWarnings("unused") P property) {
+		return Optional.empty();
 	}
 
 	protected Optional<ValueProvider<?, ?>> getDefaultPropertyPresenter(@SuppressWarnings("unused") P property) {

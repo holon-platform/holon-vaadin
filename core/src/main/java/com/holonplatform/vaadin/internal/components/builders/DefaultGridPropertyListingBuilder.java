@@ -29,7 +29,9 @@ import com.holonplatform.vaadin.internal.components.DefaultPropertyListing;
 import com.holonplatform.vaadin.internal.data.DatastoreCommitHandler;
 import com.holonplatform.vaadin.internal.data.DatastoreItemDataProvider;
 import com.holonplatform.vaadin.internal.data.PropertiesItemIdentifier;
+import com.vaadin.data.HasValue;
 import com.vaadin.data.ValueProvider;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.renderers.Renderer;
 
 /**
@@ -93,6 +95,19 @@ public class DefaultGridPropertyListingBuilder extends
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.PropertyListingBuilder.GridPropertyListingBuilder#editor(com.
+	 * holonplatform.core.property.Property, com.vaadin.data.HasValue)
+	 */
+	@Override
+	public <T, E extends HasValue<T> & Component> GridPropertyListingBuilder editor(Property<T> property, E editor) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		ObjectUtils.argumentNotNull(editor, "Editor field must be not null");
+		getInstance().getPropertyColumn(property).setEditor(editor);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.builders.PropertyListingBuilder.GridPropertyListingBuilder#renderer(com.
 	 * holonframework.core.property.Property, com.vaadin.ui.renderers.Renderer)
 	 */
@@ -103,8 +118,10 @@ public class DefaultGridPropertyListingBuilder extends
 		return builder();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.builders.PropertyListingBuilder.GridPropertyListingBuilder#render(com.holonplatform.core.property.Property, com.vaadin.data.ValueProvider, com.vaadin.ui.renderers.Renderer)
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.PropertyListingBuilder.GridPropertyListingBuilder#render(com.
+	 * holonplatform.core.property.Property, com.vaadin.data.ValueProvider, com.vaadin.ui.renderers.Renderer)
 	 */
 	@Override
 	public <T, P> GridPropertyListingBuilder render(Property<T> property, ValueProvider<T, P> presentationProvider,

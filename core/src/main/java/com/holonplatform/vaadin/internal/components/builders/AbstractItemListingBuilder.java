@@ -29,7 +29,6 @@ import com.holonplatform.vaadin.components.ItemListing.CellStyleGenerator;
 import com.holonplatform.vaadin.components.ItemListing.ColumnAlignment;
 import com.holonplatform.vaadin.components.ItemListing.ItemClickListener;
 import com.holonplatform.vaadin.components.ItemListing.ItemDescriptionGenerator;
-import com.holonplatform.vaadin.components.ItemListing.PropertyEditorFactory;
 import com.holonplatform.vaadin.components.ItemListing.PropertyReorderListener;
 import com.holonplatform.vaadin.components.ItemListing.PropertyResizeListener;
 import com.holonplatform.vaadin.components.ItemListing.PropertyVisibilityListener;
@@ -311,19 +310,6 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 	public B editable(P property, boolean editable) {
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		getInstance().getPropertyColumn(property).setEditable(editable);
-		return builder();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder#editor(java.lang.Object,
-	 * com.holonplatform.vaadin.components.ItemListing.PropertyEditorFactory)
-	 */
-	@Override
-	public B editor(P property, PropertyEditorFactory<P> propertyEditorFactory) {
-		ObjectUtils.argumentNotNull(property, "Property must be not null");
-		ObjectUtils.argumentNotNull(propertyEditorFactory, "Factory must be not null");
-		getInstance().getPropertyColumn(property).setEditorFactory(propertyEditorFactory);
 		return builder();
 	}
 
