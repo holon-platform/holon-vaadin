@@ -39,7 +39,6 @@ import com.holonplatform.vaadin.data.ItemDataProvider;
 import com.holonplatform.vaadin.data.ItemDataSource;
 import com.holonplatform.vaadin.data.ItemDataSource.Configuration;
 import com.holonplatform.vaadin.data.ItemIdentifierProvider;
-import com.holonplatform.vaadin.internal.data.ItemStore.ItemActionListener;
 import com.vaadin.data.provider.DataProviderListener;
 import com.vaadin.shared.Registration;
 
@@ -52,7 +51,7 @@ import com.vaadin.shared.Registration;
  * @since 5.0.0
  */
 public class DefaultItemDataSource<ITEM, PROPERTY>
-		implements ItemDataSource<ITEM, PROPERTY>, Configuration<ITEM, PROPERTY>, ItemActionListener<ITEM> {
+		implements ItemDataSource<ITEM, PROPERTY>, Configuration<ITEM, PROPERTY> {
 
 	private static final long serialVersionUID = 5690427592609021861L;
 
@@ -176,7 +175,6 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 				getDataProvider().orElseThrow(() -> new IllegalStateException("Missing ItemDataProvider")),
 				getItemIdentifierProvider().orElse(null), batchSize, determineMaxCacheSize(batchSize));
 		this.itemStore.setFreezed(!isAutoRefresh());
-		this.itemStore.addItemActionListener(this);
 	}
 
 	/**
@@ -835,22 +833,6 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 	@Override
 	public void discard() {
 		requireItemStore().discard();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.internal.data.ItemStore.ItemActionListener#onItemAction(java.lang.Object,
-	 * java.lang.Object, java.lang.Object, com.holonplatform.vaadin.data.ItemDataSource.ItemAction)
-	 */
-	@Override
-	public void onItemAction(ITEM item, Object itemId, ITEM previous,
-			com.holonplatform.vaadin.data.ItemDataSource.ItemAction action) {
-		// TODO
-		// if not buffered, invoke commit
-		/*
-		 * if (!isBuffered() && (action == ItemAction.ADDED || action == ItemAction.REMOVED || action ==
-		 * ItemAction.MODIFIED)) { commit(); }
-		 */
 	}
 
 	public static class DefaultItemDataSourceBuilder<ITEM, PROPERTY> implements ItemDataSource.Builder<ITEM, PROPERTY> {

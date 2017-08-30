@@ -33,8 +33,8 @@ import com.holonplatform.vaadin.components.Selectable;
 import com.holonplatform.vaadin.data.ItemDataSource;
 import com.holonplatform.vaadin.data.ItemDataSource.ItemSort;
 import com.holonplatform.vaadin.internal.data.ItemDataProviderAdapter;
-import com.vaadin.data.SelectionModel.Multi;
 import com.vaadin.data.HasValue;
+import com.vaadin.data.SelectionModel.Multi;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.DataProviderListener;
 import com.vaadin.data.provider.GridSortOrder;
@@ -46,6 +46,7 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.components.grid.Editor;
 import com.vaadin.ui.components.grid.MultiSelectionModel;
 import com.vaadin.ui.components.grid.MultiSelectionModel.SelectAllCheckBoxVisibility;
 import com.vaadin.ui.renderers.Renderer;
@@ -119,6 +120,16 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 
 		// row style generator
 		grid.setStyleGenerator(i -> generateRowStyle(i));
+
+		Editor<T> editor = getGrid().getEditor();
+		if (editor != null) {
+			editor.addSaveListener(e -> {
+				requireDataSource().update(e.getBean());
+				if (isCommitOnSave()) {
+					requireDataSource().commit();
+				}
+			});
+		}
 
 		super.setWidth(100, Unit.PERCENTAGE);
 		addStyleName("h-itemlisting", false);
@@ -423,17 +434,25 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		}
 
 		// editing
-		if (requireDataSource().getConfiguration().isPropertyReadOnly(property)) {
-			column.setEditable(false);
-		} else {
-			column.setEditable(propertyColumn.isEditable());
-			if (propertyColumn.isEditable()) {
-				if (propertyColumn.getEditor().isPresent()) {
-					((Column) column).setEditorComponent(propertyColumn.getEditor().get());
-				} else {
-					getDefaultPropertyEditor(property).ifPresent(e -> ((Column) column).setEditorComponent(e));
-				}
+		final boolean readOnly = requireDataSource().getConfiguration().isPropertyReadOnly(property);
+		if (propertyColumn.isEditable()) {
+			if (propertyColumn.getEditor().isPresent()) {
+				((Column) column).setEditorComponent(propertyColumn.getEditor().get());
+				column.setEditable(!readOnly);
+			} else {
+				getDefaultPropertyEditor(property).ifPresent(e -> {
+					((Column) column).setEditorComponent(e);
+					column.setEditable(!readOnly);
+				});
 			}
+		} else {
+			if (column.getEditorBinding() != null) {
+				column.setEditable(false);
+			}
+		}
+
+		if (readOnly && column.getEditorBinding() != null) {
+			column.setEditable(false);
 		}
 
 		// hiding
@@ -463,8 +482,9 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		}
 
 	}
-	
-	protected <E extends HasValue<?> & Component> Optional<E> getDefaultPropertyEditor(@SuppressWarnings("unused") P property) {
+
+	protected <E extends HasValue<?> & Component> Optional<E> getDefaultPropertyEditor(
+			@SuppressWarnings("unused") P property) {
 		return Optional.empty();
 	}
 
