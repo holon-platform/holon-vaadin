@@ -79,6 +79,16 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder#buffered(boolean)
+	 */
+	@Override
+	public B buffered(boolean buffered) {
+		getInstance().setBuffered(buffered);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see
 	 * com.holonplatform.vaadin.components.builders.ItemDataSourceComponentBuilder#dataSource(com.holonplatform.vaadin
 	 * .data.ItemDataProvider, com.holonplatform.vaadin.data.ItemIdentifierProvider)

@@ -440,6 +440,7 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 		return requireItemStore().containsItem(itemId);
 	}
 
+	@Override
 	public Optional<CommitHandler<ITEM>> getCommitHandler() {
 		return Optional.ofNullable(commitHandler);
 	}

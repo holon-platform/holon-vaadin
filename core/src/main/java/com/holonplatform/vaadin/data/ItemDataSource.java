@@ -200,6 +200,12 @@ public interface ItemDataSource<ITEM, PROPERTY> extends Serializable {
 		 * @return the item data provider
 		 */
 		Optional<ItemDataProvider<ITEM>> getDataProvider();
+		
+		/**
+		 * Get the commit handler
+		 * @return the commit handler
+		 */
+		Optional<CommitHandler<ITEM>> getCommitHandler();
 
 		/**
 		 * Get available item properties.

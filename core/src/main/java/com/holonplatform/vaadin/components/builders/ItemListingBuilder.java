@@ -102,6 +102,20 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 	B sortGenerator(P property, PropertySortGenerator<P> generator);
 
 	/**
+	 * Set whether the item listing is in buffered mode. Default is <code>false</code>.
+	 * <p>
+	 * When buffered, the listing component requires a specific action to commit item modifications to persistence
+	 * store, using {@link ItemListing#commit()}, and changes can be discarded using {@link ItemListing#discard()}.
+	 * </p>
+	 * <p>
+	 * When not buffered, the {@link CommitHandler}, if configured, will be invoked at any item set modification (item
+	 * added, updated or removed).
+	 * @param buffered Buffered mode to set
+	 * @return this
+	 */
+	B buffered(boolean buffered);
+
+	/**
 	 * Set the handler to use to persist item set modifications.
 	 * @param commitHandler Handler to set (not null)
 	 * @return this

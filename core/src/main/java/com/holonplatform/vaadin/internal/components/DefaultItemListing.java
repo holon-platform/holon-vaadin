@@ -100,7 +100,12 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	private SelectAllCheckBoxVisibility selectAllCheckBoxVisibility = SelectAllCheckBoxVisibility.DEFAULT;
 
 	/**
-	 * Data source
+	 * Buffered mode
+	 */
+	private boolean buffered = false;
+
+	/**
+	 * Data source (buffered)
 	 */
 	private ItemDataSource<T, P> dataSource;
 
@@ -124,9 +129,15 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		Editor<T> editor = getGrid().getEditor();
 		if (editor != null) {
 			editor.addSaveListener(e -> {
-				requireDataSource().update(e.getBean());
-				if (isCommitOnSave()) {
-					requireDataSource().commit();
+				if (isBuffered()) {
+					requireDataSource().update(e.getBean());
+					if (isCommitOnSave()) {
+						requireDataSource().commit();
+					}
+				} else {
+					requireDataSource().getConfiguration().getCommitHandler().ifPresent(ch -> {
+						ch.commit(Collections.emptySet(), Collections.singleton(e.getBean()), Collections.emptySet());
+					});
 				}
 			});
 		}
@@ -721,9 +732,11 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	 */
 	@Override
 	public void scrollToItem(T item) {
-		int index = requireDataSource().indexOfItem(item);
-		if (index > -1) {
-			getGrid().scrollTo(index);
+		if (isBuffered()) {
+			int index = requireDataSource().indexOfItem(item);
+			if (index > -1) {
+				getGrid().scrollTo(index);
+			}
 		}
 	}
 
@@ -856,6 +869,15 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		return getDataSource().orElseThrow(() -> new IllegalStateException("Missing ItemDataSource"));
 	}
 
+	@Override
+	public boolean isBuffered() {
+		return buffered;
+	}
+
+	public void setBuffered(boolean buffered) {
+		this.buffered = buffered;
+	}
+
 	/**
 	 * Set the listing data source.
 	 * @param dataSource The data source to set (not null)
@@ -876,7 +898,10 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	 */
 	@Override
 	public void refresh() {
-		requireDataSource().refresh();
+		if (isBuffered()) {
+			requireDataSource().refresh();
+		}
+		getGrid().getDataProvider().refreshAll();
 	}
 
 	/*
@@ -888,7 +913,9 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		if (getSelectionMode() != Selectable.SelectionMode.NONE) {
 			deselectAll();
 		}
-		requireDataSource().clear();
+		if (isBuffered()) {
+			requireDataSource().clear();
+		}
 	}
 
 	/*
@@ -897,6 +924,9 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	 */
 	@Override
 	public Optional<T> getItem(Object itemId) {
+		if (!isBuffered()) {
+			throw new IllegalStateException("The item listing is not in buffered mode");
+		}
 		return requireDataSource().get(itemId);
 	}
 
@@ -907,7 +937,21 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	@Override
 	public Object addItem(T item) {
 		ObjectUtils.argumentNotNull(item, "Item must be not null");
-		return requireDataSource().add(item);
+
+		Object itemId = null;
+
+		if (isBuffered()) {
+			itemId = requireDataSource().add(item);
+		} else {
+			requireDataSource().getConfiguration().getCommitHandler().ifPresent(ch -> {
+				ch.commit(Collections.singleton(item), Collections.emptySet(), Collections.emptySet());
+			});
+		}
+
+		// refresh
+		getGrid().getDataProvider().refreshAll();
+
+		return itemId;
 	}
 
 	/*
@@ -917,16 +961,32 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	@Override
 	public boolean removeItem(T item) {
 		ObjectUtils.argumentNotNull(item, "Item must be not null");
-		boolean removed = requireDataSource().remove(item);
 
-		// check commit on remove
-		if (isCommitOnRemove()) {
-			commit();
+		boolean removed = false;
+
+		if (isBuffered()) {
+			removed = requireDataSource().remove(item);
+
+			// check commit on remove
+			if (isCommitOnRemove()) {
+				commit();
+			}
+
+			if (removed && getSelectionMode() != Selectable.SelectionMode.NONE) {
+				getGrid().deselect(item);
+			}
+
+		} else {
+			if (requireDataSource().getConfiguration().getCommitHandler().isPresent()) {
+				requireDataSource().getConfiguration().getCommitHandler().get().commit(Collections.emptySet(),
+						Collections.emptySet(), Collections.singleton(item));
+				removed = true;
+			}
 		}
 
-		if (removed && getSelectionMode() != Selectable.SelectionMode.NONE) {
-			getGrid().deselect(item);
-		}
+		// refresh
+		getGrid().getDataProvider().refreshAll();
+
 		return removed;
 	}
 
@@ -937,8 +997,14 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	@Override
 	public void refreshItem(T item) {
 		ObjectUtils.argumentNotNull(item, "Item must be not null");
-		requireDataSource().refresh(item);
-		// repaintRows(item);
+
+		if (isBuffered()) {
+			requireDataSource().refresh(item);
+		} else {
+			requireDataSource().getConfiguration().getDataProvider().ifPresent(dp -> dp.refresh(item));
+		}
+
+		getGrid().getDataProvider().refreshItem(item);
 	}
 
 	/*
@@ -947,6 +1013,9 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	 */
 	@Override
 	public void commit() {
+		if (!isBuffered()) {
+			throw new IllegalStateException("The item listing is not in buffered mode");
+		}
 		requireDataSource().commit();
 	}
 
@@ -956,6 +1025,9 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	 */
 	@Override
 	public void discard() {
+		if (!isBuffered()) {
+			throw new IllegalStateException("The item listing is not in buffered mode");
+		}
 		requireDataSource().discard();
 	}
 
