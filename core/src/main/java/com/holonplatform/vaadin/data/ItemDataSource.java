@@ -89,6 +89,13 @@ public interface ItemDataSource<ITEM, PROPERTY> extends Serializable {
 	 * @return Item identifier
 	 */
 	Object getId(ITEM item);
+	
+	/**
+	 * Get index of given item
+	 * @param item Item
+	 * @return Item index, or <code>-1</code> if not found
+	 */
+	int indexOfItem(ITEM item);
 
 	/**
 	 * Get the item identified by given <code>itemId</code>.

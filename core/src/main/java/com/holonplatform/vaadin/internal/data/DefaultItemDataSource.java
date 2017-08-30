@@ -688,6 +688,18 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 		return queryParameters;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.holonplatform.vaadin.data.ItemDataSource#indexOfItem(java.lang.Object)
+	 */
+	@Override
+	public int indexOfItem(ITEM item) {
+		Object itemId = getId(item);
+		if (itemId != null) {
+			return requireItemStore().indexOfItem(itemId);
+		}
+		return -1;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.data.ItemDataSource#getId(java.lang.Object)

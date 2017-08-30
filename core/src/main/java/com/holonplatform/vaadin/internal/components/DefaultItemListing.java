@@ -26,14 +26,12 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.holonplatform.core.i18n.LocalizationContext;
-import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.components.ItemListing;
 import com.holonplatform.vaadin.components.Selectable;
 import com.holonplatform.vaadin.data.ItemDataSource;
 import com.holonplatform.vaadin.data.ItemDataSource.ItemSort;
-import com.holonplatform.vaadin.internal.VaadinLogger;
 import com.holonplatform.vaadin.internal.data.ItemDataProviderAdapter;
 import com.vaadin.data.SelectionModel.Multi;
 import com.vaadin.data.ValueProvider;
@@ -53,11 +51,6 @@ import com.vaadin.ui.renderers.TextRenderer;
  * TODO
  */
 public class DefaultItemListing<T, P> extends CustomComponent implements ItemListing<T, P> {
-
-	/**
-	 * Logger
-	 */
-	private static final Logger LOGGER = VaadinLogger.create();
 
 	/**
 	 * Property column definitions
@@ -353,7 +346,6 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		if (column != null && (column.getStyle() != null || column.getAlignment() != null)) {
 			final StringBuilder sb = new StringBuilder();
 			if (column.getAlignment() != null) {
-				// TODO check
 				if (ColumnAlignment.CENTER.equals(column.getAlignment())) {
 					sb.append("v-align-center");
 				} else if (ColumnAlignment.RIGHT.equals(column.getAlignment())) {
@@ -680,8 +672,10 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	 */
 	@Override
 	public void scrollToItem(T item) {
-		// TODO
-		// getGrid().scrollTo(row);
+		int index = requireDataSource().indexOfItem(item);
+		if (index > -1) {
+			getGrid().scrollTo(index);
+		}
 	}
 
 	/*
