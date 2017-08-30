@@ -62,26 +62,30 @@ public interface PropertyListingBuilder<B extends PropertyListingBuilder<B, X>, 
 	/**
 	 * Builder to create {@link PropertyListing} components using a {@link Grid} as backing component.
 	 */
-	public interface GridPropertyListingBuilder extends PropertyListingBuilder<GridPropertyListingBuilder, Grid<PropertyBox>>,
+	public interface GridPropertyListingBuilder
+			extends PropertyListingBuilder<GridPropertyListingBuilder, Grid<PropertyBox>>,
 			BaseGridItemListingBuilder<PropertyBox, Property, PropertyListing, GridPropertyListingBuilder> {
-
-		/**
-		 * Set a custom {@link ValueProvider} for given item property.
-		 * @param <T> Property type
-		 * @param property Item property to set the converter for (not null)
-		 * @param converter Converter to use (not null)
-		 * @return this
-		 */
-		<T> GridPropertyListingBuilder converter(Property<T> property, ValueProvider<?, T> converter);
 
 		/**
 		 * Set a custom {@link Renderer} for given item property.
 		 * @param <T> Property type
 		 * @param property Item property to set the renderer for (not null)
-		 * @param renderer Renderer to use (not null)
+		 * @param renderer Renderer to use
 		 * @return this
 		 */
-		<T> GridPropertyListingBuilder renderer(Property<T> property, Renderer<? super T> renderer);
+		<T> GridPropertyListingBuilder render(Property<T> property, Renderer<? super T> renderer);
+
+		/**
+		 * Set a custom {@link Renderer} and presentation provider for given item property.
+		 * @param <T> Property type
+		 * @param <P> Presentation value type
+		 * @param property Item property to set the renderer for
+		 * @param presentationProvider Presentation provider
+		 * @param renderer Renderer to use
+		 * @return this
+		 */
+		<T, P> GridPropertyListingBuilder render(Property<T> property, ValueProvider<T, P> presentationProvider,
+				Renderer<? super P> renderer);
 
 	}
 

@@ -38,22 +38,30 @@ public class DefaultGridItemListingBuilder<T> extends
 		super(new DefaultBeanListing<>(beanType));
 	}
 
-	/* (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridItemListingBuilder#converter(java.lang.String, com.vaadin.data.ValueProvider)
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridItemListingBuilder#render(java.lang.String,
+	 * com.vaadin.ui.renderers.Renderer)
 	 */
 	@Override
-	public GridItemListingBuilder<T> converter(String property, ValueProvider<?, ?> converter) {
+	public GridItemListingBuilder<T> render(String property, Renderer<?> renderer) {
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
-		getInstance().getPropertyColumn(property).setPresentationProvider(converter);
+		getInstance().getPropertyColumn(property).setRenderer(renderer);
 		return builder();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridItemListingBuilder#renderer(java.lang.String, com.vaadin.ui.renderers.Renderer)
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridItemListingBuilder#render(java.lang.String,
+	 * com.vaadin.data.ValueProvider, com.vaadin.ui.renderers.Renderer)
 	 */
 	@Override
-	public GridItemListingBuilder<T> renderer(String property, Renderer<?> renderer) {
+	public <V, P> GridItemListingBuilder<T> render(String property, ValueProvider<V, P> presentationProvider,
+			Renderer<? super P> renderer) {
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		getInstance().getPropertyColumn(property).setPresentationProvider(presentationProvider);
 		getInstance().getPropertyColumn(property).setRenderer(renderer);
 		return builder();
 	}

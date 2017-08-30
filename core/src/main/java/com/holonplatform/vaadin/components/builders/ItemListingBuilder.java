@@ -537,20 +537,25 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 			extends BaseGridItemListingBuilder<T, String, BeanListing<T>, GridItemListingBuilder<T>> {
 
 		/**
-		 * Set a custom {@link ValueProvider} for given item property.
-		 * @param property Item property to set the converter for (not null)
-		 * @param converter Converter to use (not null)
+		 * Set a custom {@link Renderer} for given item property.
+		 * @param <V> Property value type
+		 * @param property Item property to set the renderer for (not null)
+		 * @param renderer Renderer to use
 		 * @return this
 		 */
-		GridItemListingBuilder<T> converter(String property, ValueProvider<?, ?> converter);
+		GridItemListingBuilder<T> render(String property, Renderer<?> renderer);
 
 		/**
-		 * Set a custom {@link Renderer} for given item property.
-		 * @param property Item property to set the renderer for (not null)
-		 * @param renderer Renderer to use (not null)
+		 * Set a custom {@link Renderer} and presentation provider for given item property.
+		 * @param <V> Property value type
+		 * @param <P> Presentation value type
+		 * @param property Item property to set the renderer for
+		 * @param presentationProvider Presentation provider
+		 * @param renderer Renderer to use
 		 * @return this
 		 */
-		GridItemListingBuilder<T> renderer(String property, Renderer<?> renderer);
+		<V, P> GridItemListingBuilder<T> render(String property, ValueProvider<V, P> presentationProvider,
+				Renderer<? super P> renderer);
 
 	}
 
