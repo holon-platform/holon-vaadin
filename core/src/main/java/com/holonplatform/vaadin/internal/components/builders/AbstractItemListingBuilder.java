@@ -39,11 +39,10 @@ import com.holonplatform.vaadin.components.Selectable.SelectionMode;
 import com.holonplatform.vaadin.components.builders.ComponentPostProcessor;
 import com.holonplatform.vaadin.components.builders.ItemListingBuilder;
 import com.holonplatform.vaadin.data.ItemDataProvider;
+import com.holonplatform.vaadin.data.ItemDataSource;
 import com.holonplatform.vaadin.data.ItemDataSource.CommitHandler;
 import com.holonplatform.vaadin.data.ItemDataSource.PropertySortGenerator;
 import com.holonplatform.vaadin.data.ItemIdentifierProvider;
-import com.holonplatform.vaadin.data.container.ItemDataSourceContainer;
-import com.holonplatform.vaadin.data.container.ItemDataSourceContainerBuilder.BaseItemDataSourceContainerBuilder;
 import com.holonplatform.vaadin.internal.components.DefaultItemListing;
 import com.vaadin.ui.Component;
 
@@ -69,7 +68,7 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 	/**
 	 * Data source builder.
 	 */
-	protected final BaseItemDataSourceContainerBuilder<T, P> dataSourceBuilder = ItemDataSourceContainer.builder();
+	protected final ItemDataSource.Builder<T, P> dataSourceBuilder = ItemDataSource.builder();
 
 	/**
 	 * Constructor
@@ -543,7 +542,7 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 		localize(listing);
 
 		// data source
-		ItemDataSourceContainer<T, P> dataSource = dataSourceBuilder.build();
+		ItemDataSource<T, P> dataSource = dataSourceBuilder.build();
 		listing.setDataSource(dataSource);
 
 		// visible columns

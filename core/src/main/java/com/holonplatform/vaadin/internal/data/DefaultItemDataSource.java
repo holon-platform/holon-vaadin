@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.holonplatform.vaadin.internal.data.container;
+package com.holonplatform.vaadin.internal.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,24 +36,23 @@ import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.core.query.QuerySort.SortDirection;
 import com.holonplatform.vaadin.data.ItemDataProvider;
+import com.holonplatform.vaadin.data.ItemDataSource;
 import com.holonplatform.vaadin.data.ItemDataSource.Configuration;
 import com.holonplatform.vaadin.data.ItemIdentifierProvider;
-import com.holonplatform.vaadin.data.container.ItemDataSourceContainer;
-import com.holonplatform.vaadin.internal.data.DefaultItemStore;
-import com.holonplatform.vaadin.internal.data.ItemStore;
 import com.holonplatform.vaadin.internal.data.ItemStore.ItemActionListener;
+import com.vaadin.data.provider.DataProviderListener;
 import com.vaadin.shared.Registration;
 
 /**
- * Default {@link ItemDataSourceContainer} implementation.
+ * Default {@link ItemDataSource} implementation.
  * 
  * @param <ITEM> Item type
  * @param <PROPERTY> Item property type
  * 
  * @since 5.0.0
  */
-public class DefaultItemDataSourceContainer<ITEM, PROPERTY>
-		implements ItemDataSourceContainer<ITEM, PROPERTY>, Configuration<ITEM, PROPERTY>, ItemActionListener<ITEM> {
+public class DefaultItemDataSource<ITEM, PROPERTY>
+		implements ItemDataSource<ITEM, PROPERTY>, Configuration<ITEM, PROPERTY>, ItemActionListener<ITEM> {
 
 	private static final long serialVersionUID = 5690427592609021861L;
 
@@ -147,7 +146,7 @@ public class DefaultItemDataSourceContainer<ITEM, PROPERTY>
 	 * @param itemAdapter Item adapter
 	 * @param batchSize Batch size
 	 */
-	public DefaultItemDataSourceContainer(ItemDataProvider<ITEM> dataProvider,
+	public DefaultItemDataSource(ItemDataProvider<ITEM> dataProvider,
 			ItemIdentifierProvider<ITEM, Object> itemIdentifierProvider, int batchSize) {
 		this();
 		this.dataProvider = dataProvider;
@@ -159,7 +158,7 @@ public class DefaultItemDataSourceContainer<ITEM, PROPERTY>
 	 * Constructor which do not perform internal initialization. The container initialization must be performed later
 	 * using the {@link #init()} method.
 	 */
-	protected DefaultItemDataSourceContainer() {
+	protected DefaultItemDataSource() {
 		super();
 		// include container filters
 		/*
@@ -207,7 +206,8 @@ public class DefaultItemDataSourceContainer<ITEM, PROPERTY>
 		this.itemIdentifierProvider = itemIdentifierProvider;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.data.ItemDataSource.Configuration#getItemIdentifierProvider()
 	 */
 	@Override
@@ -215,7 +215,8 @@ public class DefaultItemDataSourceContainer<ITEM, PROPERTY>
 		return Optional.ofNullable(itemIdentifierProvider);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.data.ItemDataSource.Configuration#getDataProvider()
 	 */
 	@Override
@@ -259,11 +260,6 @@ public class DefaultItemDataSourceContainer<ITEM, PROPERTY>
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.data.querycontainer.ItemQueryContainer# setMaxCacheSize(int)
-	 */
-	@Override
 	public void setMaxCacheSize(int maxCacheSize) {
 		getItemStore().ifPresent(s -> {
 			s.setMaxCacheSize(maxCacheSize);
@@ -279,11 +275,6 @@ public class DefaultItemDataSourceContainer<ITEM, PROPERTY>
 		return autoRefresh;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.querycontainer.ItemQueryContainer#setAutoRefresh( boolean)
-	 */
-	@Override
 	public void setAutoRefresh(boolean autoRefresh) {
 		this.autoRefresh = autoRefresh;
 		// if auto refresh not enabled, freeze the item store
@@ -329,12 +320,6 @@ public class DefaultItemDataSourceContainer<ITEM, PROPERTY>
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.data.querycontainer.ItemQueryContainer# addContainerProperty(java.lang.Object,
-	 * java.lang.Class, boolean, boolean, java.lang.Object)
-	 */
-	@Override
 	public <T> boolean addContainerProperty(PROPERTY propertyId, Class<T> type, boolean readOnly, boolean sortable,
 			T defaultValue) {
 		if (propertyId != null) {
@@ -362,21 +347,10 @@ public class DefaultItemDataSourceContainer<ITEM, PROPERTY>
 		return false;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.querycontainer.ItemQueryContainer# addContainerProperty(java.lang.Object,
-	 * java.lang.Class, boolean, boolean)
-	 */
-	@Override
 	public boolean addContainerProperty(PROPERTY propertyId, Class<?> type, boolean readOnly, boolean sortable) {
 		return addContainerProperty(propertyId, type, readOnly, sortable, null);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.querycontainer.ItemQueryContainer# setPropertySortable(java.lang.Object, boolean)
-	 */
-	@Override
 	public void setPropertySortable(PROPERTY propertyId, boolean sortable) {
 		if (propertyId != null) {
 			if (sortable) {
@@ -389,11 +363,6 @@ public class DefaultItemDataSourceContainer<ITEM, PROPERTY>
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.querycontainer.ItemQueryContainer# setPropertyReadOnly(java.lang.Object, boolean)
-	 */
-	@Override
 	public void setPropertyReadOnly(PROPERTY propertyId, boolean readOnly) {
 		if (propertyId != null) {
 			if (readOnly) {
@@ -406,12 +375,6 @@ public class DefaultItemDataSourceContainer<ITEM, PROPERTY>
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.data.querycontainer.ItemQueryContainer# setPropertyDefaultValue(java.lang.Object,
-	 * java.lang.Object)
-	 */
-	@Override
 	public void setPropertyDefaultValue(PROPERTY propertyId, Object defaultValue) {
 		if (propertyId != null) {
 			if (defaultValues == null) {
@@ -475,36 +438,18 @@ public class DefaultItemDataSourceContainer<ITEM, PROPERTY>
 		return requireItemStore().size();
 	}
 
-	// TODO
 	public boolean containsId(Object itemId) {
 		return requireItemStore().containsItem(itemId);
 	}
 
-	/**
-	 * Get the commit handler
-	 * @return the commit handler
-	 */
 	public Optional<CommitHandler<ITEM>> getCommitHandler() {
 		return Optional.ofNullable(commitHandler);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.data.container.ItemQueryContainer#setCommitHandler(com.holonplatform.vaadin.data.
-	 * ItemDataSource.CommitHandler)
-	 */
-	@Override
 	public void setCommitHandler(CommitHandler<ITEM> commitHandler) {
 		this.commitHandler = commitHandler;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.data.container.ItemDataSourceContainer#addQueryConfigurationProvider(com.holonplatform.
-	 * core.query.QueryConfigurationProvider)
-	 */
-	@Override
 	public Registration addQueryConfigurationProvider(QueryConfigurationProvider queryConfigurationProvider) {
 		ObjectUtils.argumentNotNull(queryConfigurationProvider, "QueryConfigurationProvider must be not null");
 		if (queryConfigurationProviders == null) {
@@ -522,47 +467,36 @@ public class DefaultItemDataSourceContainer<ITEM, PROPERTY>
 		};
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.querycontainer.ItemQueryContainer#setFixedQueryFilter(com.holonplatform.core.query.
-	 * QueryFilter)
-	 */
-	@Override
 	public void setFixedFilter(QueryFilter filter) {
 		this.fixedFilter = filter;
 		// reset store
 		resetStorePreservingFreezeState();
 	}
 
-	@Override
 	public void setFixedSort(QuerySort sort) {
 		this.fixedSort = sort;
 		// reset store
 		resetStorePreservingFreezeState();
 	}
 
-	@Override
 	public void setDefaultSort(QuerySort sort) {
 		this.defaultSort = sort;
 		// reset store
 		resetStorePreservingFreezeState();
 	}
 
-	@Override
 	public void addQueryParameter(String name, Object value) {
 		queryParameters.addParameter(name, value);
 		// reset store
 		resetStorePreservingFreezeState();
 	}
 
-	@Override
 	public void removeQueryParameter(String name) {
 		queryParameters.removeParameter(name);
 		// reset store
 		resetStorePreservingFreezeState();
 	}
 
-	@Override
 	public void setPropertySortGenerator(PROPERTY property, PropertySortGenerator<PROPERTY> propertySortGenerator) {
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		ObjectUtils.argumentNotNull(propertySortGenerator, "PropertySortGenerator must be not null");
@@ -822,7 +756,7 @@ public class DefaultItemDataSourceContainer<ITEM, PROPERTY>
 		ObjectUtils.argumentNotNull(item, "Item to refresh must be not null");
 		requireItemStore().refreshItem(item);
 	}
-	
+
 	/**
 	 * Reset item store content preserving the <em>freezed</em> state
 	 */
@@ -890,7 +824,7 @@ public class DefaultItemDataSourceContainer<ITEM, PROPERTY>
 	public void discard() {
 		requireItemStore().discard();
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.internal.data.ItemStore.ItemActionListener#onItemAction(java.lang.Object,
@@ -905,6 +839,265 @@ public class DefaultItemDataSourceContainer<ITEM, PROPERTY>
 		 * if (!isBuffered() && (action == ItemAction.ADDED || action == ItemAction.REMOVED || action ==
 		 * ItemAction.MODIFIED)) { commit(); }
 		 */
+	}
+
+	public static class DefaultItemDataSourceBuilder<ITEM, PROPERTY> implements ItemDataSource.Builder<ITEM, PROPERTY> {
+
+		/**
+		 * Container instance to build and setup
+		 */
+		protected final DefaultItemDataSource<ITEM, PROPERTY> instance = new DefaultItemDataSource<>();
+
+		/**
+		 * Container batch size
+		 */
+		protected int batchSize = ItemDataSource.DEFAULT_BATCH_SIZE;
+
+		/**
+		 * Constructor
+		 */
+		public DefaultItemDataSourceBuilder() {
+			super();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.data.container.ItemDataSourceContainerBuilder#dataSource(com.holonplatform.vaadin.
+		 * data .ItemDataProvider)
+		 */
+		@Override
+		public Builder<ITEM, PROPERTY> dataSource(ItemDataProvider<ITEM> dataProvider) {
+			instance.setDataProvider(dataProvider);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.data.container.ItemDataSourceContainerBuilder#itemIdentifier(com.holonplatform.
+		 * vaadin. data.ItemIdentifierProvider)
+		 */
+		@Override
+		public <ID> Builder<ITEM, PROPERTY> itemIdentifier(ItemIdentifierProvider<ITEM, ID> itemIdentifierProvider) {
+			instance.setItemIdentifierProvider(itemIdentifierProvider);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.data.QueryContainerBuilder#autoRefresh(boolean)
+		 */
+		@Override
+		public Builder<ITEM, PROPERTY> autoRefresh(boolean autoRefresh) {
+			instance.setAutoRefresh(autoRefresh);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.data.QueryContainerBuilder#batchSize(int)
+		 */
+		@Override
+		public Builder<ITEM, PROPERTY> batchSize(int batchSize) {
+			this.batchSize = batchSize;
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.data.QueryContainerBuilder#maxCacheSize(int)
+		 */
+		@Override
+		public Builder<ITEM, PROPERTY> maxCacheSize(int maxCacheSize) {
+			instance.setMaxCacheSize(maxCacheSize);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.data.QueryContainerBuilder#defaultValue(java.lang.Object, java.lang.Object)
+		 */
+		@Override
+		public Builder<ITEM, PROPERTY> defaultValue(PROPERTY propertyId, Object defaultValue) {
+			instance.setPropertyDefaultValue(propertyId, defaultValue);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.data.container.ItemDataSourceContainerBuilder#withProperty(java.lang.Object,
+		 * java.lang.Class)
+		 */
+		@Override
+		public Builder<ITEM, PROPERTY> withProperty(PROPERTY propertyId, Class<?> type) {
+			instance.addContainerProperty(propertyId, type, false, false);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.data.container.ItemDataSourceContainerBuilder#withSortableProperty(java.lang.Object,
+		 * java.lang.Class)
+		 */
+		@Override
+		public Builder<ITEM, PROPERTY> withSortableProperty(PROPERTY propertyId, Class<?> type) {
+			instance.addContainerProperty(propertyId, type, false, true);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.data.container.ItemDataSourceContainerBuilder#withReadOnlyProperty(java.lang.Object,
+		 * java.lang.Class)
+		 */
+		@Override
+		public Builder<ITEM, PROPERTY> withReadOnlyProperty(PROPERTY propertyId, Class<?> type) {
+			instance.addContainerProperty(propertyId, type, true, false);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.data.container.ItemDataSourceContainerBuilder#withReadOnlySortableProperty(java.
+		 * lang. Object, java.lang.Class)
+		 */
+		@Override
+		public Builder<ITEM, PROPERTY> withReadOnlySortableProperty(PROPERTY propertyId, Class<?> type) {
+			instance.addContainerProperty(propertyId, type, true, true);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.data.container.ItemDataSourceContainerBuilder#sortable(java.lang.Object,
+		 * boolean)
+		 */
+		@Override
+		public Builder<ITEM, PROPERTY> sortable(PROPERTY propertyId, boolean sortable) {
+			instance.setPropertySortable(propertyId, sortable);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.data.container.ItemDataSourceContainerBuilder#readOnly(java.lang.Object,
+		 * boolean)
+		 */
+		@Override
+		public Builder<ITEM, PROPERTY> readOnly(PROPERTY propertyId, boolean readOnly) {
+			instance.setPropertyReadOnly(propertyId, readOnly);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.data.container.ItemDataSourceContainerBuilder#withPropertySortGenerator(java.lang.
+		 * Object, com.holonplatform.vaadin.data.ItemDataSource.PropertySortGenerator)
+		 */
+		@Override
+		public Builder<ITEM, PROPERTY> withPropertySortGenerator(PROPERTY property,
+				PropertySortGenerator<PROPERTY> propertySortGenerator) {
+			instance.setPropertySortGenerator(property, propertySortGenerator);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.data.container.ItemDataSourceContainerBuilder#withQueryConfigurationProvider(com.
+		 * holonframework.core.query.QueryConfigurationProvider)
+		 */
+		@Override
+		public Builder<ITEM, PROPERTY> withQueryConfigurationProvider(
+				QueryConfigurationProvider queryConfigurationProvider) {
+			instance.addQueryConfigurationProvider(queryConfigurationProvider);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.data.container.ItemDataSourceContainerBuilder#fixedFilter(com.holonplatform.core.
+		 * query .QueryFilter)
+		 */
+		@Override
+		public Builder<ITEM, PROPERTY> fixedFilter(QueryFilter filter) {
+			instance.setFixedFilter(filter);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.data.container.ItemDataSourceContainerBuilder#fixedSort(com.holonplatform.core.
+		 * query. QuerySort)
+		 */
+		@Override
+		public Builder<ITEM, PROPERTY> fixedSort(QuerySort sort) {
+			instance.setFixedSort(sort);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.data.container.ItemDataSourceContainerBuilder#defaultSort(com.holonplatform.core.
+		 * query .QuerySort)
+		 */
+		@Override
+		public Builder<ITEM, PROPERTY> defaultSort(QuerySort sort) {
+			instance.setDefaultSort(sort);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.data.container.ItemDataSourceContainerBuilder#queryParameter(java.lang.String,
+		 * java.lang.Object)
+		 */
+		@Override
+		public Builder<ITEM, PROPERTY> queryParameter(String name, Object value) {
+			instance.addQueryParameter(name, value);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.data.container.ItemDataSourceContainerBuilder#commitHandler(com.holonplatform.
+		 * vaadin. data.ItemDataSource.CommitHandler)
+		 */
+		@Override
+		public Builder<ITEM, PROPERTY> commitHandler(CommitHandler<ITEM> commitHandler) {
+			instance.setCommitHandler(commitHandler);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.data.container.ItemDataSourceContainerBuilder#withDataProviderListener(com.vaadin.
+		 * data. provider.DataProviderListener)
+		 */
+		@Override
+		public Builder<ITEM, PROPERTY> withDataProviderListener(DataProviderListener<ITEM> listener) {
+			// TODO
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.data.QueryContainerBuilder#build()
+		 */
+		@Override
+		public ItemDataSource<ITEM, PROPERTY> build() {
+			// init container
+			instance.init(batchSize);
+			return instance;
+		}
+
 	}
 
 }

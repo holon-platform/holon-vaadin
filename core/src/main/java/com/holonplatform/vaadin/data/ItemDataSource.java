@@ -23,8 +23,11 @@ import java.util.Optional;
 import com.holonplatform.core.exceptions.DataAccessException;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.query.QueryConfigurationProvider;
+import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
+import com.holonplatform.vaadin.internal.data.DefaultItemDataSource;
 import com.holonplatform.vaadin.internal.data.DefaultItemSort;
+import com.vaadin.data.provider.DataProviderListener;
 
 /**
  * Represents an item set data source, providing operations to retrieve items by id and change the item set composition
@@ -46,6 +49,11 @@ import com.holonplatform.vaadin.internal.data.DefaultItemSort;
  */
 public interface ItemDataSource<ITEM, PROPERTY> extends Serializable {
 
+	/**
+	 * Default batch (page) size for items loading using {@link ItemDataProvider}
+	 */
+	public static final int DEFAULT_BATCH_SIZE = 50;
+	
 	/**
 	 * Get the data source configuration.
 	 * @return Data source configuration (never null)
@@ -185,7 +193,7 @@ public interface ItemDataSource<ITEM, PROPERTY> extends Serializable {
 		 * @return the item data provider
 		 */
 		Optional<ItemDataProvider<ITEM>> getDataProvider();
-		
+
 		/**
 		 * Get available item properties.
 		 * @return Available item properties iterable
@@ -324,6 +332,196 @@ public interface ItemDataSource<ITEM, PROPERTY> extends Serializable {
 		 * @param removedItems Removed items: an empty collection if none
 		 */
 		void commit(Collection<ITEM> addedItems, Collection<ITEM> modifiedItems, Collection<ITEM> removedItems);
+
+	}
+
+	// Builders
+
+	/**
+	 * Get a builder to create an {@link ItemDataSource}.
+	 * @param <ITEM> Item type
+	 * @param <PROPERTY> Item property type
+	 * @return {@link ItemDataSource} builder
+	 */
+	static <ITEM, PROPERTY> Builder<ITEM, PROPERTY> builder() {
+		return new DefaultItemDataSource.DefaultItemDataSourceBuilder<>();
+	}
+
+	/**
+	 * Builder to create {@link ItemDataSource} instances.
+	 * @param <PROPERTY> Item property type
+	 * @param <ITEM> Item type
+	 */
+	public interface Builder<ITEM, PROPERTY> {
+
+		/**
+		 * Set the items data provider.
+		 * @param dataProvider The items data provider to set
+		 * @return this
+		 */
+		Builder<ITEM, PROPERTY> dataSource(ItemDataProvider<ITEM> dataProvider);
+
+		/**
+		 * Set the item identifier provider to use to obtain item ids.
+		 * @param <ID> Item id type
+		 * @param itemIdentifierProvider the item identifier provider to set
+		 * @return this
+		 */
+		<ID> Builder<ITEM, PROPERTY> itemIdentifier(ItemIdentifierProvider<ITEM, ID> itemIdentifierProvider);
+
+		/**
+		 * Add an Item property to this container
+		 * @param propertyId Property id
+		 * @param type Property value type
+		 * @return this
+		 */
+		Builder<ITEM, PROPERTY> withProperty(PROPERTY propertyId, Class<?> type);
+
+		/**
+		 * Add an Item property to this container and declares it as sortable
+		 * @param propertyId Property id
+		 * @param type Property value type
+		 * @return this
+		 */
+		Builder<ITEM, PROPERTY> withSortableProperty(PROPERTY propertyId, Class<?> type);
+
+		/**
+		 * Add an Item property to this container and declares it as read-only
+		 * @param propertyId Property id
+		 * @param type Property value type
+		 * @return this
+		 */
+		Builder<ITEM, PROPERTY> withReadOnlyProperty(PROPERTY propertyId, Class<?> type);
+
+		/**
+		 * Add an Item property to this container and declares it as read-only and sortable
+		 * @param propertyId Property id
+		 * @param type Property value type
+		 * @return this
+		 */
+		Builder<ITEM, PROPERTY> withReadOnlySortableProperty(PROPERTY propertyId, Class<?> type);
+
+		/**
+		 * Set if auto-refresh is enabled for this container, i.e. items are loaded when one of the Container method
+		 * which involve operations on item set is called.
+		 * <p>
+		 * If auto-refresh is not enabled, {@link ItemDataSource#refresh()} method must be called to load items before
+		 * using this Container.
+		 * </p>
+		 * @param autoRefresh <code>true</code> to enable auto-refresh
+		 * @return this
+		 */
+		Builder<ITEM, PROPERTY> autoRefresh(boolean autoRefresh);
+
+		/**
+		 * Set batch (page) size for items loading using {@link ItemDataProvider}.
+		 * <p>
+		 * A value <code>&lt;=0</code> means no paging, and {@link ItemDataProvider} should behave in a consistent
+		 * manner.
+		 * </p>
+		 * @param batchSize Batch (page) size for items loading
+		 * @return this
+		 */
+		Builder<ITEM, PROPERTY> batchSize(int batchSize);
+
+		/**
+		 * Set max items cache size
+		 * @param maxCacheSize Max cache size to set
+		 * @return this
+		 */
+		Builder<ITEM, PROPERTY> maxCacheSize(int maxCacheSize);
+
+		/**
+		 * Set whether given property id is sortable.
+		 * @param propertyId Property id
+		 * @param sortable Whether given property id is sortable
+		 * @return this
+		 */
+		Builder<ITEM, PROPERTY> sortable(PROPERTY propertyId, boolean sortable);
+
+		/**
+		 * Set whether given property id is read-only.
+		 * @param propertyId Property id
+		 * @param readOnly Whether given property id is read-only
+		 * @return this
+		 */
+		Builder<ITEM, PROPERTY> readOnly(PROPERTY propertyId, boolean readOnly);
+
+		/**
+		 * Set a default value to initialize the given <code>propertyId</code>
+		 * @param propertyId Property id
+		 * @param defaultValue Default value
+		 * @return this
+		 */
+		Builder<ITEM, PROPERTY> defaultValue(PROPERTY propertyId, Object defaultValue);
+
+		/**
+		 * Set a {@link PropertySortGenerator} to generate {@link QuerySort}s for given <code>property</code>
+		 * @param property Property (not null)
+		 * @param propertySortGenerator PropertySortGenerator (not null)
+		 * @return this
+		 */
+		Builder<ITEM, PROPERTY> withPropertySortGenerator(PROPERTY property,
+				PropertySortGenerator<PROPERTY> propertySortGenerator);
+
+		/**
+		 * Add an external {@link QueryConfigurationProvider} for additional query configuration
+		 * @param queryConfigurationProvider QueryConfigurationProvider to add
+		 * @return this
+		 */
+		Builder<ITEM, PROPERTY> withQueryConfigurationProvider(QueryConfigurationProvider queryConfigurationProvider);
+
+		/**
+		 * Set query fixed filter (always added to query predicates)
+		 * @param filter Query fixed filter, or <code>null</code> for none
+		 * @return this
+		 */
+		Builder<ITEM, PROPERTY> fixedFilter(QueryFilter filter);
+
+		/**
+		 * Set query fixed sort (always added to query sorts)
+		 * @param sort Query fixed sort, or <code>null</code> for none
+		 * @return this
+		 */
+		Builder<ITEM, PROPERTY> fixedSort(QuerySort sort);
+
+		/**
+		 * Set query default sort. If not <code>null</code> and no other sort is available, this one will be used
+		 * @param sort Default query sort
+		 * @return this
+		 */
+		Builder<ITEM, PROPERTY> defaultSort(QuerySort sort);
+
+		/**
+		 * Add a query parameter
+		 * @param name Parameter name
+		 * @param value Parameter value
+		 * @return this
+		 */
+		Builder<ITEM, PROPERTY> queryParameter(String name, Object value);
+
+		/**
+		 * Set the handler to manage item set modifications.
+		 * <p>
+		 * This is required to activate item set modification support.
+		 * </p>
+		 * @param commitHandler Item commit handler
+		 * @return this
+		 */
+		Builder<ITEM, PROPERTY> commitHandler(CommitHandler<ITEM> commitHandler);
+
+		/**
+		 * Add an {@link DataProviderListener}
+		 * @param listener Listener to add
+		 * @return this
+		 */
+		Builder<ITEM, PROPERTY> withDataProviderListener(DataProviderListener<ITEM> listener);
+
+		/**
+		 * Build {@link ItemDataSource} instance
+		 * @return ItemDataSource instance
+		 */
+		ItemDataSource<ITEM, PROPERTY> build();
 
 	}
 
