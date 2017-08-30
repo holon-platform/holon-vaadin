@@ -712,25 +712,6 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.ItemListing#editItem(java.lang.Object)
-	 */
-	@Override
-	public void editItem(T item) {
-		// TODO
-
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.ItemListing#cancelEditing()
-	 */
-	@Override
-	public void cancelEditing() {
-		getGrid().getEditor().cancel();
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see
 	 * com.holonplatform.vaadin.components.ItemListing#setSelectionMode(com.holonplatform.vaadin.components.Selectable.
 	 * SelectionMode)

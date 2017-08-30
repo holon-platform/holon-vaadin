@@ -94,18 +94,6 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, Component {
 	void sort(ItemSort<P>... sorts);
 
 	/**
-	 * Set the listing in edit mode for given <code>item</code>, if available.
-	 * @param item Item to edit
-	 */
-	void editItem(T item);
-
-	/**
-	 * Cancel edit mode, if it was active, restoring listing to view mode.
-	 * @see #editItem(Object)
-	 */
-	void cancelEditing();
-
-	/**
 	 * Clear items in data source and listing rows.
 	 */
 	void clear();
