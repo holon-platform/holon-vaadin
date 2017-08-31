@@ -40,6 +40,8 @@ import com.holonplatform.vaadin.data.ItemDataSource;
 import com.holonplatform.vaadin.data.ItemDataSource.Configuration;
 import com.holonplatform.vaadin.data.ItemIdentifierProvider;
 import com.vaadin.data.provider.DataProviderListener;
+import com.vaadin.data.provider.Query;
+import com.vaadin.data.provider.QuerySortOrder;
 import com.vaadin.shared.Registration;
 
 /**
@@ -139,6 +141,11 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 	private final DefaultParameterSet queryParameters = new DefaultParameterSet();
 
 	/**
+	 * Data provider query
+	 */
+	private Query<ITEM, QueryFilter> dataProviderQuery;
+
+	/**
 	 * Constructor.
 	 * @param dataProvider {@link ItemDataProvider} to be used as items data source
 	 * @param itemIdentifierProvider Item identifier provider
@@ -159,12 +166,41 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 	 */
 	protected DefaultItemDataSource() {
 		super();
-		// include container filters
-		/*
-		 * addQueryConfigurationProvider(new QueryConfigurationProvider() {
-		 * @Override public QueryFilter getQueryFilter() { // Container filters return
-		 * ContainerUtils.convertContainerFilters(getConfiguration(), getContainerFilters()).orElse(null); } });
-		 */
+		// include data provider filters and sorts
+		addQueryConfigurationProvider(new QueryConfigurationProvider() {
+
+			@Override
+			public QueryFilter getQueryFilter() {
+				return getDataProviderQuery().flatMap(q -> q.getFilter()).orElse(null);
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see com.holonplatform.core.query.QueryConfigurationProvider#getQuerySort()
+			 */
+			@Override
+			public QuerySort getQuerySort() {
+				final List<QuerySort> sorts = new LinkedList<>();
+				List<QuerySortOrder> orders = getDataProviderQuery().map(q -> q.getSortOrders()).orElse(null);
+				if (orders != null && !orders.isEmpty()) {
+					for (QuerySortOrder order : orders) {
+						QuerySort sort = fromOrder(order, getProperties());
+						if (sort != null) {
+							sorts.add(sort);
+						}
+					}
+				}
+				if (!sorts.isEmpty()) {
+					if (sorts.size() == 1) {
+						return sorts.get(0);
+					} else {
+						return QuerySort.of(sorts);
+					}
+				}
+				return null;
+			}
+
+		});
 	}
 
 	/**
@@ -687,7 +723,8 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 		return queryParameters;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.data.ItemDataSource#indexOfItem(java.lang.Object)
 	 */
 	@Override
@@ -697,6 +734,15 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 			return requireItemStore().indexOfItem(itemId);
 		}
 		return -1;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.data.ItemDataSource#getItemAt(int)
+	 */
+	@Override
+	public ITEM getItemAt(int index) {
+		return requireItemStore().getItem(index);
 	}
 
 	/*
@@ -768,6 +814,19 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 		requireItemStore().refreshItem(item);
 	}
 
+	public Optional<Query<ITEM, QueryFilter>> getDataProviderQuery() {
+		return Optional.ofNullable(dataProviderQuery);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.data.ItemDataSource#setDataProviderQuery(com.vaadin.data.provider.Query)
+	 */
+	@Override
+	public void setDataProviderQuery(Query<ITEM, QueryFilter> dataProviderQuery) {
+		this.dataProviderQuery = dataProviderQuery;
+	}
+
 	/**
 	 * Reset item store content preserving the <em>freezed</em> state
 	 */
@@ -805,6 +864,14 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 			}
 		}
 		return null;
+	}
+
+	private static QuerySort fromOrder(QuerySortOrder order, Iterable<?> properties) {
+		return getPropertyPath(order.getSorted(), properties).map(path -> QuerySort.of(path,
+				(order.getDirection() != null
+						&& order.getDirection() == com.vaadin.shared.data.sort.SortDirection.DESCENDING)
+								? SortDirection.DESCENDING : SortDirection.ASCENDING))
+				.orElse(null);
 	}
 
 	/*

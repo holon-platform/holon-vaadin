@@ -25,6 +25,7 @@ import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.vaadin.components.PropertyListing;
 import com.holonplatform.vaadin.components.builders.PropertyListingBuilder.GridPropertyListingBuilder;
 import com.holonplatform.vaadin.data.ItemDataProvider;
+import com.holonplatform.vaadin.data.ItemIdentifierProvider;
 import com.holonplatform.vaadin.internal.components.DefaultPropertyListing;
 import com.holonplatform.vaadin.internal.data.DatastoreCommitHandler;
 import com.holonplatform.vaadin.internal.data.DatastoreItemDataProvider;
@@ -87,9 +88,14 @@ public class DefaultGridPropertyListingBuilder extends
 	@Override
 	public GridPropertyListingBuilder dataSource(Datastore datastore, DataTarget<?> dataTarget,
 			Property... identifierProperties) {
+		ObjectUtils.argumentNotNull(identifierProperties, "Identifier properties must be not null");
+		if (identifierProperties.length == 0) {
+			throw new IllegalArgumentException("Identifier properties must be not empty");
+		}
+		final ItemIdentifierProvider<PropertyBox, ?> identifier = new PropertiesItemIdentifier(identifierProperties);
 		commitHandler(new DatastoreCommitHandler(datastore, dataTarget));
-		dataSource(new DatastoreItemDataProvider(datastore, dataTarget, PropertySet.of(properties)),
-				identifierProperties);
+		dataSource(new DatastoreItemDataProvider(datastore, dataTarget, PropertySet.of(properties), identifier),
+				identifier);
 		return builder();
 	}
 

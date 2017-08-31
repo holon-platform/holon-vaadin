@@ -22,13 +22,11 @@ import java.util.stream.Stream;
 
 import com.holonplatform.core.Path;
 import com.holonplatform.core.internal.utils.ObjectUtils;
-import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.core.query.QuerySort.SortDirection;
 import com.holonplatform.vaadin.data.ItemDataProvider;
-import com.holonplatform.vaadin.data.ItemDataSource;
 import com.holonplatform.vaadin.data.ItemIdentifierProvider;
 import com.vaadin.data.provider.AbstractBackEndDataProvider;
 import com.vaadin.data.provider.DataProvider;
@@ -36,7 +34,7 @@ import com.vaadin.data.provider.Query;
 import com.vaadin.data.provider.QuerySortOrder;
 
 /**
- * A {@link DataProvider} using an {@link ItemDataSource} as data source.
+ * A {@link DataProvider} using an {@link ItemDataProvider} as data source.
  * 
  * @since 5.0.0
  */
@@ -52,20 +50,12 @@ public class ItemDataProviderAdapter<ITEM> extends AbstractBackEndDataProvider<I
 		this(dataProvider, null);
 	}
 
-	@SuppressWarnings("unchecked")
 	public ItemDataProviderAdapter(ItemDataProvider<ITEM> dataProvider,
 			ItemIdentifierProvider<ITEM, ?> itemIdentifier) {
 		super();
 		ObjectUtils.argumentNotNull(dataProvider, "ItemDataProvider must be not null");
 		this.dataProvider = dataProvider;
 		this.itemIdentifier = itemIdentifier;
-
-		if (dataProvider instanceof DatastoreItemDataProvider) {
-			final DatastoreItemDataProvider dsp = ((DatastoreItemDataProvider) dataProvider);
-			if (!dsp.getItemIdentifier().isPresent()) {
-				dsp.setItemIdentifier((ItemIdentifierProvider<PropertyBox, ?>) itemIdentifier);
-			}
-		}
 	}
 
 	protected ItemDataProvider<ITEM> getDataProvider() {

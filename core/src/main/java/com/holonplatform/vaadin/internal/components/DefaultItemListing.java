@@ -30,9 +30,11 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.components.ItemListing;
 import com.holonplatform.vaadin.components.Selectable;
+import com.holonplatform.vaadin.data.ItemDataProvider;
 import com.holonplatform.vaadin.data.ItemDataSource;
 import com.holonplatform.vaadin.data.ItemDataSource.ItemSort;
 import com.holonplatform.vaadin.internal.data.ItemDataProviderAdapter;
+import com.holonplatform.vaadin.internal.data.ItemDataSourceAdapter;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.SelectionModel.Multi;
 import com.vaadin.data.ValueProvider;
@@ -875,7 +877,11 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	}
 
 	public void setBuffered(boolean buffered) {
+		boolean changed = this.buffered != buffered;
 		this.buffered = buffered;
+		if (changed) {
+			setupDataProvider();
+		}
 	}
 
 	/**
@@ -884,12 +890,22 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	 */
 	public void setDataSource(ItemDataSource<T, P> dataSource) {
 		ObjectUtils.argumentNotNull(dataSource, "ItemDataSource must be not null");
-
 		this.dataSource = dataSource;
-		dataSource.getConfiguration().getDataProvider().ifPresent(d -> {
-			getGrid().setDataProvider(new ItemDataProviderAdapter<>(d,
-					dataSource.getConfiguration().getItemIdentifierProvider().orElse(null)));
-		});
+		setupDataProvider();
+	}
+
+	protected void setupDataProvider() {
+		if (this.dataSource != null) {
+			if (isBuffered()) {
+				getGrid().setDataProvider(new ItemDataSourceAdapter<>(this.dataSource));
+			} else {
+				ItemDataProvider<T> dataProvider = this.dataSource.getConfiguration().getDataProvider()
+						.orElseThrow(() -> new IllegalStateException(
+								"The datasource [" + this.dataSource + "] has not a configured ItemDataProvider"));
+				getGrid().setDataProvider(new ItemDataProviderAdapter<>(dataProvider,
+						this.dataSource.getConfiguration().getItemIdentifierProvider().orElse(null)));
+			}
+		}
 	}
 
 	/*

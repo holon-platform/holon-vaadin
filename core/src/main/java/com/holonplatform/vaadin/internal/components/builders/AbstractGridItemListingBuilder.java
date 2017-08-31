@@ -309,7 +309,6 @@ public abstract class AbstractGridItemListingBuilder<T, P, C extends ItemListing
 		}
 
 		if (footerGenerator != null) {
-			// TODO check
 			instance.addDataProviderListener(e -> {
 				if (instance.isFooterVisible()) {
 					footerGenerator.updateFooter(instance, new GridFooterSection(instance.getGrid()));

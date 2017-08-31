@@ -28,6 +28,7 @@ import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.vaadin.internal.data.DefaultItemDataSource;
 import com.holonplatform.vaadin.internal.data.DefaultItemSort;
 import com.vaadin.data.provider.DataProviderListener;
+import com.vaadin.data.provider.Query;
 
 /**
  * Represents an item set data source, providing operations to retrieve items by id and change the item set composition
@@ -53,7 +54,7 @@ public interface ItemDataSource<ITEM, PROPERTY> extends Serializable {
 	 * Default batch (page) size for items loading using {@link ItemDataProvider}
 	 */
 	public static final int DEFAULT_BATCH_SIZE = 50;
-	
+
 	/**
 	 * Get the data source configuration.
 	 * @return Data source configuration (never null)
@@ -89,13 +90,20 @@ public interface ItemDataSource<ITEM, PROPERTY> extends Serializable {
 	 * @return Item identifier
 	 */
 	Object getId(ITEM item);
-	
+
 	/**
 	 * Get index of given item
 	 * @param item Item
 	 * @return Item index, or <code>-1</code> if not found
 	 */
 	int indexOfItem(ITEM item);
+
+	/**
+	 * Get the item at given index.
+	 * @param index Item index
+	 * @return The itemat given index, or <code>null</code> if not available
+	 */
+	ITEM getItemAt(int index);
 
 	/**
 	 * Get the item identified by given <code>itemId</code>.
@@ -149,6 +157,12 @@ public interface ItemDataSource<ITEM, PROPERTY> extends Serializable {
 	void sort(ItemSort<PROPERTY>... sorts);
 
 	/**
+	 * Set the data provider {@link Query} to use to obtain filters and sorts.
+	 * @param dataProviderQuery the query to set
+	 */
+	void setDataProviderQuery(Query<ITEM, QueryFilter> dataProviderQuery);
+
+	/**
 	 * Item actions enumeration.
 	 */
 	public enum ItemAction {
@@ -200,7 +214,7 @@ public interface ItemDataSource<ITEM, PROPERTY> extends Serializable {
 		 * @return the item data provider
 		 */
 		Optional<ItemDataProvider<ITEM>> getDataProvider();
-		
+
 		/**
 		 * Get the commit handler
 		 * @return the commit handler

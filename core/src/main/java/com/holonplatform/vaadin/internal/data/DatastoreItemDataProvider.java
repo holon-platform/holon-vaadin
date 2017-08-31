@@ -87,6 +87,18 @@ public class DatastoreItemDataProvider implements ItemDataProvider<PropertyBox> 
 		this.propertySet = propertySet;
 	}
 
+	public DatastoreItemDataProvider(Datastore datastore, DataTarget<?> target, PropertySet<?> propertySet,
+			ItemIdentifierProvider<PropertyBox, ?> itemIdentifier) {
+		super();
+		ObjectUtils.argumentNotNull(datastore, "Datastore must be not null");
+		ObjectUtils.argumentNotNull(target, "DataTarget must be not null");
+		ObjectUtils.argumentNotNull(propertySet, "PropertySet must be not null");
+		this.datastore = datastore;
+		this.target = target;
+		this.propertySet = propertySet;
+		this.itemIdentifier = itemIdentifier;
+	}
+
 	/**
 	 * Get the {@link Datastore} to use to perform count and load operations.
 	 * @return the datastore
