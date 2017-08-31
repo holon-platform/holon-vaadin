@@ -1,0 +1,130 @@
+== Vaadin integration
+
+The `holon-vaadin` artifact is the main entry point to use the Holon platform Vaadin integration.
+
+_Maven coordinates_:
+[source, xml, subs="attributes+"]
+----
+<groupId>com.holon-platform.vaadin</groupId>
+<artifactId>holon-vaadin</artifactId>
+<version>{revnumber}</version>
+----
+
+== Component builders
+
+A complete set of _fluent_ builders is available to create and configure the most common Vaadin standard components and the ones provided by the Holon platform Vaadin integration module.
+
+TIP: See <<UIComponents>> for a list of the addiotional components made available by the Holon platform Vaadin integration module.
+
+All the builders can be obtained using the link:{apidir}/com/holonplatform/vaadin/components/Components.html[Components^] interface, which is organized in  sub-interfaces by component kind.
+
+.Components builders structure
+|===
+|Sub-interface |Provides
+
+|*[NONE]*
+|A set of _configure(*)_ methods to setup existing standard component instances and a set of methods to obtain the _fluent_ builders for standard Vaadin components, such as `Label`, `Button`, and standard layout components.
+
+|*input*
+|Builders for different data type `Input` components, including selection components. Furthermore, provides builder to create input _forms_.
+
+|*view*
+|Builders for `ViewComponent` components and view _forms_.
+
+|*listing*
+|Builders for components which represent a list of _items_.
+|===
+
+TIP: For each UI displayed text of a component (for example, the component caption or description), the builders provide the opportunity to set a _localizable_ text, using a `Localizable` object or directly providing the _message code_ and the _default message_ of the localizable text. In order for the localization to work, a `LocalizationContext` must be available as a context resource. See the link:holon-core.html#i18n[Internationalization] documentation for further information.
+
+[[UIComponents]]
+== UI Components
+
+The Vaadin module provides a set of components which extend or decorates the standard components set. The available components are described below.
+
+=== Input
+
+The link:{apidir}/com/holonplatform/vaadin/components/Input.html[Input^] interface represents a component that has a user-editable value, which can be read and setted using the methods provided by the The link:{apidir}/com/holonplatform/vaadin/components/ValueHolder.html[ValueHolder^] super interface.
+
+Input components supports the _read-only_ (to prevent the user from changing the value) and _required_ (to show a suitable indicator along with the field) modes.
+
+Input components supports `ValueChangeListener` registration to listen to input value changes.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=input1,indent=0]
+----
+<1> Create and configure a `String` value type `Input` field.
+<2> Set a value
+<3> Get the value
+<4> Add a `ValueChangeListener`
+
+The concrete Vaadin `Component`, which represents the UI input element, can be obtained through the `getComponent()` method.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=input2,indent=0]
+----
+<1> Create and configure a `LocalDate` value type `Input` field.
+<2> Get the input `Component`, which can be used to display the input field in UI.
+
+An `Input` component can be obtained from a standard Vaadin `HasValue` component using the `from(...)` static method.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=input3,indent=0]
+----
+
+Another way to obtain a standard Vaadin `HasValue` component from an input component is to use the `asField()` input builder method.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=input4,indent=0]
+----
+<1> Create select field using `Locale` data type and obtain it as `Field`, i.e. as a standard `HasValue` component.
+
+=== ValidatableInput
+
+The link:{apidir}/com/holonplatform/vaadin/components/ValidatableInput.html[ValidatableInput^] interface represents an `Input` component which supports value validation using the standard Holon platform `Validator` interface.
+
+Value validation can be triggered each time the input value changes, using `setValidateOnValueChange` method.
+
+A link:{apidir}/com/holonplatform/vaadin/components/ValidationStatusHandler.html[ValidationStatusHandler^] can be used to control how the validation errors are notified to the user, listening to validation status change events.
+
+By default, the standard Vaadin component error notification is used.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=input5,indent=0]
+----
+<1> Create a `ValidatableInput` from a String input
+<2> Add a validator to check the input value is a valid e-mail address
+<3> Add a validator to check the input value is maximum 100 characters long
+<4> Set validation status handler which shows a notification when the input in invalid
+<5> Perform the input value validation
+<6> Triggers validation when input value changes
+
+A `ValidatableInput` can be obtained from an existing `Input` or `HasValue` component instance or using the appropriate builder.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=input6,indent=0]
+----
+<1> Create a `ValidatableInput` from a String `Input`
+<2> Create a `ValidatableInput` from a String type `HasValue` component
+<3> Create a `ValidatableInput` using the input builder
+<4> Add a default _required_ (the input is not empty) validator using the provided error message
+<5> Add a standard validator
+
+=== Selectable Input
+
+TODO
+
+== Property renderers and presenters
+
+
+== Data providers
+
+
+== Device information
+
