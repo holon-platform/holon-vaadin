@@ -17,14 +17,12 @@ package com.holonplatform.vaadin.test.data;
 
 import java.io.Serializable;
 
-// TODO
 //@Entity
 //@Table(name = "testdata")
 public class TestDataDomain implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	// TODO
 	// @Id
 	private String code;
 	private String description;

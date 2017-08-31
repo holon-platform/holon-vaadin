@@ -27,7 +27,10 @@ import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.vaadin.data.ItemIdentifierProvider;
 
 /**
- * TODO
+ * A {@link PropertyBox} wrapper which uses an {@link ItemIdentifierProvider} to extract the identifiers to be used for
+ * <code>equals</code> and <code>hashCode</code> methods.
+ * 
+ * @since 5.0.0
  */
 public class IdentifiablePropertyBox implements PropertyBox {
 

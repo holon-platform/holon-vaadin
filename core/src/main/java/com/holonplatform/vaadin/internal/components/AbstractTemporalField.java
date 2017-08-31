@@ -308,7 +308,7 @@ public abstract class AbstractTemporalField<T extends Temporal & TemporalAdjuste
 		 */
 		@Override
 		public B timeZone(TimeZone timeZone) {
-			// TODO not supported by local date and time fields
+			// not supported by local date and time fields
 			return builder();
 		}
 

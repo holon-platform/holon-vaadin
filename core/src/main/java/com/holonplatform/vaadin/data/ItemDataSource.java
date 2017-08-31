@@ -27,7 +27,6 @@ import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.vaadin.internal.data.DefaultItemDataSource;
 import com.holonplatform.vaadin.internal.data.DefaultItemSort;
-import com.vaadin.data.provider.DataProviderListener;
 import com.vaadin.data.provider.Query;
 
 /**
@@ -536,13 +535,6 @@ public interface ItemDataSource<ITEM, PROPERTY> extends Serializable {
 		 * @return this
 		 */
 		Builder<ITEM, PROPERTY> commitHandler(CommitHandler<ITEM> commitHandler);
-
-		/**
-		 * Add an {@link DataProviderListener}
-		 * @param listener Listener to add
-		 * @return this
-		 */
-		Builder<ITEM, PROPERTY> withDataProviderListener(DataProviderListener<ITEM> listener);
 
 		/**
 		 * Build {@link ItemDataSource} instance

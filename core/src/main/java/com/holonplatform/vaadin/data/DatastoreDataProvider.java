@@ -33,8 +33,6 @@ import com.vaadin.shared.Registration;
 
 /**
  * A {@link DataProvider} backed by a {@link Datastore}.
- * 
- * TODO docs
  *
  * @since 5.0.0
  */

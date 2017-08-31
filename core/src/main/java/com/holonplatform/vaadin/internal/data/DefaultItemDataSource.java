@@ -39,7 +39,6 @@ import com.holonplatform.vaadin.data.ItemDataProvider;
 import com.holonplatform.vaadin.data.ItemDataSource;
 import com.holonplatform.vaadin.data.ItemDataSource.Configuration;
 import com.holonplatform.vaadin.data.ItemIdentifierProvider;
-import com.vaadin.data.provider.DataProviderListener;
 import com.vaadin.data.provider.Query;
 import com.vaadin.data.provider.QuerySortOrder;
 import com.vaadin.shared.Registration;
@@ -1134,18 +1133,6 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 		@Override
 		public Builder<ITEM, PROPERTY> commitHandler(CommitHandler<ITEM> commitHandler) {
 			instance.setCommitHandler(commitHandler);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.data.container.ItemDataSourceContainerBuilder#withDataProviderListener(com.vaadin.
-		 * data. provider.DataProviderListener)
-		 */
-		@Override
-		public Builder<ITEM, PROPERTY> withDataProviderListener(DataProviderListener<ITEM> listener) {
-			// TODO
 			return this;
 		}
 
