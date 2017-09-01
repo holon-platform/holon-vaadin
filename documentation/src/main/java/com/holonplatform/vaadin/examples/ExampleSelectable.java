@@ -20,6 +20,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.holonplatform.core.query.ConstantExpression;
+import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.vaadin.components.Components;
 import com.holonplatform.vaadin.components.MultiSelect;
 import com.holonplatform.vaadin.components.SingleSelect;
@@ -128,6 +130,18 @@ public class ExampleSelectable {
 						(itemCaption, filterText) -> itemCaption.toLowerCase().startsWith(filterText.toLowerCase())) // <1>
 				.build();
 		// end::selectable7[]
+	}
+
+	public void selectable8() {
+		// tag::selectable8[]
+		final TestData ONE = new TestData(1);
+		final TestData TWO = new TestData(2);
+
+		SingleSelect<TestData> singleSelect = Components.input.singleSelect(TestData.class).dataSource(
+				ItemDataProvider.create(q -> 2, (q, o, l) -> Stream.of(ONE, TWO)),
+				filterText -> QueryFilter.startsWith(ConstantExpression.create("description"), filterText, true))
+				.build();
+		// end::selectable8[]
 	}
 
 	private class TestData {

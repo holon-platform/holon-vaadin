@@ -224,7 +224,19 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[
 
 For `SingleSelect` inputs using *SELECT* rendering mode, the UI component allows the user to type a _filtering_ text to search for a selection item, and such filter by default is referred to item captions.
 
-TODO
+When using a *fixed item set*, the in-memory caption filter can be customized using the `filteringMode(...)` builder method.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[tag=selectable7,indent=0]
+----
+
+When using a `ItemDataProvider` or a Vaadin `DataProvider`, an overloaded form of the `dataSource(...)` method can be used, which accept as second parameter a function to provide a suitable query filter using the current user filtering text.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[tag=selectable8,indent=0]
+----
 
 === Grouping Inputs in Forms
 
