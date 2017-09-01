@@ -246,6 +246,8 @@ The selection data type will be the same as the selection property type.
 
 The simplest way to configure a `Property` based selectable input, is by using a `Datastore`.
 
+TIP: See the link:holon-core.html#Property[Property] documentation for further information about the Holon platform `Property` model.
+
 [source, java]
 ----
 include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[tag=selectable9,indent=0]
@@ -265,10 +267,117 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[
 ----
 <1> Set a `QueryConfigurationProvider` which provides a `QueryFilter` to select only the items with the `ID` property that is greater than 0
 
-=== Grouping Inputs in Forms
+=== Grouping Inputs
 
+The link:{apidir}/com/holonplatform/vaadin/components/PropertyInputGroup.html[PropertyInputGroup^] component allows to group and manage a set of `Input` fields, relying on the `Property` model and using  `PropertyBox` objects to collect, set and provide the Input values.
 
+TIP: See the link:holon-core.html#Property[Property] documentation for further information about the Holon platform `Property` model.
 
+A `PropertyInputGroup` is bound to a set of properties, and for each property an `Input` field is made available to set and get the property value. Each property has to be bound to an `Input` field with a consistent value type.
+
+The property values are setted and obtained using the `PropertyBox` data container, with the same property set of the input group.
+
+The property values are automatically updated in the current `PropertyBox` according to any user modification made through the input's UI components.
+
+The property input group supports `ValueChangeListener` registration to be notified when the group `PropertyBox` value changes.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInputGroup.java[tag=group1,indent=0]
+----
+<1> Create a `PropertyInputGroup` using the `PROPERTIES` property set
+<2> Bind the `ID` property to a `Long` type Input field
+<3> Bind the `DESCRIPTION` property to a `String` type Input field
+<4> Set the property values using a `PropertyBox` instance
+<5> Get the property values as a `PropertyBox` instance
+<6> Add a group `ValueChangeListener`
+
+The default Holon platform `PropertyRenderer` architecture can be used to automatically generate a suitable Input component for a `Property`, according to its type.
+
+The `bind(...)` builder method can therefore be used to override the default property input generation only when a custom `Input` type is required.
+
+TIP: See <<RenderersPresenters>> for further information about property renderers.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInputGroup.java[tag=group2,indent=0]
+----
+<1> The property `Input` fields are automatically generated using the available `PropertyRenderer` from the default registry
+
+==== Read-only properties
+
+A property can be setted as *read-only*, to prevent the modification of its value. When a property is read-only, the `Input` component will be in read-only mode too, preventing the user from changing the value.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInputGroup.java[tag=group3,indent=0]
+----
+<1> The `ID` property is setted as read-only, preventing the user from changing the property value
+
+==== Hidden properties
+
+A property can be setted as *hidden*. When a property is hidden, it is part of the group property set and its value will be preserved in the `PropertyBox` instances, but no `Input` component will be generated and bound to the property itself, so its value will never be visible on the user interface.
+
+The `hidden(Property property)` method of the group builder can be used to set a property as hidden.
+
+==== Default property values
+
+A *default value* can be provided for a property. If available, the default value will be used as property value when the corresponding Input component is empty (i.e. has no value).
+
+The `defaultValue(Property<T> property, DefaultValueProvider<T> defaultValueProvider)` method of the group builder can be used to set a default value for a property.
+
+=== Input group validation
+
+A `PropertyInputGroup` support both property value and group value validation, using both standard Holon platform `Validator` and Vaadin validators.
+
+A set of `required(...)` group builder methods are provided to add a _required_ validator to a property (i.e. a validator that check the value is not null or empty) and to show the required indicator symbol alog with the property input component. 
+
+When a validator in bound to the overall input group, the value to validate will be represented by the `PropertyBox` which contains all the current property values.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInputGroup.java[tag=group4,indent=0]
+----
+<1> Add a validator bound to the `DESCRIPTION` property to check the value size is not greater than 100 characters
+<2> Add a _required_ validator to the `ID` property
+<3> Add a _required_ validator to the `ID` property providing a custom validation error message
+<4> Add an overall validator which read the `ID` property value from the group `PropertyBox` and checks it is greater than 0
+
+The input group validation is performed invoking all the available property validators, and then the overall group validators, if any.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInputGroup.java[tag=group5,indent=0]
+----
+<1> Explicit group validation: if some validation failure occurs, a `ValidationException` is thrown
+<2> Using the default `getValue()` method, the validation is triggered automatically, and a  `ValidationException` is thrown if validation fails
+<3> The `getValue(boolean validate)` method can be used to skip value validation
+<4> The `getValueIfValid()` returns an Optional, which contains the `PropertyBox` value only if the validation succeded
+
+A link:{apidir}/com/holonplatform/vaadin/components/ValidationStatusHandler.html[ValidationStatusHandler^] can be used to control how the validation errors are notified to the user, listening to validation status change events.
+
+The property input group support `ValidationStatusHandler` configuration both property and overall validation.
+
+Furthermore, the input group builder provides two methods to control if the validation failures are to be collected and all notified to the user or if the validation has to stop at first failure, both from a properties or a group point of view.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInputGroup.java[tag=group6,indent=0]
+----
+<1> Set to stop overall validation at first failure
+<2> Set to stop properties validation at first failure
+<3> Set the overall `ValidationStatusHandler`
+<4> Set the properties `ValidationStatusHandler`
+
+TIP: A property input group `ValidationStatusHandler` setter method which accept a `Label` is provided as a shorter to use a standard Vaadin `Label` to notify validation error.
+
+=== Input Forms
+
+=== View components
+
+TODO
+
+[[RenderersPresenters]]
 == Property renderers and presenters
 
 
