@@ -238,6 +238,33 @@ When using a `ItemDataProvider` or a Vaadin `DataProvider`, an overloaded form o
 include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[tag=selectable8,indent=0]
 ----
 
+==== Using the `Property` model with selectable Inputs
+
+The Holon platform `Property` model is fully supported by the selectable input builder, which allow to create selectable inputs using `PropertyBox` type items and a specific `Property` as selection property (typically, the property which acts as item id).
+
+The selection data type will be the same as the selection property type.
+
+The simplest way to configure a `Property` based selectable input, is by using a `Datastore`.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[tag=selectable9,indent=0]
+----
+<1> Create a `SingleSelect` using the `ID` property as selection property
+<2> Set the select data source using a `Datastore`, specifying the `DataTarget` and the set of property to use as query projection
+<3> Set an item caption generator which provides the value of the `DESCRIPTION` property as item caption
+<4> Set the selected value, which will be of type `Long`, consistent with the `ID` selection property
+<5> Get the selected value, which will be of type `Long`, consistent with the `ID` selection property
+<6> Refresh the selection items, querying the `Datastore`
+
+One or more `QueryConfigurationProvider` can be used to control the Datastore query configuration, providing additional filters and/or sorts.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[tag=selectable10,indent=0]
+----
+<1> Set a `QueryConfigurationProvider` which provides a `QueryFilter` to select only the items with the `ID` property that is greater than 0
+
 === Grouping Inputs in Forms
 
 

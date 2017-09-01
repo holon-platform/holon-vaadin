@@ -20,6 +20,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.holonplatform.core.datastore.DataTarget;
+import com.holonplatform.core.datastore.Datastore;
+import com.holonplatform.core.property.PathProperty;
+import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.query.ConstantExpression;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.vaadin.components.Components;
@@ -142,6 +146,43 @@ public class ExampleSelectable {
 				filterText -> QueryFilter.startsWith(ConstantExpression.create("description"), filterText, true))
 				.build();
 		// end::selectable8[]
+	}
+
+	public void selectable9() {
+		// tag::selectable9[]
+		Datastore datastore = obtainDatastore();
+
+		final PathProperty<Long> ID = PathProperty.create("id", Long.class);
+		final PathProperty<String> DESCRIPTION = PathProperty.create("description", String.class);
+
+		SingleSelect<Long> singleSelect = Components.input.singleSelect(ID) // <1>
+				.dataSource(datastore, DataTarget.named("testData"), PropertySet.of(ID, DESCRIPTION)) // <2>
+				.itemCaptionGenerator(propertyBox -> propertyBox.getValue(DESCRIPTION)) // <3>
+				.build();
+
+		singleSelect.setValue(Long.valueOf(1)); // <4>
+		Long selectedId = singleSelect.getValue(); // <5>
+
+		singleSelect.refresh(); // <6>
+		// end::selectable9[]
+	}
+
+	public void selectable10() {
+		// tag::selectable10[]
+		Datastore datastore = obtainDatastore();
+
+		final PathProperty<Long> ID = PathProperty.create("id", Long.class);
+		final PathProperty<String> DESCRIPTION = PathProperty.create("description", String.class);
+
+		SingleSelect<Long> singleSelect = Components.input.singleSelect(ID)
+				.dataSource(datastore, DataTarget.named("testData"), PropertySet.of(ID, DESCRIPTION), // Datastore
+						() -> ID.gt(0L)) // <1>
+				.itemCaptionGenerator(propertyBox -> propertyBox.getValue(DESCRIPTION)).build();
+		// end::selectable10[]
+	}
+
+	private static Datastore obtainDatastore() {
+		return null;
 	}
 
 	private class TestData {
