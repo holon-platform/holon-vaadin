@@ -18,6 +18,7 @@ package com.holonplatform.vaadin.components.builders;
 import com.holonplatform.vaadin.components.Input;
 import com.holonplatform.vaadin.data.ItemDataProvider;
 import com.holonplatform.vaadin.data.ItemDataSource;
+import com.vaadin.data.provider.DataProvider;
 
 /**
  * Select component builder with {@link ItemDataSource} support.
@@ -39,5 +40,12 @@ public interface SelectItemDataSourceBuilder<T, C extends Input<T>, S, ITEM, B e
 	 * @return this
 	 */
 	B dataSource(ItemDataProvider<ITEM> dataProvider);
+	
+	/**
+	 * Set the selection items data provider.
+	 * @param dataProvider Items data provider (not null)
+	 * @return this
+	 */
+	B dataSource(DataProvider<ITEM, ?> dataProvider);
 
 }

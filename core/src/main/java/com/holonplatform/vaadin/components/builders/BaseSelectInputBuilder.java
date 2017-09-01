@@ -18,14 +18,12 @@ package com.holonplatform.vaadin.components.builders;
 import java.util.Set;
 
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.vaadin.components.Input;
 import com.holonplatform.vaadin.components.ItemSet.ItemCaptionGenerator;
 import com.holonplatform.vaadin.components.ItemSet.ItemIconGenerator;
 import com.holonplatform.vaadin.components.MultiSelect;
 import com.holonplatform.vaadin.components.SingleSelect;
 import com.vaadin.server.Resource;
-import com.vaadin.server.SerializableFunction;
 import com.vaadin.ui.ComboBox.CaptionFilter;
 
 /**
@@ -166,14 +164,6 @@ public interface BaseSelectInputBuilder<T, C extends Input<T>, S, ITEM, B extend
 		 * @return this
 		 */
 		B filteringMode(CaptionFilter captionFilter);
-
-		/**
-		 * Set the function to provide the {@link QueryFilter} to use with the data provider when user types a caption
-		 * filter String.
-		 * @param filterProvider caption {@link QueryFilter} provider
-		 * @return this
-		 */
-		B captionQueryFilter(SerializableFunction<String, QueryFilter> filterProvider);
 
 	}
 

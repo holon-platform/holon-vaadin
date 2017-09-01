@@ -27,7 +27,6 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.AnnotationUtils;
 import com.holonplatform.core.internal.utils.ObjectUtils;
-import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.vaadin.components.ItemSet;
 import com.holonplatform.vaadin.components.Selectable;
 import com.holonplatform.vaadin.components.builders.BaseSelectInputBuilder.RenderingMode;
@@ -38,8 +37,8 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.server.Resource;
 import com.vaadin.server.SerializableFunction;
 import com.vaadin.shared.Registration;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.ComboBox.CaptionFilter;
+import com.vaadin.ui.Component;
 
 /**
  * Abstract select field implementation.
@@ -104,7 +103,7 @@ public abstract class AbstractSelectField<T, S, ITEM, I, F extends HasValue<I> &
 
 	public abstract void setDataProvider(DataProvider<ITEM, ?> dataProvider);
 	
-	public abstract void setDataProvider(DataProvider<ITEM, QueryFilter> dataProvider, SerializableFunction<String, QueryFilter> filterConverter);
+	public abstract void setDataProvider(DataProvider<ITEM, ?> dataProvider, SerializableFunction<String, ?> filterConverter);
 
 	public abstract Optional<DataProvider<ITEM, ?>> getDataProvider();
 

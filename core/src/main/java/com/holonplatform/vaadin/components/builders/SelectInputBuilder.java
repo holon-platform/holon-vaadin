@@ -21,7 +21,6 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.components.Input;
 import com.holonplatform.vaadin.components.ItemSet.ItemCaptionGenerator;
-import com.vaadin.data.Converter;
 
 /**
  * Builder to create selection {@link Input}s.
@@ -36,13 +35,6 @@ import com.vaadin.data.Converter;
  */
 public interface SelectInputBuilder<T, C extends Input<T>, S, ITEM, B extends SelectInputBuilder<T, C, S, ITEM, B>>
 		extends BaseSelectInputBuilder<T, C, S, ITEM, B> {
-
-	/**
-	 * Set a {@link Converter} to be used to convert an item to the selection data type.
-	 * @param itemConverter the converter to set
-	 * @return this
-	 */
-	B itemConverter(Converter<S, ITEM> itemConverter);
 
 	/**
 	 * Set the given items as selection item set.

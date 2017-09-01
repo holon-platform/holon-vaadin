@@ -26,7 +26,6 @@ import java.util.stream.Stream;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
-import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.vaadin.components.Field;
 import com.holonplatform.vaadin.components.MultiSelect;
 import com.holonplatform.vaadin.components.builders.BaseSelectInputBuilder.RenderingMode;
@@ -148,8 +147,7 @@ public class MultiSelectField<T, ITEM>
 	 * DataProvider, com.vaadin.server.SerializableFunction)
 	 */
 	@Override
-	public void setDataProvider(DataProvider<ITEM, QueryFilter> dataProvider,
-			SerializableFunction<String, QueryFilter> filterConverter) {
+	public void setDataProvider(DataProvider<ITEM, ?> dataProvider, SerializableFunction<String, ?> filterConverter) {
 		setDataProvider(dataProvider);
 	}
 
@@ -257,7 +255,7 @@ public class MultiSelectField<T, ITEM>
 		 */
 		public Builder(Class<? extends T> type, RenderingMode renderingMode) {
 			super(new MultiSelectField<>(type, renderingMode));
-			itemConverter(Converter.identity());
+			getInstance().setItemConverter(Converter.identity());
 		}
 
 		/*
@@ -284,6 +282,18 @@ public class MultiSelectField<T, ITEM>
 
 		/*
 		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.builders.SelectItemDataSourceBuilder#dataSource(com.vaadin.data.provider.
+		 * DataProvider)
+		 */
+		@Override
+		public MultiSelectInputBuilder<T> dataSource(DataProvider<T, ?> dataProvider) {
+			this.dataProvider = dataProvider;
+			return builder();
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.components.builders.SelectFieldBuilder#items(java.lang.Iterable)
 		 */
 		@Override
@@ -302,17 +312,6 @@ public class MultiSelectField<T, ITEM>
 		public MultiSelectInputBuilder<T> addItem(T item) {
 			ObjectUtils.argumentNotNull(item, "Item must be not null");
 			this.items.add(item);
-			return builder();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.builders.SelectItemDataSourceBuilder#itemConverter(com.vaadin.data.
-		 * Converter)
-		 */
-		@Override
-		public MultiSelectInputBuilder<T> itemConverter(Converter<T, T> converter) {
-			getInstance().setItemConverter(converter);
 			return builder();
 		}
 
@@ -355,7 +354,7 @@ public class MultiSelectField<T, ITEM>
 		public PropertyBuilder(Property<T> selectProperty, RenderingMode renderingMode) {
 			super(new MultiSelectField<>(selectProperty.getType(), renderingMode));
 			itemIdentifier = new PropertyItemIdentifier(selectProperty);
-			itemConverter(new DefaultPropertyBoxConverter<>(selectProperty));
+			getInstance().setItemConverter(new DefaultPropertyBoxConverter<>(selectProperty));
 		}
 
 		/*

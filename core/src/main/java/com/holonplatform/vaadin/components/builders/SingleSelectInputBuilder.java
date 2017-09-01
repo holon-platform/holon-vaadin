@@ -15,8 +15,12 @@
  */
 package com.holonplatform.vaadin.components.builders;
 
+import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.vaadin.components.Input;
 import com.holonplatform.vaadin.components.SingleSelect;
+import com.holonplatform.vaadin.data.ItemDataProvider;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.server.SerializableFunction;
 
 /**
  * Builder to create a single selection {@link Input}.
@@ -28,5 +32,24 @@ import com.holonplatform.vaadin.components.SingleSelect;
 public interface SingleSelectInputBuilder<T>
 		extends SelectInputBuilder.SingleSelectConfigurator<T, T, SingleSelectInputBuilder<T>>,
 		SelectItemDataSourceBuilder<T, SingleSelect<T>, T, T, SingleSelectInputBuilder<T>> {
+
+	/**
+	 * Set the selection items data provider.
+	 * @param dataProvider Items data provider (not null)
+	 * @param filterProvider Optional caption {@link QueryFilter} provider for {@link RenderingMode#SELECT} type inputs
+	 * @return this
+	 */
+	SingleSelectInputBuilder<T> dataSource(ItemDataProvider<T> dataProvider,
+			SerializableFunction<String, QueryFilter> filterProvider);
+
+	/**
+	 * Set the selection items data provider.
+	 * @param <F> Caption filter type
+	 * @param dataProvider Items data provider (not null)
+	 * @param filterProvider Optional caption {@link QueryFilter} provider for {@link RenderingMode#SELECT} type inputs
+	 * @return this
+	 */
+	<F> SingleSelectInputBuilder<T> dataSource(DataProvider<T, F> dataProvider,
+			SerializableFunction<String, F> filterProvider);
 
 }

@@ -143,11 +143,11 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 	 * @see com.holonplatform.vaadin.internal.components.AbstractSelectField#setDataProvider(com.vaadin.data.provider.
 	 * DataProvider, com.vaadin.server.SerializableFunction)
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void setDataProvider(DataProvider<ITEM, QueryFilter> dataProvider,
-			SerializableFunction<String, QueryFilter> filterConverter) {
+	public void setDataProvider(DataProvider<ITEM, ?> dataProvider, SerializableFunction<String, ?> filterConverter) {
 		if (filterConverter != null && getInternalField() instanceof ComboBox) {
-			((ComboBox<ITEM>) getInternalField()).setDataProvider(dataProvider, filterConverter);
+			((ComboBox) getInternalField()).setDataProvider(dataProvider, filterConverter);
 		} else {
 			setDataProvider(dataProvider);
 		}
@@ -256,7 +256,7 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 			implements SelectInputBuilder.SingleSelectConfigurator<T, ITEM, B> {
 
 		protected CaptionFilter captionFilter;
-		protected SerializableFunction<String, QueryFilter> filterProvider;
+		protected SerializableFunction<String, ?> filterProvider;
 
 		/**
 		 * Constructor
@@ -312,17 +312,6 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.builders.BaseSelectInputBuilder.SingleSelectConfigurator#
-		 * captionQueryFilter(java.util.function.Function)
-		 */
-		@Override
-		public B captionQueryFilter(SerializableFunction<String, QueryFilter> filterProvider) {
-			this.filterProvider = filterProvider;
-			return builder();
-		}
-
-		/*
-		 * (non-Javadoc)
 		 * @see
 		 * com.holonplatform.vaadin.internal.components.builders.AbstractSelectFieldBuilder#configureDataSource(com.
 		 * holonplatform.vaadin.internal.components.AbstractSelectField)
@@ -331,9 +320,11 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 		protected void configureDataSource(SingleSelectField<T, ITEM> instance) {
 			if (!items.isEmpty()) {
 				instance.setItems(items, captionFilter);
-			} else {
+			} else if (itemDataProvider != null) {
 				instance.setDataProvider(new ItemDataProviderAdapter<>(itemDataProvider, itemIdentifier),
 						filterProvider);
+			} else {
+				instance.setDataProvider(dataProvider, filterProvider);
 			}
 		}
 
@@ -353,7 +344,7 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 		 */
 		public Builder(Class<? extends T> type, RenderingMode renderingMode) {
 			super(type, renderingMode);
-			itemConverter(Converter.identity());
+			getInstance().setItemConverter(Converter.identity());
 		}
 
 		/*
@@ -379,12 +370,41 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.builders.SelectItemDataSourceBuilder#itemConverter(com.vaadin.data.
-		 * Converter)
+		 * @see
+		 * com.holonplatform.vaadin.components.builders.SelectItemDataSourceBuilder#dataSource(com.vaadin.data.provider.
+		 * DataProvider)
 		 */
 		@Override
-		public SingleSelectInputBuilder<T> itemConverter(Converter<T, T> converter) {
-			getInstance().setItemConverter(converter);
+		public SingleSelectInputBuilder<T> dataSource(DataProvider<T, ?> dataProvider) {
+			this.dataProvider = dataProvider;
+			return builder();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.builders.SingleSelectInputBuilder#dataSource(com.holonplatform.vaadin.
+		 * data.ItemDataProvider, com.vaadin.server.SerializableFunction)
+		 */
+		@Override
+		public SingleSelectInputBuilder<T> dataSource(ItemDataProvider<T> dataProvider,
+				SerializableFunction<String, QueryFilter> filterProvider) {
+			this.itemDataProvider = dataProvider;
+			this.filterProvider = filterProvider;
+			return builder();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.builders.SingleSelectInputBuilder#dataSource(com.vaadin.data.provider.
+		 * DataProvider, com.vaadin.server.SerializableFunction)
+		 */
+		@Override
+		public <F> SingleSelectInputBuilder<T> dataSource(DataProvider<T, F> dataProvider,
+				SerializableFunction<String, F> filterProvider) {
+			this.dataProvider = dataProvider;
+			this.filterProvider = filterProvider;
 			return builder();
 		}
 
@@ -427,7 +447,7 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 		public PropertyBuilder(Property<T> selectProperty, RenderingMode renderingMode) {
 			super(selectProperty.getType(), renderingMode);
 			itemIdentifier = new PropertyItemIdentifier(selectProperty);
-			itemConverter(new DefaultPropertyBoxConverter<>(selectProperty));
+			getInstance().setItemConverter(new DefaultPropertyBoxConverter<>(selectProperty));
 		}
 
 		/*
@@ -439,6 +459,19 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 		@Override
 		public SinglePropertySelectInputBuilder<T> dataSource(ItemDataProvider<PropertyBox> dataProvider) {
 			this.itemDataProvider = dataProvider;
+			return builder();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.builders.SinglePropertySelectInputBuilder#captionQueryFilter(com.vaadin.
+		 * server.SerializableFunction)
+		 */
+		@Override
+		public SinglePropertySelectInputBuilder<T> captionQueryFilter(
+				SerializableFunction<String, QueryFilter> filterProvider) {
+			this.filterProvider = filterProvider;
 			return builder();
 		}
 

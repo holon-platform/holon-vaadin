@@ -29,7 +29,7 @@ import com.holonplatform.vaadin.data.ItemDataProvider;
 import com.holonplatform.vaadin.data.ItemIdentifierProvider;
 import com.holonplatform.vaadin.internal.components.AbstractSelectField;
 import com.holonplatform.vaadin.internal.data.ItemDataProviderAdapter;
-import com.vaadin.data.Converter;
+import com.vaadin.data.provider.DataProvider;
 import com.vaadin.server.Resource;
 
 /**
@@ -56,6 +56,11 @@ public abstract class AbstractSelectFieldBuilder<T, C extends Input<T>, S, ITEM,
 	 * Item data provider
 	 */
 	protected ItemDataProvider<ITEM> itemDataProvider = null;
+	
+	/**
+	 * Vaadin data provider
+	 */
+	protected DataProvider<ITEM, ?> dataProvider = null;
 
 	/**
 	 * Item identifier
@@ -68,16 +73,6 @@ public abstract class AbstractSelectFieldBuilder<T, C extends Input<T>, S, ITEM,
 	 */
 	public AbstractSelectFieldBuilder(I instance) {
 		super(instance);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.builders.SelectInputBuilder#itemConverter(com.vaadin.data.Converter)
-	 */
-	@Override
-	public B itemConverter(Converter<S, ITEM> itemConverter) {
-		getInstance().setItemConverter(itemConverter);
-		return builder();
 	}
 
 	/*
@@ -156,8 +151,10 @@ public abstract class AbstractSelectFieldBuilder<T, C extends Input<T>, S, ITEM,
 	protected void configureDataSource(I instance) {
 		if (!items.isEmpty()) {
 			instance.setItems(items);
-		} else {
+		} else if (itemDataProvider != null) {
 			instance.setDataProvider(new ItemDataProviderAdapter<>(itemDataProvider, itemIdentifier));
+		} else if (dataProvider != null) {
+			instance.setDataProvider(dataProvider);
 		}
 	}
 

@@ -14,7 +14,7 @@ _Maven coordinates_:
 
 A complete set of _fluent_ builders is available to create and configure the most common Vaadin standard components and the ones provided by the Holon platform Vaadin integration module.
 
-TIP: See <<UIComponents>> for a list of the addiotional components made available by the Holon platform Vaadin integration module.
+TIP: See <<UIComponents>> for a list of the additional components made available by the Holon platform Vaadin integration module.
 
 All the builders can be obtained using the link:{apidir}/com/holonplatform/vaadin/components/Components.html[Components^] interface, which is organized in  sub-interfaces by component kind.
 
@@ -118,7 +118,117 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=i
 
 === Selectable Input
 
+When the Input values must be selected from a specific set, a _selectable_ Input type can be used. Two _selectable_ Input types are available:
+
+* The link:{apidir}/com/holonplatform/vaadin/components/SingleSelect.html[SingleSelect^] Input, in which at most one item can be selected at a time;
+* The link:{apidir}/com/holonplatform/vaadin/components/SingleSelect.html[MultiSelect^] Input, in which multiple items can be selected at the same time.
+
+Both _selectable_ Input types extends the link:{apidir}/com/holonplatform/vaadin/components/Selectable.html[Selectable^] interface, which provides methods to check if some item is selected, obtain the selected item/s and change the current selection. Furthermore, a `SelectionListener` can be registered to listen to selection changes.
+
+.SingleSelect example
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[tag=selectable1,indent=0]
+----
+<1> Create a `SingleSelect` Input using the `TestData` class as selection item type
+<2> Select a value using the default `setValue()` Input method
+<3> Select a value using `select()` method
+<4> Deselect the value using the default `clear()` Input method
+<5> Deselect the value using the `deselectAll()` method
+<6> Check whether a value is selected
+<7> Add a selection listener
+
+.MultiSelect example
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[tag=selectable2,indent=0]
+----
+<1> Create a `MultiSelect` Input using the `TestData` class as selection item type
+<2> Select a set of values using the default `setValue()` Input method
+<3> Add a value to current selection using the `select()` method
+<4> Remove a value from current selection
+<5> Deselect the value using the default `clear()` Input method
+<6> Deselect the value using the `deselectAll()` method
+<7> Check whether a value is selected
+<8> Add a selection listener
+
+==== Rendering mode
+
+The visual aspect of the _selectable_ Input can be configured using the `RenderingMode` enumeration. According to the rendering mode, a suitable UI component will be used to implement the Input.
+
+NOTE: The default rendering modes are `SELECT` for `SingleSelect` inputs and `OPTIONS` for `MultiSelect` inputs.
+
+|===
+|Rendering mode |SingleSelect UI component |MultiSelect UI component
+
+|*NATIVE_SELECT*
+|`com.vaadin.ui.NativeSelect`
+|_not supported_
+
+|*SELECT*
+|`com.vaadin.ui.ComboBox`
+|`com.vaadin.ui.ListSelect`
+
+|*OPTIONS*
+|`com.vaadin.ui.CheckBoxGroup`
+|`com.vaadin.ui.RadioButtonGroup`
+|===
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[tag=selectable3,indent=0]
+----
+<1> Create a `SingleSelect` using the *OPTIONS* rendering mode: a CheckBox group UI component will be used
+<2> Create a `MultiSelect` using the *SELECT* rendering mode: a ListSelect UI component will be used
+
+==== Selection items data source
+
+The data source of the available items for a _selectable_ input can be configured in the following ways:
+
+* Using a fixed set of items, which can be provided using the `addItem(...)` or `items(...)` methods of the select input builder;
+* Using a Holon platform `ItemDataSource` data provider;
+* Using a standard Vaadin `DataProvider`.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[tag=selectable4,indent=0]
+----
+<1> Create a select input using an explicitly provided items set
+<2> Create a select input using a Holon platform `ItemDataSource`
+<3> Create a select input using a Vaadin `DataProvider`
+
+==== Item captions and icons
+
+The _selectable_ input builders allow to explicitly set the selection item *captions* and *icons*. As for the items caption, the Holon platform *localization* architecture is supported, and the builders provides methods to specify the caption using a `Localizable` or a _message code_.
+
+TIP: In order for the localization to work, a `LocalizationContext` must be available as a context resource. See the link:holon-core.html#i18n[Internationalization] documentation for further information.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[tag=selectable5,indent=0]
+----
+<1> Set the item caption for the `ONE` item
+<2> Set the localizable item caption for the `ONE` item, providing a default caption and a translation message code
+<3> Set the item icon for the `ONE` item
+
+Furthermore, the `ItemCaptionGenerator` and the `ItemIconGenerator` interfaces can be used to provide custom selection items *captions* and *icons*. By default, the item caption is obtained using the `toString()` method of the item class and no icon is displayed.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[tag=selectable6,indent=0]
+----
+<1> Set an item caption generator which provides the item description as item caption
+<2> Set an item icon generator
+
+==== SingleSelect caption filter
+
+For `SingleSelect` inputs using *SELECT* rendering mode, the UI component allows the user to type a _filtering_ text to search for a selection item, and such filter by default is referred to item captions.
+
 TODO
+
+=== Grouping Inputs in Forms
+
+
 
 == Property renderers and presenters
 
