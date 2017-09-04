@@ -394,6 +394,8 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInputGroup.java[
 ----
 <1> Create a `PropertyInputForm` with given property set using a FormLayout as base layout, and using the default composer
 <2> Set a custom `Composer` to compose the Input components on the form layout
+<3> Set the form value using a `PropertyBox`
+<4> Get the form value
 
 A set of default builder factory methods are provided to use the most common Vaadin layout components as form base content.
 
@@ -408,7 +410,39 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInputGroup.java[
 
 === View components
 
-TODO
+The link:{apidir}/com/holonplatform/vaadin/components/ViewComponent.html[ViewComponent^] represents a UI component which can be used to display a value on the user interface. Unlike a `Input` component the value cannot be changed by the user.
+
+As a `ValueHolder`, the view component value can be setted and obtained using the `setValue` and `getValue` methods.
+
+The actual UI component to display is obtained form the `getComponent()` method.
+
+A Vaadin `Label` is used for the default `ViewComponent` implementation, and a default view component can be built using the default builder which can be obtained from the `builder(Class valueType)` method or from the `Components.view` interface.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleViewComponent.java[tag=view1,indent=0]
+----
+<1> Create and configure a `ViewComponent` with a `String` value type
+<2> Set the value
+<3> Get the value
+
+==== View component Groups and Forms
+
+Just like the `Input` components, the `ViewComponent` s can be organized in _groups_ (using the link:{apidir}/com/holonplatform/vaadin/components/PropertyViewGroup.html[PropertyViewGroup^]) or in _forms_ (using the link:{apidir}/com/holonplatform/vaadin/components/PropertyViewForm.html[PropertyViewForm^]). Unlike the _group_, the _form_ is a UI component which can be displayed in the user interface, composing the view components on a base layout.
+
+These component containers rely on the `Property` model to bind each view component to a `Property` value and they use a `PropertyBox` to provide the property values to show.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleViewComponent.java[tag=view2,indent=0]
+----
+<1> Create a `PropertyViewGroup`
+<2> Create a `PropertyViewForm` using a `VerticalLayout` as base layout
+<3> Create a `PropertyViewForm` using a `FormLayout` as base layout and providing a custom components composer
+<4> Set the form value using a `PropertyBox`
+<5> Get the form value
+
+== Item listing
 
 [[RenderersPresenters]]
 == Property renderers and presenters

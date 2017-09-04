@@ -669,8 +669,8 @@ public interface Components {
 		 * @param content Form content, where view components will be composed by the form {@link Composer} (not null)
 		 * @return {@link PropertyViewForm} builder
 		 */
-		static <C extends Component> PropertyInputFormBuilder<C> form(C content) {
-			return PropertyInputForm.builder(content);
+		static <C extends Component> PropertyViewFormBuilder<C> form(C content) {
+			return PropertyViewForm.builder(content);
 		}
 
 		/**

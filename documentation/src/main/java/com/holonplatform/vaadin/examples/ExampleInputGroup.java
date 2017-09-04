@@ -137,6 +137,10 @@ public class ExampleInputGroup {
 				.composer((layout, source) -> { // <2>
 					source.getValueComponents().forEach(c -> layout.addComponent(c.getComponent()));
 				}).build();
+
+		form.setValue(PropertyBox.builder(PROPERTIES).set(ID, 1L).set(DESCRIPTION, "Test").build()); // <3>
+
+		PropertyBox value = form.getValue(); // <4>
 		// end::form1[]
 	}
 
