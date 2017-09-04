@@ -501,6 +501,13 @@ public interface PropertyInputGroup extends PropertySetBound, ValueHolder<Proper
 		 * @return this
 		 */
 		B withPostProcessor(PostProcessor<Input<?>> postProcessor);
+		
+		/**
+		 * Add a {@link ValueChangeListener} to be notified when the input group value changes.
+		 * @param listener The ValueChangeListener to add (not null)
+		 * @return this
+		 */
+		B withValueChangeListener(ValueChangeListener<PropertyBox> listener);
 
 		/**
 		 * Build the {@link PropertyInputGroup}.

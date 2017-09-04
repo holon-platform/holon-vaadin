@@ -1291,6 +1291,20 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 			return builder();
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.PropertyInputGroup.Builder#withValueChangeListener(com.holonplatform.
+		 * vaadin.components.ValueHolder.ValueChangeListener)
+		 */
+		@Override
+		public B withValueChangeListener(
+				com.holonplatform.vaadin.components.ValueHolder.ValueChangeListener<PropertyBox> listener) {
+			ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
+			instance.addValueChangeListener(listener);
+			return builder();
+		}
+
 	}
 
 	// Internal

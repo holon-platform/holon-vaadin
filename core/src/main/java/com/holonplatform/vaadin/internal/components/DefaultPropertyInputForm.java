@@ -506,6 +506,18 @@ public class DefaultPropertyInputForm<C extends Component> extends
 
 		/*
 		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.PropertyInputGroup.Builder#withValueChangeListener(com.holonplatform.
+		 * vaadin.components.ValueHolder.ValueChangeListener)
+		 */
+		@Override
+		public PropertyInputFormBuilder<C> withValueChangeListener(ValueChangeListener<PropertyBox> listener) {
+			inputGroupBuilder.withValueChangeListener(listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.components.PropertyForm.PropertyFormBuilder#initializer(java.util.function.
 		 * Consumer)
 		 */
