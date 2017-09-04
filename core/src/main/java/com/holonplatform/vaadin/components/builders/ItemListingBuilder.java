@@ -461,6 +461,15 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		B frozenColumns(int frozenColumnsCount);
 
 		/**
+		 * Set whether the row editor is in buffered mode. In buffered mode, the editor has the <code>SAVE</code> and
+		 * <code>CANCEL</code> buttons to commit or discard the item modifications (default mode). In the unbuffered
+		 * mode, the editor has no buttons and all changed data is committed directly.
+		 * @param caption Localizable caption (not null)
+		 * @return this
+		 */
+		B editorBuffered(boolean editorBuffered);
+
+		/**
 		 * Set the caption for the editor <em>Save</em> button.
 		 * @param caption Localizable caption (not null)
 		 * @return this

@@ -202,6 +202,17 @@ public abstract class AbstractGridItemListingBuilder<T, P, C extends ItemListing
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder#editorBuffered(
+	 * boolean)
+	 */
+	@Override
+	public B editorBuffered(boolean editorBuffered) {
+		getInstance().setEditorBuffered(editorBuffered);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see
 	 * com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder#editorSaveCaption(com
 	 * .holonframework.core.i18n.Localizable)

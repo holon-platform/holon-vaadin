@@ -691,6 +691,10 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		getGrid().getEditor().setEnabled(enabled);
 	}
 
+	public void setEditorBuffered(boolean buffered) {
+		getGrid().getEditor().setBuffered(buffered);
+	}
+
 	public void setEditorSaveCaption(String caption) {
 		getGrid().getEditor().setSaveCaption(caption);
 	}
