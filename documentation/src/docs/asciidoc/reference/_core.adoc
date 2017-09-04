@@ -636,6 +636,41 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag
 
 === Item set management
 
+The item set component provides methods to manage the item set which is provided as the listing data source, to add, update and remove one or more item in the set.
+
+To reflect the item set management operations in the underlyng data source (for example, a RDBMS), the `CommitHandler` interface is used. The `commit(...)` method of that interface is invoked at each item set modification, providing the _added_, _updated_ and _removed_ items. The `CommitHandler` implementation should persist the item set modifications in the concrete data source.
+
+NOTE: When using the `dataSource(...)` builder method which accepts a `Datastore` as data source, a default `CommitHandler` is automatically configured, using the provided `Datastore` to perform the item persistence operations.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing10,indent=0]
+----
+<1> When using the `Datastore` method of the data source builder, a default `CommitHandler` is automatically configured
+<2> You can provide a custom `CommitHandler` using the `commitHandler(...)` builder method
+<3> Add an item 
+<4> Refresh (update) the item
+<5> Remove the item
+
+==== Buffered mode
+
+The item set component supports a *buffered* mode to handle its items set. When in _buffered_ mode, the item set modifications are cached internally and not reflected to the concrete data source until the `commit()` method is called.
+
+A `discard()` method is provided to discards all changes since last commit.
+
+The same `CommitHandler` as before is used to persist the item set modifications, but it is invoked only when the `commit()` method is called.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing11,indent=0]
+----
+<1> Set the listing in _buffered_ mode
+<2> Add an item 
+<3> Refresh (update) the item
+<4> Remove the item
+<5> _commit_ the item set modifications
+<6> _discard_ the item set modifications since the last commit
+
 === Editing items
 
 

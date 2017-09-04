@@ -54,7 +54,7 @@ public interface BaseItemDataSourceComponentBuilder<B extends BaseItemDataSource
 	B batchSize(int batchSize);
 
 	/**
-	 * Set max items cache size
+	 * Set max items cache size when in <em>buffered</em> mode.
 	 * @param maxCacheSize Max cache size to set
 	 * @return this
 	 */

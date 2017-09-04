@@ -221,6 +221,48 @@ public class ExampleListing {
 		// end::listing9[]
 	}
 
+	public void listing10() {
+		// tag::listing10[]
+		Datastore datastore = getDatastore();
+
+		PropertyListing listing = Components.listing.properties(PROPERTIES) //
+				.dataSource(datastore, DataTarget.named("test"), ID) // <1>
+				.commitHandler((addedItems, modifiedItems, removedItems) -> { // <2>
+					// ...
+				}).build();
+
+		final PropertyBox ITEM = PropertyBox.builder(PROPERTIES).set(ID, 777L).set(DESCRIPTION, "A description")
+				.build();
+
+		listing.addItem(ITEM); // <3>
+
+		listing.refreshItem(ITEM); // <4>
+
+		listing.removeItem(ITEM); // <5>
+		// end::listing10[]
+	}
+
+	public void listing11() {
+		// tag::listing11[]
+		Datastore datastore = getDatastore();
+
+		PropertyListing listing = Components.listing.properties(PROPERTIES) //
+				.dataSource(datastore, DataTarget.named("test"), ID) //
+				.buffered(true) // <1>
+				.build();
+
+		final PropertyBox ITEM = PropertyBox.builder(PROPERTIES).set(ID, 777L).set(DESCRIPTION, "A description")
+				.build();
+
+		listing.addItem(ITEM); // <2>
+		listing.refreshItem(ITEM); // <3>
+		listing.removeItem(ITEM); // <4>
+
+		listing.commit(); // <5>
+		listing.discard(); // <6>
+		// end::listing11[]
+	}
+
 	private static ItemDataProvider<PropertyBox> getDataProvider() {
 		return null;
 	}
