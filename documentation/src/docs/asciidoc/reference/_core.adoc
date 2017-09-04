@@ -444,6 +444,78 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleViewComponent.ja
 
 == Item listing
 
+The link:{apidir}/com/holonplatform/vaadin/components/ItemListing.html[ItemListing^] component can be used to display a set of items as tabular data. By default, it is backed by a Vaadin `Grid` as concrete UI component.
+
+Each item _property_ to display is bound to a _column_, and a Property *id* is used to bind the item property to the listing column.
+
+The `ItemListing` is a link:{apidir}/com/holonplatform/vaadin/components/Selectable.html[Selectable^] component, supporting items selection in single or multiple mode.
+
+The `ItemListing` interface provides a set of methods to control the listing appearance, showing and hiding columns, sorting and refreshing the item set, and so on.
+
+Two `ItemListing` sub-interfaces are available to use this component:
+
+* link:{apidir}/com/holonplatform/vaadin/components/BeanListing.html[BeanListing^]: Uses a Java Bean as item type and the listing column ids are the bean property names. 
+* link:{apidir}/com/holonplatform/vaadin/components/PropertyListing.html[PropertyListing^]: Uses a `PropertyBox` as item type and the listing column ids are the `Property` of the provided property set.
+
+=== BeanListing
+
+A link:{apidir}/com/holonplatform/vaadin/components/BeanListing.html[BeanListing^] can be obtained providing the Java Bean class to use as item type.
+
+The listing columns will be generated inspecting the *bean class* to detect the available bean properties, and the column ids will be the bean property names.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=beanListing,indent=0]
+----
+<1> Create a `BeanListing` using the `TestData` bean class
+<2> Set the column header for the `id` item (bean) property
+<3> Set the column header for the `description` item (bean) property
+
+=== PropertyListing
+
+A link:{apidir}/com/holonplatform/vaadin/components/PropertyListing.html[PropertyListing^] can be obtained providing the `Property` set to use for the listing items.
+
+The listing columns will be generated according to the item property set `Property` types and each column will be identified by the `Property` itself.
+
+For each property:
+
+* The property _caption_, if available, will be used as column header. The caption/header localization is fully supported and performed if a `LocalizationContext` is available;
+* The cells of the column which corresponds to a property will be rendered according to the property type and relying on the available property value _presenters_;
+* For any property of `com.vaadin.ui.Component` type, a `ComponentRenderer` will be automatically used to render the Vaadin components in the cells.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=propertyListing,indent=0]
+----
+<1> Create a `PropertyListing` using given `Property` set
+
+=== Items data source
+
+To build an item listing, the *data source* of the items must be provided using the link:{apidir}/com/holonplatform/vaadin/data/ItemDataProvider.html[ItemDataProvider^] interface.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing1,indent=0]
+----
+<1> Create a `PropertyListing` and provide an `ItemDataProvider` as data source
+
+Furthermore, an link:{apidir}/com/holonplatform/vaadin/data/ItemIdentifierProvider.html[ItemIdentifierProvider^] should be configured to provide the item *identifiers*, expecially for the item selection consistency. The default behaviour is to use item itself as its own identifier, which it is not always the right semantic to use, expecially for `PropertyBox` type objects.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing2,indent=0]
+----
+<1> Create a `PropertyListing` and provide an `ItemDataProvider` as data source, along with an `ItemIdentifierProvider` which provides the value of the `ID` property as item id
+<2> A shorter builder method to use the `ID` property as item identifier
+
+The item listing builders make available convenience methods to use a `Datastore` as data source, providing the `DataTarget` to use as target of the query on the backend data (for example, the name of a RDBMS table).
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing3,indent=0]
+----
+<1> Create a `PropertyListing` and use a `Datastore` to build a data source which performs a query using the `test` data target (which can be, for example, the name of a RDBMS table), the property set of the listing as query projection and the `ID` property as item identifier
+
 [[RenderersPresenters]]
 == Property renderers and presenters
 
