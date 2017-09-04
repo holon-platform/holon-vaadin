@@ -38,7 +38,7 @@ public class DefaultBeanListing<T> extends DefaultItemListing<T, String> impleme
 	 * @see com.holonplatform.vaadin.internal.components.DefaultItemListing#getColumnId(java.lang.Object)
 	 */
 	@Override
-	protected String getColumnId(String property) {
+	public String getColumnId(String property) {
 		return property;
 	}
 

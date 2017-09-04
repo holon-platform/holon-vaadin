@@ -70,7 +70,7 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 	 * @see com.holonplatform.vaadin.internal.components.DefaultItemListing#getColumnId(java.lang.Object)
 	 */
 	@Override
-	protected String getColumnId(Property property) {
+	public String getColumnId(Property property) {
 		return propertyIds.get(property);
 	}
 

@@ -17,6 +17,8 @@ package com.holonplatform.vaadin.components.builders;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Set;
 
 import com.holonplatform.core.Path;
 import com.holonplatform.core.i18n.Localizable;
@@ -42,8 +44,8 @@ import com.vaadin.data.HasValue;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
-import com.vaadin.ui.components.grid.FooterRow;
-import com.vaadin.ui.components.grid.HeaderRow;
+import com.vaadin.ui.components.grid.FooterCell;
+import com.vaadin.ui.components.grid.HeaderCell;
 import com.vaadin.ui.components.grid.MultiSelectionModel.SelectAllCheckBoxVisibility;
 import com.vaadin.ui.renderers.Renderer;
 
@@ -529,14 +531,14 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		 * @param builder Header builder (not null)
 		 * @return this
 		 */
-		B header(HeaderBuilder builder);
+		B header(HeaderBuilder<P> builder);
 
 		/**
 		 * Set the listing footer builder to create and manage footer rows
 		 * @param builder Footer builder (not null)
 		 * @return this
 		 */
-		B footer(FooterBuilder builder);
+		B footer(FooterBuilder<P> builder);
 
 		/**
 		 * Set a {@link GridFooterGenerator} to update footer contents when item set changes.
@@ -635,12 +637,6 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		ROWTYPE prependRow();
 
 		/**
-		 * Removes the given row from the section.
-		 * @param row the row to be removed
-		 */
-		void removeRow(ROWTYPE row);
-
-		/**
 		 * Removes the row at the given position from the section.
 		 * @param rowIndex the position of the row
 		 */
@@ -648,37 +644,165 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 
 		/**
 		 * Sets the default row of the section.
-		 * @param row the new default row, or null for no default row
+		 * @param rowIndex the position of the row
 		 */
-		void setDefaultRow(ROWTYPE row);
+		void setDefaultRow(int rowIndex);
+
+	}
+
+	/**
+	 * A header row in a {@link ItemListing}.
+	 * @param <P> Item property type
+	 */
+	public interface ListingHeaderRow<P> extends Serializable {
+
+		/**
+		 * Returns the cell on this row corresponding to the given property id.
+		 * @param propertyId the id of the property/column whose header cell to get, not null
+		 * @return the header cell
+		 * @throws IllegalArgumentException if there is no such column in the grid
+		 */
+		HeaderCell getCell(P propertyId);
+
+		/**
+		 * Merges cells corresponding to the given property ids in the row. Original cells are hidden, and new merged
+		 * cell is shown instead. The cell has a width of all merged cells together, inherits styles of the first merged
+		 * cell but has empty caption.
+		 * @param propertyIdsToMerge the ids of the property/column of the cells that should be merged. The cells should
+		 *        not be merged to any other cell set.
+		 * @return the remaining visible cell after the merge
+		 */
+		@SuppressWarnings("unchecked")
+		HeaderCell join(P... propertyIdsToMerge);
+
+		/**
+		 * Merges column cells in the row. Original cells are hidden, and new merged cell is shown instead. The cell has
+		 * a width of all merged cells together, inherits styles of the first merged cell but has empty caption.
+		 * @param cellsToMerge the cells which should be merged. The cells should not be merged to any other cell set.
+		 * @return the remaining visible cell after the merge
+		 */
+		HeaderCell join(Set<HeaderCell> cellsToMerge);
+
+		/**
+		 * Merges column cells in the row. Original cells are hidden, and new merged cell is shown instead. The cell has
+		 * a width of all merged cells together, inherits styles of the first merged cell but has empty caption.
+		 * @param cellsToMerge the cells which should be merged. The cells should not be merged to any other cell set.
+		 * @return the remaining visible cell after the merge
+		 */
+		HeaderCell join(HeaderCell... cellsToMerge);
+
+		/**
+		 * Returns the custom style name for this row.
+		 * @return the style name or null if no style name has been set
+		 */
+		String getStyleName();
+
+		/**
+		 * Sets a custom style name for this row.
+		 * @param styleName the style name to set or null to not use any style name
+		 */
+		void setStyleName(String styleName);
+
+		/**
+		 * Gets a collection of all components inside this row.
+		 * <p>
+		 * The order of the components in the returned collection is not specified.
+		 * @return a collection of components in the row
+		 */
+		Collection<? extends Component> getComponents();
+
+	}
+
+	/**
+	 * A footer row in a {@link ItemListing}.
+	 * @param <P> Item property type
+	 */
+	public interface ListingFooterRow<P> extends Serializable {
+
+		/**
+		 * Returns the cell on this row corresponding to the given property id.
+		 * @param propertyId the id of the property/column whose footer cell to get, not null
+		 * @return the footer cell
+		 * @throws IllegalArgumentException if there is no such column in the grid
+		 */
+		FooterCell getCell(P propertyId);
+
+		/**
+		 * Merges cells corresponding to the given property ids in the row. Original cells are hidden, and new merged
+		 * cell is shown instead. The cell has a width of all merged cells together, inherits styles of the first merged
+		 * cell but has empty caption.
+		 * @param propertyIdsToMerge the ids of the property/column of the cells that should be merged. The cells should
+		 *        not be merged to any other cell set.
+		 * @return the remaining visible cell after the merge
+		 */
+		@SuppressWarnings("unchecked")
+		FooterCell join(P... propertyIdsToMerge);
+
+		/**
+		 * Merges column cells in the row. Original cells are hidden, and new merged cell is shown instead. The cell has
+		 * a width of all merged cells together, inherits styles of the first merged cell but has empty caption.
+		 * @param cellsToMerge the cells which should be merged. The cells should not be merged to any other cell set.
+		 * @return the remaining visible cell after the merge
+		 */
+		FooterCell join(Set<FooterCell> cellsToMerge);
+
+		/**
+		 * Merges column cells in the row. Original cells are hidden, and new merged cell is shown instead. The cell has
+		 * a width of all merged cells together, inherits styles of the first merged cell but has empty caption.
+		 * @param cellsToMerge the cells which should be merged. The cells should not be merged to any other cell set.
+		 * @return the remaining visible cell after the merge
+		 */
+		FooterCell join(FooterCell... cellsToMerge);
+
+		/**
+		 * Returns the custom style name for this row.
+		 * @return the style name or null if no style name has been set
+		 */
+		String getStyleName();
+
+		/**
+		 * Sets a custom style name for this row.
+		 * @param styleName the style name to set or null to not use any style name
+		 */
+		void setStyleName(String styleName);
+
+		/**
+		 * Gets a collection of all components inside this row.
+		 * <p>
+		 * The order of the components in the returned collection is not specified.
+		 * @return a collection of components in the row
+		 */
+		Collection<? extends Component> getComponents();
 
 	}
 
 	/**
 	 * Builder to create and manage Header rows.
+	 * @param <P> Item property type
 	 */
 	@FunctionalInterface
-	public interface HeaderBuilder {
+	public interface HeaderBuilder<P> {
 
 		/**
 		 * Build Grid header rows.
 		 * @param header Header rows container
 		 */
-		void buildHeader(GridSection<HeaderRow> header);
+		void buildHeader(GridSection<ListingHeaderRow<P>> header);
 
 	}
 
 	/**
 	 * Builder to create and manage Footer rows.
+	 * @param <P> Item property type
 	 */
 	@FunctionalInterface
-	public interface FooterBuilder {
+	public interface FooterBuilder<P> {
 
 		/**
 		 * Build Grid footer rows.
 		 * @param footer Footer rows container
 		 */
-		void buildFooter(GridSection<FooterRow> footer);
+		void buildFooter(GridSection<ListingFooterRow<P>> footer);
 
 	}
 
@@ -693,7 +817,7 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		 * @param listing Source listing component
 		 * @param footer Footer row reference
 		 */
-		void updateFooter(ItemListing<T, P> listing, GridSection<FooterRow> footer);
+		void updateFooter(ItemListing<T, P> listing, GridSection<ListingFooterRow<P>> footer);
 
 	}
 

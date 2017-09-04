@@ -15,6 +15,12 @@
  */
 package com.holonplatform.vaadin.internal.components.builders;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ObjectUtils;
@@ -23,8 +29,11 @@ import com.holonplatform.vaadin.components.ItemListing.ItemDetailsGenerator;
 import com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder;
 import com.holonplatform.vaadin.internal.components.DefaultItemListing;
 import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.components.grid.FooterCell;
 import com.vaadin.ui.components.grid.FooterRow;
+import com.vaadin.ui.components.grid.HeaderCell;
 import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.components.grid.MultiSelectionModel.SelectAllCheckBoxVisibility;
 
@@ -44,8 +53,8 @@ public abstract class AbstractGridItemListingBuilder<T, P, C extends ItemListing
 
 	private int frozenColumns = 0;
 
-	private com.holonplatform.vaadin.components.builders.ItemListingBuilder.HeaderBuilder headerBuilder;
-	private com.holonplatform.vaadin.components.builders.ItemListingBuilder.FooterBuilder footerBuilder;
+	private HeaderBuilder<P> headerBuilder;
+	private FooterBuilder<P> footerBuilder;
 	private com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridFooterGenerator<T, P> footerGenerator;
 
 	private Localizable editorSaveCaption;
@@ -243,7 +252,7 @@ public abstract class AbstractGridItemListingBuilder<T, P, C extends ItemListing
 	 * holonframework.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder.HeaderBuilder)
 	 */
 	@Override
-	public B header(com.holonplatform.vaadin.components.builders.ItemListingBuilder.HeaderBuilder builder) {
+	public B header(HeaderBuilder<P> builder) {
 		ObjectUtils.argumentNotNull(builder, "Builder must be not null");
 		this.headerBuilder = builder;
 		return builder();
@@ -255,7 +264,7 @@ public abstract class AbstractGridItemListingBuilder<T, P, C extends ItemListing
 	 * holonframework.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder.FooterBuilder)
 	 */
 	@Override
-	public B footer(com.holonplatform.vaadin.components.builders.ItemListingBuilder.FooterBuilder builder) {
+	public B footer(FooterBuilder<P> builder) {
 		ObjectUtils.argumentNotNull(builder, "Builder must be not null");
 		this.footerBuilder = builder;
 		return builder();
@@ -302,219 +311,228 @@ public abstract class AbstractGridItemListingBuilder<T, P, C extends ItemListing
 
 		// header and footer
 		if (headerBuilder != null) {
-			headerBuilder.buildHeader(new GridHeaderSection(instance.getGrid()));
+			headerBuilder.buildHeader(new GridHeaderSection<>(instance.getGrid(), id -> instance.getColumnId(id)));
 		}
 		if (footerBuilder != null) {
-			footerBuilder.buildFooter(new GridFooterSection(instance.getGrid()));
+			footerBuilder.buildFooter(new GridFooterSection<>(instance.getGrid(), id -> instance.getColumnId(id)));
 		}
 
 		if (footerGenerator != null) {
 			instance.addDataProviderListener(e -> {
 				if (instance.isFooterVisible()) {
-					footerGenerator.updateFooter(instance, new GridFooterSection(instance.getGrid()));
+					footerGenerator.updateFooter(instance,
+							new GridFooterSection<>(instance.getGrid(), id -> instance.getColumnId(id)));
 				}
 			});
 		}
 	}
 
-	private final static class GridHeaderSection
-			implements com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridSection<HeaderRow> {
+	private final static class GridHeaderSection<P> implements GridSection<ListingHeaderRow<P>> {
 
 		private final Grid<?> grid;
+		private final Function<P, String> converter;
 
-		public GridHeaderSection(Grid<?> grid) {
+		public GridHeaderSection(Grid<?> grid, Function<P, String> converter) {
 			super();
 			this.grid = grid;
+			this.converter = converter;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder.GridSection#
-		 * addRowAt(int)
-		 */
 		@Override
-		public HeaderRow addRowAt(int index) {
-			return grid.getHeaderRow(index);
+		public ListingHeaderRow<P> addRowAt(int index) {
+			return new HeaderRowWrapper<>(grid.getHeaderRow(index), converter);
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder.GridSection#
-		 * appendRow()
-		 */
 		@Override
-		public HeaderRow appendRow() {
-			return grid.appendHeaderRow();
+		public ListingHeaderRow<P> appendRow() {
+			return new HeaderRowWrapper<>(grid.appendHeaderRow(), converter);
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridSection#getRowAt(int)
-		 */
 		@Override
-		public HeaderRow getRowAt(int index) {
-			return grid.getHeaderRow(index);
+		public ListingHeaderRow<P> getRowAt(int index) {
+			return new HeaderRowWrapper<>(grid.getHeaderRow(index), converter);
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder.GridSection#
-		 * getDefaultHeaderRow()
-		 */
 		@Override
-		public HeaderRow getDefaultRow() {
-			return grid.getDefaultHeaderRow();
+		public ListingHeaderRow<P> getDefaultRow() {
+			return new HeaderRowWrapper<>(grid.getDefaultHeaderRow(), converter);
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder.GridSection#
-		 * getRowCount()
-		 */
 		@Override
 		public int getRowCount() {
 			return grid.getHeaderRowCount();
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder.GridSection#
-		 * prependRow()
-		 */
 		@Override
-		public HeaderRow prependRow() {
-			return grid.prependHeaderRow();
+		public ListingHeaderRow<P> prependRow() {
+			return new HeaderRowWrapper<>(grid.prependHeaderRow(), converter);
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder.GridSection#
-		 * removeRow(com.vaadin.ui.Grid.StaticSection.StaticRow)
-		 */
-		@Override
-		public void removeRow(HeaderRow row) {
-			grid.removeHeaderRow(row);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder.GridSection#
-		 * removeRow(int)
-		 */
 		@Override
 		public void removeRow(int rowIndex) {
 			grid.removeHeaderRow(rowIndex);
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder.GridSection#
-		 * setDefaultRow(com.vaadin.ui.Grid.StaticSection.StaticRow)
-		 */
 		@Override
-		public void setDefaultRow(HeaderRow row) {
-			grid.setDefaultHeaderRow(row);
+		public void setDefaultRow(int rowIndex) {
+			grid.setDefaultHeaderRow(grid.getHeaderRow(rowIndex));
 		}
 
 	}
 
-	private final static class GridFooterSection
-			implements com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridSection<FooterRow> {
+	private final static class GridFooterSection<P> implements GridSection<ListingFooterRow<P>> {
 
 		private final Grid<?> grid;
+		private final Function<P, String> converter;
 
-		public GridFooterSection(Grid<?> grid) {
+		public GridFooterSection(Grid<?> grid, Function<P, String> converter) {
 			super();
 			this.grid = grid;
+			this.converter = converter;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder.GridSection#
-		 * addRowAt(int)
-		 */
 		@Override
-		public FooterRow addRowAt(int index) {
-			return grid.getFooterRow(index);
+		public ListingFooterRow<P> addRowAt(int index) {
+			return new FooterRowWrapper<>(grid.getFooterRow(index), converter);
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder.GridSection#
-		 * appendRow()
-		 */
 		@Override
-		public FooterRow appendRow() {
-			return grid.appendFooterRow();
+		public ListingFooterRow<P> appendRow() {
+			return new FooterRowWrapper<>(grid.appendFooterRow(), converter);
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridSection#getRowAt(int)
-		 */
 		@Override
-		public FooterRow getRowAt(int index) {
-			return grid.getFooterRow(index);
+		public ListingFooterRow<P> getRowAt(int index) {
+			return new FooterRowWrapper<>(grid.getFooterRow(index), converter);
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder.GridSection#
-		 * getDefaultHeaderRow()
-		 */
 		@Override
-		public FooterRow getDefaultRow() {
+		public ListingFooterRow<P> getDefaultRow() {
 			throw new UnsupportedOperationException("Grid footer does not support a default row");
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder.GridSection#
-		 * getRowCount()
-		 */
 		@Override
 		public int getRowCount() {
 			return grid.getFooterRowCount();
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder.GridSection#
-		 * prependRow()
-		 */
 		@Override
-		public FooterRow prependRow() {
-			return grid.prependFooterRow();
+		public ListingFooterRow<P> prependRow() {
+			return new FooterRowWrapper<>(grid.prependFooterRow(), converter);
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder.GridSection#
-		 * removeRow(com.vaadin.ui.Grid.StaticSection.StaticRow)
-		 */
-		@Override
-		public void removeRow(FooterRow row) {
-			grid.removeFooterRow(row);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder.GridSection#
-		 * removeRow(int)
-		 */
 		@Override
 		public void removeRow(int rowIndex) {
 			grid.removeFooterRow(rowIndex);
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder.GridSection#
-		 * setDefaultRow(com.vaadin.ui.Grid.StaticSection.StaticRow)
-		 */
 		@Override
-		public void setDefaultRow(FooterRow row) {
+		public void setDefaultRow(int rowIndex) {
 			throw new UnsupportedOperationException("Grid footer does not support a default row");
+		}
+
+	}
+
+	@SuppressWarnings("serial")
+	private static final class HeaderRowWrapper<P> implements ListingHeaderRow<P> {
+
+		private final HeaderRow row;
+		private final Function<P, String> converter;
+
+		public HeaderRowWrapper(HeaderRow row, Function<P, String> converter) {
+			super();
+			this.row = row;
+			this.converter = converter;
+		}
+
+		@Override
+		public HeaderCell getCell(P propertyId) {
+			return row.getCell(converter.apply(propertyId));
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public HeaderCell join(P... propertyIdsToMerge) {
+			ObjectUtils.argumentNotNull(propertyIdsToMerge, "Property ids to merge must be not null");
+			return row.join(Arrays.asList(propertyIdsToMerge).stream().map(id -> converter.apply(id))
+					.collect(Collectors.toList()).toArray(new String[0]));
+		}
+
+		@Override
+		public HeaderCell join(Set<HeaderCell> cellsToMerge) {
+			return row.join(cellsToMerge);
+		}
+
+		@Override
+		public HeaderCell join(HeaderCell... cellsToMerge) {
+			return row.join(cellsToMerge);
+		}
+
+		@Override
+		public String getStyleName() {
+			return row.getStyleName();
+		}
+
+		@Override
+		public void setStyleName(String styleName) {
+			row.setStyleName(styleName);
+		}
+
+		@Override
+		public Collection<? extends Component> getComponents() {
+			return row.getComponents();
+		}
+
+	}
+
+	@SuppressWarnings("serial")
+	private static final class FooterRowWrapper<P> implements ListingFooterRow<P> {
+
+		private final FooterRow row;
+		private final Function<P, String> converter;
+
+		public FooterRowWrapper(FooterRow row, Function<P, String> converter) {
+			super();
+			this.row = row;
+			this.converter = converter;
+		}
+
+		@Override
+		public FooterCell getCell(P propertyId) {
+			return row.getCell(converter.apply(propertyId));
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public FooterCell join(P... propertyIdsToMerge) {
+			ObjectUtils.argumentNotNull(propertyIdsToMerge, "Property ids to merge must be not null");
+			return row.join(Arrays.asList(propertyIdsToMerge).stream().map(id -> converter.apply(id))
+					.collect(Collectors.toList()).toArray(new String[0]));
+		}
+
+		@Override
+		public FooterCell join(Set<FooterCell> cellsToMerge) {
+			return row.join(cellsToMerge);
+		}
+
+		@Override
+		public FooterCell join(FooterCell... cellsToMerge) {
+			return row.join(cellsToMerge);
+		}
+
+		@Override
+		public String getStyleName() {
+			return row.getStyleName();
+		}
+
+		@Override
+		public void setStyleName(String styleName) {
+			row.setStyleName(styleName);
+		}
+
+		@Override
+		public Collection<? extends Component> getComponents() {
+			return row.getComponents();
 		}
 
 	}

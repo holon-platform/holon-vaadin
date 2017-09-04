@@ -178,7 +178,7 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		return grid;
 	}
 
-	protected String getColumnId(P property) {
+	public String getColumnId(P property) {
 		return (property != null) ? property.toString() : null;
 	}
 
