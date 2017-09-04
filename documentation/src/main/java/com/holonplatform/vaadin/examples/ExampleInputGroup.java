@@ -20,7 +20,9 @@ import com.holonplatform.core.property.PathProperty;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.vaadin.components.Components;
+import com.holonplatform.vaadin.components.PropertyInputForm;
 import com.holonplatform.vaadin.components.PropertyInputGroup;
+import com.vaadin.ui.FormLayout;
 
 @SuppressWarnings("unused")
 public class ExampleInputGroup {
@@ -122,9 +124,37 @@ public class ExampleInputGroup {
 		// end::group6[]
 	}
 
+	public void form1() {
+		// tag::form1[]
+		final PathProperty<Long> ID = PathProperty.create("id", Long.class);
+		final PathProperty<String> DESCRIPTION = PathProperty.create("description", String.class);
+
+		final PropertySet<?> PROPERTIES = PropertySet.of(ID, DESCRIPTION);
+
+		PropertyInputForm form = Components.input.form(new FormLayout()).properties(PROPERTIES).required(ID).build(); // <1>
+
+		form = Components.input.form(new FormLayout()).properties(PROPERTIES).required(ID)
+				.composer((layout, source) -> { // <2>
+					source.getValueComponents().forEach(c -> layout.addComponent(c.getComponent()));
+				}).build();
+		// end::form1[]
+	}
+
+	public void form2() {
+		// tag::form2[]
+		PropertyInputForm form = Components.input.form().properties(PROPERTY_SET).build(); // <1>
+		form = Components.input.formVertical().properties(PROPERTY_SET).build(); // <2>
+		form = Components.input.formHorizontal().properties(PROPERTY_SET).build(); // <3>
+		form = Components.input.formGrid().properties(PROPERTY_SET)
+				.initializer(gridLayout -> gridLayout.setSpacing(true)).build(); // <4>
+		// end::form2[]
+	}
+
 	@SuppressWarnings("static-method")
 	private PropertyInputGroup createInputGroup() {
 		return null;
 	}
+
+	private final static PropertySet<?> PROPERTY_SET = PropertySet.of();
 
 }

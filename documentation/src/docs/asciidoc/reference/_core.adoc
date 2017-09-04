@@ -267,6 +267,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[
 ----
 <1> Set a `QueryConfigurationProvider` which provides a `QueryFilter` to select only the items with the `ID` property that is greater than 0
 
+[[PropertyInputGroup]]
 === Grouping Inputs
 
 The link:{apidir}/com/holonplatform/vaadin/components/PropertyInputGroup.html[PropertyInputGroup^] component allows to group and manage a set of `Input` fields, relying on the `Property` model and using  `PropertyBox` objects to collect, set and provide the Input values.
@@ -369,9 +370,41 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInputGroup.java[
 <3> Set the overall `ValidationStatusHandler`
 <4> Set the properties `ValidationStatusHandler`
 
-TIP: A property input group `ValidationStatusHandler` setter method which accept a `Label` is provided as a shorter to use a standard Vaadin `Label` to notify validation error.
+TIP: A property input group `ValidationStatusHandler` setter method which accept a `Label` is provided as a shorter to use a standard Vaadin `Label` to notify validation errors.
 
 === Input Forms
+
+The link:{apidir}/com/holonplatform/vaadin/components/PropertyInputForm.html[PropertyInputForm^] represents a `Input` group bound to a `Property` model which is also a UI `Component`, and can be used to display and manage the `Input` components in the UI.
+
+It is a <<PropertyInputGroup>>, from which inherits all the `Input` generation, configuration and management features, using a `PropertyBox` to set and get the property values bound to each Input component.
+
+It extends the link:{apidir}/com/holonplatform/vaadin/components/ComposableComponent.html[ComposableComponent^] interface, which represents an UI component with a base layout and the capability to _compose_ a set of UI components on this layout.
+
+The `Composer` interface is used to _compose_ the `Input` components on the UI, and must be provided to the `PropertyInputForm`, along with the base layout component on which the `Input` components will be organized.
+
+NOTE: The `ComposableComponent` interface provides the `componentContainerComposer()` static method to obtain a default _composer_ which uses a Vaadin `ComponentContainer` as base layout.
+
+The inputs composition is triggered using the `compose()` method. The `PropertyInputForm` builder provides a `composeOnAttach(...)` method to set whether to automatically trigger the components composition when the form is attached to a parent layout, and this is the standard behaviour.
+
+Furthermore, a `initializer(...)` builder method is made available to perform custom configuration of the base layout component.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInputGroup.java[tag=form1,indent=0]
+----
+<1> Create a `PropertyInputForm` with given property set using a FormLayout as base layout, and using the default composer
+<2> Set a custom `Composer` to compose the Input components on the form layout
+
+A set of default builder factory methods are provided to use the most common Vaadin layout components as form base content.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInputGroup.java[tag=form2,indent=0]
+----
+<1> Create a `PropertyInputForm` using a `FormLayout` as base content
+<2> Create a `PropertyInputForm` using a `VerticalLayout` as base content
+<3> Create a `PropertyInputForm` using a `HorizontalLayout` as base content
+<4> Create a `PropertyInputForm` using a `GridLayout` as base content and setting an _initializer_ function to perform GridLayout configuration
 
 === View components
 
