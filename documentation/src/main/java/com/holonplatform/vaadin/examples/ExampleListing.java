@@ -15,6 +15,9 @@
  */
 package com.holonplatform.vaadin.examples;
 
+import java.util.Locale;
+import java.util.Set;
+
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.property.PathProperty;
@@ -22,8 +25,13 @@ import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.vaadin.components.BeanListing;
 import com.holonplatform.vaadin.components.Components;
+import com.holonplatform.vaadin.components.ItemListing.ColumnAlignment;
 import com.holonplatform.vaadin.components.PropertyListing;
+import com.holonplatform.vaadin.components.Selectable.SelectionMode;
 import com.holonplatform.vaadin.data.ItemDataProvider;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.renderers.NumberRenderer;
+import com.vaadin.ui.renderers.TextRenderer;
 
 @SuppressWarnings("unused")
 public class ExampleListing {
@@ -94,6 +102,123 @@ public class ExampleListing {
 				.dataSource(datastore, DataTarget.named("test"), ID) // <1>
 				.build();
 		// end::listing3[]
+	}
+
+	public void listing4() {
+		// tag::listing4[]
+		PropertyListing listing = Components.listing.properties(PROPERTIES) //
+				.header(ID, "Custom ID header") // <1>
+				.columnHidingAllowed(true) // <2>
+				.hidable(ID, false) // <3>
+				.columnReorderingAllowed(true) // <4>
+				.alignment(ID, ColumnAlignment.RIGHT) // <5>
+				.hidden(DESCRIPTION, true) // <6>
+				.resizable(ID, false) // <7>
+				.width(ID, 100) // <8>
+				.expandRatio(DESCRIPTION, 1) // <9>
+				.minWidth(DESCRIPTION, 200) // <10>
+				.maxWidth(DESCRIPTION, 300) // <11>
+				.style(ID, (property, item) -> item.getValue(DESCRIPTION) != null ? "empty" : "not-empty") // <12>
+				.withPropertyReorderListener((properties, userOriginated) -> { // <13>
+					// ...
+				}).withPropertyResizeListener((property, widthInPixel, userOriginated) -> { // <14>
+					// ...
+				}).withPropertyVisibilityListener((property, hidden, userOriginated) -> { // <15>
+					// ...
+				}).build();
+		// end::listing4[]
+	}
+
+	public void listing5() {
+		// tag::listing5[]
+		PropertyListing listing = Components.listing.properties(PROPERTIES) //
+				.render(ID, new NumberRenderer(Locale.US)) // <1>
+				.render(ID, value -> String.valueOf(value), new TextRenderer()) // <2>
+				.build();
+		// end::listing5[]
+	}
+
+	public void listing6() {
+		// tag::listing6[]
+		PropertyListing listing = Components.listing.properties(PROPERTIES) //
+				.heightByContents() // <1>
+				.frozenColumns(1) // <2>
+				.hideHeaders() // <3>
+				.withRowStyle(item -> { // <4>
+					return item.getValue(DESCRIPTION) != null ? "has-des" : "no-nes";
+				}) //
+				.itemDescriptionGenerator(item -> item.getValue(DESCRIPTION)) // <5>
+				.detailsGenerator(item -> { // <6>
+					VerticalLayout component = new VerticalLayout();
+					// ...
+					return component;
+				}).withItemClickListener((item, property, event) -> { // <7>
+					// ...
+				}).header(header -> { // <8>
+					header.getDefaultRow().setStyleName("my-header");
+				}).footer(footer -> { // <9>
+					footer.appendRow().setStyleName("my-footer");
+				}).footerGenerator((source, footer) -> { // <10>
+					footer.getRowAt(0).getCell(ID).setText("ID footer");
+				}).withPostProcessor(grid -> { // <11>
+					// ...
+				}).build();
+		// end::listing6[]
+	}
+
+	public void listing7() {
+		// tag::listing7[]
+		PropertyListing listing = Components.listing.properties(PROPERTIES) //
+				.selectionMode(SelectionMode.SINGLE) // <1>
+				.build();
+
+		final PropertyBox ITEM = PropertyBox.builder(PROPERTIES).set(ID, 1L).build();
+
+		PropertyBox selected = listing.getFirstSelectedItem().orElse(null); // <2>
+
+		boolean isSelected = listing.isSelected(ITEM); // <3>
+
+		listing.select(ITEM); // <4>
+
+		listing.deselectAll(); // <5>
+		// end::listing7[]
+	}
+
+	public void listing8() {
+		// tag::listing8[]
+		PropertyListing listing = Components.listing.properties(PROPERTIES) //
+				.build();
+
+		listing.setSelectionMode(SelectionMode.MULTI); // <1>
+
+		final PropertyBox ITEM = PropertyBox.builder(PROPERTIES).set(ID, 1L).build();
+
+		Set<PropertyBox> selected = listing.getSelectedItems(); // <2>
+
+		boolean isSelected = listing.isSelected(ITEM); // <3>
+
+		listing.select(ITEM); // <4>
+
+		listing.deselectAll(); // <5>
+
+		listing.selectAll(); // <6>
+		// end::listing8[]
+	}
+
+	public void listing9() {
+		// tag::listing9[]
+		PropertyListing listing = Components.listing.properties(PROPERTIES) //
+				.sortable(ID, true) // <1>
+				.sortUsing(ID, DESCRIPTION) // <2>
+				.sortGenerator(ID, (property, ascending) -> { // <3>
+					return ascending ? ID.asc() : ID.desc();
+				}) //
+				.fixedSort(ID.asc()) // <4>
+				.defaultSort(DESCRIPTION.asc()) // <5>
+				.fixedFilter(ID.gt(0L)) // <6>
+				.withQueryConfigurationProvider(() -> DESCRIPTION.isNotNull()) // <7>
+				.build();
+		// end::listing9[]
 	}
 
 	private static ItemDataProvider<PropertyBox> getDataProvider() {

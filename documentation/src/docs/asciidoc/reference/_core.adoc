@@ -516,6 +516,129 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag
 ----
 <1> Create a `PropertyListing` and use a `Datastore` to build a data source which performs a query using the `test` data target (which can be, for example, the name of a RDBMS table), the property set of the listing as query projection and the `ID` property as item identifier
 
+=== Columns configuration
+
+The listing component columns can be configured in a number of ways:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing4,indent=0]
+----
+<1> Set a custom header caption for the `ID` property/column
+<2> Set whether the listing columns can be hidden
+<3> Set that the `ID` property/column cannot be hidden
+<4> Set whether the listing columns can reordered
+<5> Set the `ID` property/column cell contents alignment
+<6> Set the `DESCRIPTION` property/column as hidden by default
+<7> Set the `ID` property/column as not resizable
+<8> Set the `ID` property/column width in pixels
+<9> Set the `DESCRIPTION` property/column expand ratio
+<10> Set the `DESCRIPTION` property/column minimum width
+<11> Set the `DESCRIPTION` property/column maximum width
+<12> Set the `ID` property/column CSS style generator
+<13> Add a listener to be notified when the listing columns order changes
+<14> Add a listener to be notified when a property/column is resized 
+<15> Add a listener to be notified when a property/column is shown or hidden 
+
+=== Column rendering
+
+The default column rendering can be overridden using a custom vaadin `Renderer`. The `Renderer` must handle the same data type of the property/column for which it is configured. 
+
+Furthermore, a property/column value can be converted to a different value type, and, in this case, a suitable `Renderer` for the converted type must be provided.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing5,indent=0]
+----
+<1> Set a custom `NumberRenderer` for the `ID` property/column (which is of type `Long`)
+<2> Set a converter to convert the `Long` type value of the `ID` property/column into a `String` and a suitable render according to the new value type
+
+=== Listing configuration
+
+The item listing component is highly configurable. Through the builders you can configure:
+
+* The *header appeareance*, adding and removing header rows and joining header columns
+* Showing and configuring a *footer* section
+* Set a number of column as *frozen*
+* Provide *rows CSS style* using a style generator
+* Provide item *description* (tooltip) for item rows
+* Provide a *item click listener* to listen for user clicks on item rows
+* Provide a *row details component* which can be shown for each item row
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing6,indent=0]
+----
+<1> Set the height of the listing defined by its contents
+<2> Set the _frozen_ columns count
+<3> Hide all the listing headers
+<4> Set the row CSS style generator
+<5> Set the item/row description (tooltip) generator
+<6> Set the item/row _details_ component generator
+<7> Register a item click listener
+<8> Add a style class name to the default header row
+<9> Append a row to the listing footer and set a style class name for it
+<10> Set the footer _generator_ to invoke to update the listing footer contents
+<11> Set a post-processor to customize the internal `Grid` component
+
+=== Item selection
+
+The item listing component supports items selection, both in single and multiple mode. The listing can be made selectable using the `setSelectionMode` method or the `selectionMode` builder method.
+
+Just like any other `Selectable` component, the item listing component provides methods to inspect the current selected item/s and change the current selection.
+
+.Single selection mode
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing7,indent=0]
+----
+<1> Set the listing _selectable_ in `SINGLE` selection mode
+<2> Get the currently selected item, if any
+<3> Check whether the given item is selected
+<4> Select the given item
+<5> Deselect all (clear current selection)
+
+.Multiple selection mode
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing8,indent=0]
+----
+<1> Set the listing _selectable_ in `MULTI` selection mode
+<2> Get the selected items
+<3> Check whether the given item is selected
+<4> Select the given item
+<5> Deselect all items
+<6> Select all items
+
+NOTE: The *select all* checkbox shown in the top left corner of the listing is visible by default. You can control the checkbox visibility using the `selectAllCheckBoxVisibility(...)` method of the item listing builder.
+
+=== Item query configuration
+
+The item listing builder provides a number of methods to control the data source items query, allowing to:
+
+* Set a property/column as *sortable* or not and *override the default sort behaviour*, for example using another property as query sort target or providing a custom `QuerySort`;
+* Set a *fixed sort*, which will always to appended to current query sorts
+* Set a *default sort*, to be used when no other query sort is configured
+* Set a *fixed filter*, which will be always applied to the query
+* Register one or more `QueryConfigurationProvider` to provide custom query configuration logic
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing9,indent=0]
+----
+<1> Set the `ID` property/column as sortable
+<2> Set to use the `DESCRIPTION` property to sort the `ID` property/column
+<3> Set a custom `QuerySort` for the `ID` property/column
+<4> Set a fixed `QuerySort`, which will always to appended to current query sorts
+<5> Set the default `QuerySort`, to be used when no other query sort is configured
+<6> Set a fixed `QueryFilter`
+<7> Add a `QueryConfigurationProvider`
+
+=== Item set management
+
+=== Editing items
+
+
 [[RenderersPresenters]]
 == Property renderers and presenters
 
