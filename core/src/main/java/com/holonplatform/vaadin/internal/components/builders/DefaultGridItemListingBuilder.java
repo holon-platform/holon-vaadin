@@ -40,14 +40,44 @@ public class DefaultGridItemListingBuilder<T> extends
 		super(new DefaultBeanListing<>(beanType));
 	}
 
-	/* (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridItemListingBuilder#editor(java.lang.String, com.vaadin.data.HasValue)
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridItemListingBuilder#editor(java.lang.String,
+	 * com.vaadin.data.HasValue)
 	 */
 	@Override
 	public <E extends HasValue<?> & Component> GridItemListingBuilder<T> editor(String property, E editor) {
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		ObjectUtils.argumentNotNull(editor, "Editor field must be not null");
 		getInstance().getPropertyColumn(property).setEditor(editor);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder#withValidator(com.
+	 * vaadin.data.Validator)
+	 */
+	@Override
+	public GridItemListingBuilder<T> withValidator(com.vaadin.data.Validator<T> validator) {
+		ObjectUtils.argumentNotNull(validator, "Validator must be not null");
+		getInstance().addValidator(validator);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridItemListingBuilder#withValidator(java.lang.
+	 * String, com.vaadin.data.Validator)
+	 */
+	@Override
+	public GridItemListingBuilder<T> withValidator(String property, com.vaadin.data.Validator<?> validator) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		ObjectUtils.argumentNotNull(validator, "Validator must be not null");
+		getInstance().getPropertyColumn(property).addValidator(validator);
 		return builder();
 	}
 

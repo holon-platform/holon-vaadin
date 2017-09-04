@@ -15,13 +15,17 @@
  */
 package com.holonplatform.vaadin.internal.components;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 import com.holonplatform.core.Path;
 import com.holonplatform.core.i18n.Localizable;
+import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.components.ItemListing.CellStyleGenerator;
 import com.holonplatform.vaadin.components.ItemListing.ColumnAlignment;
 import com.vaadin.data.HasValue;
+import com.vaadin.data.Validator;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Component;
@@ -76,6 +80,11 @@ public class DefaultPropertyColumn<T, P> implements PropertyColumn<T, P> {
 	 * Editor field
 	 */
 	private HasValue<?> editor;
+
+	/**
+	 * Validators
+	 */
+	private List<Validator<?>> validators = new LinkedList<>();
 
 	/**
 	 * Hidden
@@ -261,6 +270,25 @@ public class DefaultPropertyColumn<T, P> implements PropertyColumn<T, P> {
 	@Override
 	public <E extends HasValue<?> & Component> void setEditor(E editor) {
 		this.editor = editor;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.internal.components.PropertyColumn#addValidator(com.vaadin.data.Validator)
+	 */
+	@Override
+	public void addValidator(Validator<?> validator) {
+		ObjectUtils.argumentNotNull(validator, "Property validator must be not null");
+		this.validators.add(validator);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.internal.components.PropertyColumn#getValidators()
+	 */
+	@Override
+	public List<Validator<?>> getValidators() {
+		return validators;
 	}
 
 	/**

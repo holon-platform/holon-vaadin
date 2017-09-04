@@ -333,7 +333,7 @@ public interface PropertyInputGroup extends PropertySetBound, ValueHolder<Proper
 		 * @param validator Validator to add (not null)
 		 * @return this
 		 */
-		default <T> B withVaadinValidator(Property<T> property, com.vaadin.data.Validator<T> validator) {
+		default <T> B withValidator(Property<T> property, com.vaadin.data.Validator<T> validator) {
 			return withValidator(property, new VaadinValidatorWrapper<>(validator, null, null));
 		}
 
@@ -350,7 +350,7 @@ public interface PropertyInputGroup extends PropertySetBound, ValueHolder<Proper
 		 * @param validator Validator to add (not null)
 		 * @return this
 		 */
-		default B withVaadinValidator(com.vaadin.data.Validator<PropertyBox> validator) {
+		default B withValidator(com.vaadin.data.Validator<PropertyBox> validator) {
 			return withValidator(new VaadinValidatorWrapper<>(validator, null, null));
 		}
 

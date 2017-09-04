@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import com.holonplatform.core.Path;
+import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ObjectUtils;
@@ -40,6 +41,7 @@ import com.holonplatform.vaadin.components.Selectable.SelectionListener;
 import com.holonplatform.vaadin.components.Selectable.SelectionMode;
 import com.holonplatform.vaadin.data.ItemDataSource.CommitHandler;
 import com.holonplatform.vaadin.data.ItemDataSource.PropertySortGenerator;
+import com.holonplatform.vaadin.internal.components.ValidatorWrapper;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.ui.Component;
@@ -522,6 +524,22 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		}
 
 		/**
+		 * Adds an item {@link Validator} to item listing editor.
+		 * @param validator Validator to add (not null)
+		 * @return this
+		 */
+		default B withValidator(Validator<T> validator) {
+			return withValidator(new ValidatorWrapper<>(validator));
+		}
+
+		/**
+		 * Adds an item {@link com.vaadin.data.Validator} to item listing editor.
+		 * @param validator Validator to add (not null)
+		 * @return this
+		 */
+		B withValidator(com.vaadin.data.Validator<T> validator);
+
+		/**
 		 * Sets to call {@link ItemListing#commit()} to confirm item modifications in data source when the editor
 		 * <em>Save</em> action is triggered.
 		 * @return this
@@ -579,6 +597,25 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		 * @return this
 		 */
 		<E extends HasValue<?> & Component> GridItemListingBuilder<T> editor(String property, E editor);
+
+		/**
+		 * Adds a {@link Validator} to the field bound to given <code>property</code> in the item listing editor.
+		 * @param property Property (not null)
+		 * @param validator Validator to add (not null)
+		 * @return this
+		 */
+		default GridItemListingBuilder<T> withValidator(String property, Validator<?> validator) {
+			return withValidator(property, new ValidatorWrapper<>(validator));
+		}
+
+		/**
+		 * Adds a {@link com.vaadin.data.Validator} to the field bound to given <code>property</code> in the item
+		 * listing editor.
+		 * @param property Property (not null)
+		 * @param validator Validator to add (not null)
+		 * @return this
+		 */
+		GridItemListingBuilder<T> withValidator(String property, com.vaadin.data.Validator<?> validator);
 
 		/**
 		 * Set a custom {@link Renderer} for given item property.

@@ -35,8 +35,10 @@ import com.holonplatform.vaadin.data.ItemDataSource;
 import com.holonplatform.vaadin.data.ItemDataSource.ItemSort;
 import com.holonplatform.vaadin.internal.data.ItemDataProviderAdapter;
 import com.holonplatform.vaadin.internal.data.ItemDataSourceAdapter;
+import com.vaadin.data.Binder.BindingBuilder;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.SelectionModel.Multi;
+import com.vaadin.data.Validator;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.DataProviderListener;
 import com.vaadin.data.provider.GridSortOrder;
@@ -253,6 +255,11 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		return () -> rowStyleGenerators.remove(rowStyleGenerator);
 	}
 
+	public void addValidator(Validator<T> validator) {
+		ObjectUtils.argumentNotNull(validator, "Validator must be not null");
+		getGrid().getEditor().getBinder().withValidator(validator);
+	}
+
 	/**
 	 * Get the most suitable {@link Locale} to use.
 	 * @return the field, UI or {@link LocalizationContext} locale
@@ -450,12 +457,11 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		final boolean readOnly = requireDataSource().getConfiguration().isPropertyReadOnly(property);
 		if (propertyColumn.isEditable()) {
 			if (propertyColumn.getEditor().isPresent()) {
-				((Column) column).setEditorComponent(propertyColumn.getEditor().get());
-				column.setEditable(!readOnly);
+				setEditorBinding(property, column, propertyColumn.getEditor().get(), readOnly,
+						propertyColumn.getValidators());
 			} else {
 				getDefaultPropertyEditor(property).ifPresent(e -> {
-					((Column) column).setEditorComponent(e);
-					column.setEditable(!readOnly);
+					setEditorBinding(property, column, e, readOnly, propertyColumn.getValidators());
 				});
 			}
 		} else {
@@ -494,6 +500,19 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 			column.setRenderer(renderer);
 		}
 
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void setEditorBinding(P property, Column column, HasValue editor, boolean readOnly,
+			List<Validator<?>> validators) {
+		if (validators != null && !validators.isEmpty()) {
+			BindingBuilder builder = getGrid().getEditor().getBinder().forField(editor);
+			validators.forEach(v -> builder.withValidator(v));
+			column.setEditorBinding(builder.bind(getColumnId(property)));
+		} else {
+			column.setEditorComponent(editor);
+		}
+		column.setEditable(!readOnly);
 	}
 
 	protected <E extends HasValue<?> & Component> Optional<E> getDefaultPropertyEditor(

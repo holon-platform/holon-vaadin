@@ -31,6 +31,7 @@ import com.holonplatform.vaadin.internal.data.DatastoreCommitHandler;
 import com.holonplatform.vaadin.internal.data.DatastoreItemDataProvider;
 import com.holonplatform.vaadin.internal.data.PropertiesItemIdentifier;
 import com.vaadin.data.HasValue;
+import com.vaadin.data.Validator;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.renderers.Renderer;
@@ -109,6 +110,33 @@ public class DefaultGridPropertyListingBuilder extends
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		ObjectUtils.argumentNotNull(editor, "Editor field must be not null");
 		getInstance().getPropertyColumn(property).setEditor(editor);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder#withValidator(com.
+	 * vaadin.data.Validator)
+	 */
+	@Override
+	public GridPropertyListingBuilder withValidator(Validator<PropertyBox> validator) {
+		ObjectUtils.argumentNotNull(validator, "Validator must be not null");
+		getInstance().addValidator(validator);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.components.builders.PropertyListingBuilder.GridPropertyListingBuilder#withValidator(com.
+	 * holonplatform.core.property.Property, com.vaadin.data.Validator)
+	 */
+	@Override
+	public <T> GridPropertyListingBuilder withValidator(Property<T> property, Validator<T> validator) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		ObjectUtils.argumentNotNull(validator, "Validator must be not null");
+		getInstance().getPropertyColumn(property).addValidator(validator);
 		return builder();
 	}
 

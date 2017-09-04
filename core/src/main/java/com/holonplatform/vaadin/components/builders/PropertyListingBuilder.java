@@ -15,6 +15,7 @@
  */
 package com.holonplatform.vaadin.components.builders;
 
+import com.holonplatform.core.Validator;
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.property.Property;
@@ -22,6 +23,7 @@ import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.vaadin.components.PropertyListing;
 import com.holonplatform.vaadin.data.ItemDataProvider;
 import com.holonplatform.vaadin.data.ItemDataSource.CommitHandler;
+import com.holonplatform.vaadin.internal.components.ValidatorWrapper;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.ui.Component;
@@ -74,6 +76,27 @@ public interface PropertyListingBuilder<B extends PropertyListingBuilder<B, X>, 
 		 * @return this
 		 */
 		<T, E extends HasValue<T> & Component> GridPropertyListingBuilder editor(Property<T> property, final E editor);
+
+		/**
+		 * Adds a {@link Validator} to the field bound to given <code>property</code> in the item listing editor.
+		 * @param <T> Property type
+		 * @param property Property (not null)
+		 * @param validator Validator to add (not null)
+		 * @return this
+		 */
+		default <T> GridPropertyListingBuilder withValidator(Property<T> property, Validator<T> validator) {
+			return withValidator(property, new ValidatorWrapper<>(validator));
+		}
+
+		/**
+		 * Adds a {@link com.vaadin.data.Validator} to the field bound to given <code>property</code> in the item
+		 * listing editor.
+		 * @param <T> Property type
+		 * @param property Property (not null)
+		 * @param validator Validator to add (not null)
+		 * @return this
+		 */
+		<T> GridPropertyListingBuilder withValidator(Property<T> property, com.vaadin.data.Validator<T> validator);
 
 		/**
 		 * Set a custom {@link Renderer} for given item property.
