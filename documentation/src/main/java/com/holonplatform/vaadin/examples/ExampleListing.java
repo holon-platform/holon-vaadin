@@ -18,6 +18,7 @@ package com.holonplatform.vaadin.examples;
 import java.util.Locale;
 import java.util.Set;
 
+import com.holonplatform.core.Validator;
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.property.PathProperty;
@@ -29,6 +30,7 @@ import com.holonplatform.vaadin.components.ItemListing.ColumnAlignment;
 import com.holonplatform.vaadin.components.PropertyListing;
 import com.holonplatform.vaadin.components.Selectable.SelectionMode;
 import com.holonplatform.vaadin.data.ItemDataProvider;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.renderers.TextRenderer;
@@ -261,6 +263,22 @@ public class ExampleListing {
 		listing.commit(); // <5>
 		listing.discard(); // <6>
 		// end::listing11[]
+	}
+
+	public void listing12() {
+		// tag::listing12[]
+		PropertyListing listing = Components.listing.properties(PROPERTIES) //
+				.editable(true) // <1>
+				.editorBuffered(true) // <2>
+				.editorSaveCaption("Save item") // <3>
+				.editorCancelCaption("Discard") // <4>
+				.editable(ID, false) // <5>
+				.editor(DESCRIPTION, new TextField()) // <6>
+				.withValidator(Validator.create(pb -> pb.getValue(DESCRIPTION) != null, "Description must be not null")) // <7>
+				.withValidator(DESCRIPTION, Validator.max(100)) // <8>
+				.required(ID) // <9>
+				.build();
+		// end::listing12[]
 	}
 
 	private static ItemDataProvider<PropertyBox> getDataProvider() {

@@ -673,13 +673,30 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag
 
 === Editing items
 
+The item listing component supports line-based editing, where double-clicking a row opens the row editor, using the default Vaadin `Grid` editor. The item listing editor must be enabled using the `editable(true)` method of the builder in order to activate the row editor at double-click.
+
+The *editor fields* to use for each listing property/column will be auto-generated according to the property/column type. This behaviour can be overridden providing custom editor fields for one or more of the the listing properties.
+
+The item listing component editor supports *validation*, allowing to register value validators both for the single property/column fields and for the overall value validation. 
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing12,indent=0]
+----
+<1> Set the listing as editable
+<2> Set the row editor in buffered mode
+<3> Set the editor _save_ button caption
+<4> Set the editor _cancel_ button caption
+<5> Set a property as not editable
+<6> Set a custom editor field
+<7> Add an overall value validator
+<8> Add a property value validator
+<9> Set the `ID` property as required, automatically adding a _not empty_ validator
 
 [[RenderersPresenters]]
 == Property renderers and presenters
 
-
-== Data providers
-
+== Vaadin session scope
 
 == Device information
 
