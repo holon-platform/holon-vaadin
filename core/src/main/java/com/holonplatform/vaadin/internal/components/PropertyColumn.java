@@ -39,7 +39,7 @@ import com.vaadin.ui.renderers.Renderer;
  * @since 5.0.0
  */
 public interface PropertyColumn<T, P> extends Serializable {
-	
+
 	/**
 	 * Gets column caption (header)
 	 * @return Column caption (header)
@@ -123,22 +123,30 @@ public interface PropertyColumn<T, P> extends Serializable {
 	 * @param editable <code>true</code> if the column is editable, <code>false</code> otherwise
 	 */
 	void setEditable(boolean editable);
-	
+
 	/**
 	 * Get the editor field to use for this property column.
 	 * @return the optional editor field
 	 */
 	<E extends HasValue<?> & Component> Optional<E> getEditor();
-	
+
 	/**
 	 * Set the editor field to use for this property column.
 	 * @param editor Editor field
 	 */
 	<E extends HasValue<?> & Component> void setEditor(E editor);
-	
+
 	void addValidator(Validator<?> validator);
-	
+
 	List<Validator<?>> getValidators();
+
+	boolean isRequired();
+
+	void setRequired(boolean required);
+
+	Localizable getRequiredMessage();
+
+	void setRequiredMessage(Localizable message);
 
 	/**
 	 * Gets whether the column is initially hidden when rendered in table

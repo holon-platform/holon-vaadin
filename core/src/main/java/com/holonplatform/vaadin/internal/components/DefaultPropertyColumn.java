@@ -77,6 +77,13 @@ public class DefaultPropertyColumn<T, P> implements PropertyColumn<T, P> {
 	private boolean editable = true;
 
 	/**
+	 * Required
+	 */
+	private boolean required = false;
+
+	private Localizable requiredMessage;
+
+	/**
 	 * Editor field
 	 */
 	private HasValue<?> editor;
@@ -289,6 +296,43 @@ public class DefaultPropertyColumn<T, P> implements PropertyColumn<T, P> {
 	@Override
 	public List<Validator<?>> getValidators() {
 		return validators;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.internal.components.PropertyColumn#isRequired()
+	 */
+	@Override
+	public boolean isRequired() {
+		return required;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.internal.components.PropertyColumn#setRequired(boolean)
+	 */
+	@Override
+	public void setRequired(boolean required) {
+		this.required = required;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.internal.components.PropertyColumn#getRequiredMessage()
+	 */
+	@Override
+	public Localizable getRequiredMessage() {
+		return requiredMessage;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.internal.components.PropertyColumn#setRequiredMessage(com.holonplatform.core.i18n.
+	 * Localizable)
+	 */
+	@Override
+	public void setRequiredMessage(Localizable message) {
+		this.requiredMessage = message;
 	}
 
 	/**

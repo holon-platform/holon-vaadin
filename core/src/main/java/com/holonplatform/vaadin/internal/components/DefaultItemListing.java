@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
@@ -457,11 +458,10 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		final boolean readOnly = requireDataSource().getConfiguration().isPropertyReadOnly(property);
 		if (propertyColumn.isEditable()) {
 			if (propertyColumn.getEditor().isPresent()) {
-				setEditorBinding(property, column, propertyColumn.getEditor().get(), readOnly,
-						propertyColumn.getValidators());
+				setEditorBinding(property, column, propertyColumn.getEditor().get(), readOnly, propertyColumn);
 			} else {
 				getDefaultPropertyEditor(property).ifPresent(e -> {
-					setEditorBinding(property, column, e, readOnly, propertyColumn.getValidators());
+					setEditorBinding(property, column, e, readOnly, propertyColumn);
 				});
 			}
 		} else {
@@ -504,14 +504,18 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void setEditorBinding(P property, Column column, HasValue editor, boolean readOnly,
-			List<Validator<?>> validators) {
-		if (validators != null && !validators.isEmpty()) {
-			BindingBuilder builder = getGrid().getEditor().getBinder().forField(editor);
-			validators.forEach(v -> builder.withValidator(v));
-			column.setEditorBinding(builder.bind(getColumnId(property)));
-		} else {
-			column.setEditorComponent(editor);
+			PropertyColumn<?, ?> pc) {
+		BindingBuilder builder = getGrid().getEditor().getBinder().forField(editor);
+		if (pc.isRequired()) {
+			final Localizable requiredMessage = (pc.getRequiredMessage() != null) ? pc.getRequiredMessage()
+					: RequiredInputValidator.DEFAULT_REQUIRED_ERROR;
+			builder.asRequired(context -> {
+				return LocalizationContext.translate(requiredMessage, true);
+			});
+
 		}
+		pc.getValidators().forEach(v -> builder.withValidator(v));
+		column.setEditorBinding(builder.bind(getColumnId(property)));
 		column.setEditable(!readOnly);
 	}
 

@@ -239,6 +239,33 @@ public abstract class AbstractGridItemListingBuilder<T, P, C extends ItemListing
 
 	/*
 	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder#required(java.lang.
+	 * Object)
+	 */
+	@Override
+	public B required(P property) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		getInstance().getPropertyColumn(property).setRequired(true);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder#required(java.lang.
+	 * Object, com.holonplatform.core.i18n.Localizable)
+	 */
+	@Override
+	public B required(P property, Localizable message) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		getInstance().getPropertyColumn(property).setRequired(true);
+		getInstance().getPropertyColumn(property).setRequiredMessage(message);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder#commitOnSave()
 	 */
 	@Override
