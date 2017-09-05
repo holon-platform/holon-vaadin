@@ -810,3 +810,11 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleScope.java[tag=s
 
 == Device information
 
+The Holon platform Vaadin module makes available the link:{apidir}/com/holonplatform/vaadin/device/DeviceInfo.html[DeviceInfo^] interface, to obtain informations about the *device* in which the application is running.
+
+The `DeviceInfo` object provides informations about the _user agent_ and screen dimensions, and can be obtained using a `VaadinRequest` or relying on the currently available `VaadinSession`.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleDevice.java[tag=device,indent=0]
+----
