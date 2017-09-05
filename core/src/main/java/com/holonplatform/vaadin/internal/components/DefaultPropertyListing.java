@@ -15,6 +15,7 @@
  */
 package com.holonplatform.vaadin.internal.components;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,6 +33,7 @@ import com.holonplatform.vaadin.components.PropertyListing;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.PropertyDefinition;
 import com.vaadin.data.PropertySet;
+import com.vaadin.data.Validator;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontIcon;
@@ -130,6 +132,15 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 	@Override
 	protected <E extends HasValue<?> & Component> Optional<E> getDefaultPropertyEditor(Property property) {
 		return property.renderIfAvailable(Field.class);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.holonplatform.vaadin.internal.components.DefaultItemListing#getDefaultPropertyValidators(java.lang.Object)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	protected Collection<Validator<?>> getDefaultPropertyValidators(Property property) {
+		return property.getValidators();
 	}
 
 	@SuppressWarnings("serial")

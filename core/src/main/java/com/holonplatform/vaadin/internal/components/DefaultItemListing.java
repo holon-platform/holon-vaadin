@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.internal.components;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -540,9 +541,23 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 			});
 
 		}
+		// default validators
+		getDefaultPropertyValidators(property).forEach(v -> builder.withValidator(v));
+		// validators
 		pc.getValidators().forEach(v -> builder.withValidator(v));
+		// bind
 		column.setEditorBinding(builder.bind(getColumnId(property)));
+		// set editable if not read-only
 		column.setEditable(!readOnly);
+	}
+
+	/**
+	 * Get the default validators associated to given property id.
+	 * @param property Property id
+	 * @return property validators, empty if none
+	 */
+	protected Collection<Validator<?>> getDefaultPropertyValidators(P property) {
+		return Collections.emptySet();
 	}
 
 	/**
@@ -845,22 +860,43 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		return getGrid().getEditor().addOpenListener(listener);
 	}
 
+	/**
+	 * Set the row height of the internal grid.
+	 * @param rowHeight the row height to set
+	 */
 	public void setRowHeight(double rowHeight) {
 		getGrid().setRowHeight(rowHeight);
 	}
 
+	/**
+	 * Set the height mode of the internal grid.
+	 * @param heightMode the height mode to set
+	 */
 	public void setHeightMode(HeightMode heightMode) {
 		getGrid().setHeightMode(heightMode);
 	}
 
+	/**
+	 * Sets the number of rows that should be visible in internal Grid's body.
+	 * @param rows the number of rows to set
+	 */
 	public void setHeightByRows(double rows) {
 		getGrid().setHeightByRows(rows);
 	}
 
+	/**
+	 * Set the <em>frozen</em> columns count.
+	 * @param numberOfColumns the number of columns that should be frozen
+	 */
 	public void setFrozenColumnCount(int numberOfColumns) {
 		getGrid().setFrozenColumnCount(numberOfColumns);
 	}
 
+	/**
+	 * Add a {@link DataProviderListener} to the internal Grid data provider.
+	 * @param listener The listener to add
+	 * @return the listener registration
+	 */
 	public Registration addDataProviderListener(DataProviderListener<T> listener) {
 		return getGrid().getDataProvider().addDataProviderListener(listener);
 	}
@@ -942,6 +978,10 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		}
 	}
 
+	/**
+	 * Set the {@link SelectAllCheckBoxVisibility} mode when listing is in multiple selection mode.
+	 * @param selectAllCheckBoxVisibility the mode to set
+	 */
 	public void setSelectAllCheckBoxVisibility(SelectAllCheckBoxVisibility selectAllCheckBoxVisibility) {
 		ObjectUtils.argumentNotNull(selectAllCheckBoxVisibility, "SelectAllCheckBoxVisibility must be not null");
 		this.selectAllCheckBoxVisibility = selectAllCheckBoxVisibility;
@@ -1017,11 +1057,18 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		return getDataSource().orElseThrow(() -> new IllegalStateException("Missing ItemDataSource"));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isBuffered() {
 		return buffered;
 	}
 
+	/**
+	 * Set the buffered mode.
+	 * @param buffered <code>true</code> to activate the buffered mode
+	 */
 	public void setBuffered(boolean buffered) {
 		boolean changed = this.buffered != buffered;
 		this.buffered = buffered;
