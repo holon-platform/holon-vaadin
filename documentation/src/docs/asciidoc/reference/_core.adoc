@@ -693,6 +693,44 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag
 <8> Add a property value validator
 <9> Set the `ID` property as required, automatically adding a _not empty_ validator
 
+== Dialogs
+
+The Holon Vaadin module provides builders to create and show *dialog* windows. 
+
+A dialog window in represented by the link:{apidir}/com/holonplatform/vaadin/components/Dialog.html[Dialog^] interface, which makes available methods to set the dialog as _modal_, open and close the dialog window and registere a `CloseListener` to be invoked when the dialog is closed.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleDialog.java[tag=dialog1,indent=0]
+----
+<1> Dialog builder
+<2> Set as not draggable
+<3> Set as closable
+<4> Set as resizable
+<5> Set as modal
+<6> Set the localizable dialog message
+<7> Configure the dialog _OK_ button
+<8> Add a close listener
+<9> Open (show) the dialog
+<10> Close (hide) the dialog
+
+=== Question dialogs
+
+A _question_ dialog is a `Dialog` with a message and two buttons (instead of one) to answer _yes_ or _no_ to a question.
+
+A `QuestionCallback` can be used when the user selects one of the two buttons and the dialog is closed. The callback notifies the selected answer.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleDialog.java[tag=dialog2,indent=0]
+----
+<1> Question dialog builder
+<2> Set the dialog message (the question)
+<3> Change the _yes_ button caption
+<4> Change the _no_ button caption
+<5> Set the answer callback
+<6> Build and open the dialog
+
 [[RenderersPresenters]]
 == Property renderers and presenters
 
