@@ -17,7 +17,9 @@ package com.holonplatform.vaadin.components.builders;
 
 import java.util.Set;
 
+import com.holonplatform.core.Context;
 import com.holonplatform.core.i18n.Localizable;
+import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.vaadin.components.Input;
 import com.holonplatform.vaadin.components.ItemSet.ItemCaptionGenerator;
 import com.holonplatform.vaadin.components.ItemSet.ItemIconGenerator;
@@ -126,6 +128,57 @@ public interface BaseSelectInputBuilder<T, C extends Input<T>, S, ITEM, B extend
 	 */
 	public interface SingleSelectConfigurator<T, ITEM, B extends SingleSelectConfigurator<T, ITEM, B>>
 			extends SelectInputBuilder<T, SingleSelect<T>, T, ITEM, B> {
+
+		/**
+		 * Sets the input prompt - a textual prompt that is displayed when the field would otherwise be empty, to prompt
+		 * the user for input.
+		 * <p>
+		 * The input prompt is available only in {@link RenderingMode#SELECT} mode.
+		 * </p>
+		 * @param inputPrompt the input prompt to set, <code>null</code> for none
+		 * @return this
+		 */
+		default B inputPrompt(String inputPrompt) {
+			return inputPrompt(Localizable.builder().message(inputPrompt).build());
+		}
+
+		/**
+		 * Sets the input prompt - a textual prompt that is displayed when the field would otherwise be empty, to prompt
+		 * the user for input - using a localizable <code>messageCode</code>.
+		 * <p>
+		 * For input prompt localization, a {@link LocalizationContext} must be available and localized as
+		 * {@link Context} resource when component is built or when component is displayed if
+		 * {@link #deferLocalization()} is <code>true</code>.
+		 * </p>
+		 * <p>
+		 * The input prompt is available only in {@link RenderingMode#SELECT} mode.
+		 * </p>
+		 * @param defaultInputPrompt Default message if no translation is available for given <code>messageCode</code>
+		 *        for current Locale.
+		 * @param messageCode Input prompt translation message key
+		 * @param arguments Optional translation arguments
+		 * @return this
+		 */
+		default B inputPrompt(String defaultInputPrompt, String messageCode, Object... arguments) {
+			return inputPrompt(Localizable.builder().message(defaultInputPrompt).messageCode(messageCode)
+					.messageArguments(arguments).build());
+		}
+
+		/**
+		 * Sets the input prompt - a textual prompt that is displayed when the field would otherwise be empty, to prompt
+		 * the user for input - using a {@link Localizable} message.
+		 * <p>
+		 * For input prompt localization, a {@link LocalizationContext} must be available and localized as
+		 * {@link Context} resource when component is built or when component is displayed if
+		 * {@link #deferLocalization()} is <code>true</code>.
+		 * </p>
+		 * <p>
+		 * The input prompt is available only in {@link RenderingMode#SELECT} mode.
+		 * </p>
+		 * @param inputPrompt Localizable input prompt
+		 * @return this
+		 */
+		B inputPrompt(Localizable inputPrompt);
 
 		/**
 		 * Disables the possibility to input text into the field, so the field area of the component is just used to

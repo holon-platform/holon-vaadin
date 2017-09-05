@@ -18,6 +18,8 @@ package com.holonplatform.vaadin.internal.components;
 import java.util.Collection;
 import java.util.Optional;
 
+import com.holonplatform.core.i18n.Localizable;
+import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.query.QueryFilter;
@@ -217,6 +219,17 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 	}
 
 	/**
+	 * Sets the placeholder string - a textual prompt that is displayed when the select would otherwise be empty, to
+	 * prompt the user for input.
+	 * @param inputPrompt the desired placeholder, or null to disable
+	 */
+	public void setInputPrompt(String inputPrompt) {
+		if (getInternalField() instanceof ComboBox) {
+			((ComboBox<?>) getInternalField()).setPlaceholder(inputPrompt);
+		}
+	}
+
+	/**
 	 * Sets whether to scroll the selected item visible (directly open the page on which it is) when opening the
 	 * suggestions popup or not. This requires finding the index of the item, which can be expensive in many large lazy
 	 * loading containers.
@@ -258,6 +271,8 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 		protected CaptionFilter captionFilter;
 		protected SerializableFunction<String, ?> filterProvider;
 
+		protected Localizable inputPrompt;
+
 		/**
 		 * Constructor
 		 * @param type Selection value type
@@ -265,6 +280,20 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 		 */
 		public AbstractSingleSelectFieldBuilder(Class<? extends T> type, RenderingMode renderingMode) {
 			super(new SingleSelectField<>(type, renderingMode));
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.internal.components.builders.AbstractLocalizableComponentConfigurator#localize(com.
+		 * vaadin.ui.AbstractComponent)
+		 */
+		@Override
+		protected void localize(SingleSelectField<T, ITEM> instance) {
+			super.localize(instance);
+			if (inputPrompt != null) {
+				getInstance().setInputPrompt(LocalizationContext.translate(inputPrompt, true));
+			}
 		}
 
 		/*
@@ -307,6 +336,18 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 		@Override
 		public B filteringMode(CaptionFilter captionFilter) {
 			this.captionFilter = captionFilter;
+			return builder();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.builders.BaseSelectInputBuilder.SingleSelectConfigurator#inputPrompt(com.
+		 * holonplatform.core.i18n.Localizable)
+		 */
+		@Override
+		public B inputPrompt(Localizable inputPrompt) {
+			this.inputPrompt = inputPrompt;
 			return builder();
 		}
 
