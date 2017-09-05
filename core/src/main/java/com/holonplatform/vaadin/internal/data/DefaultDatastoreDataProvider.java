@@ -216,7 +216,7 @@ public class DefaultDatastoreDataProvider extends AbstractBackEndDataProvider<Pr
 
 	/**
 	 * Build a {@link Query} using the Datastore and configuring query filters and sorts.
-	 * @param configuration Query configuration
+	 * @param query Query
 	 * @param withSorts Whether to apply sorts, if any, to query
 	 * @return Query instance
 	 */

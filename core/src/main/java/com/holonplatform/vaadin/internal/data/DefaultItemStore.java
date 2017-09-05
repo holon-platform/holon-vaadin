@@ -105,6 +105,7 @@ public class DefaultItemStore<ITEM> implements ItemStore<ITEM> {
 	 * @param configuration Data source configuration (not null)
 	 * @param dataProvider Items provider (not null)
 	 * @param itemIdentifierProvider Item identifier provider
+	 * @param batchSize batch size
 	 * @param maxCacheSize Max cache size
 	 */
 	public DefaultItemStore(QueryConfigurationProvider configuration, ItemDataProvider<ITEM> dataProvider,

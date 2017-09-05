@@ -46,12 +46,12 @@ public class DefaultGridPropertyListingBuilder extends
 		AbstractGridItemListingBuilder<PropertyBox, Property, PropertyListing, DefaultPropertyListing, GridPropertyListingBuilder>
 		implements GridPropertyListingBuilder {
 
-	private final Iterable<Property> properties;
+	private final Iterable<Property<?>> properties;
 
 	@SuppressWarnings("unchecked")
 	public <P extends Property<?>> DefaultGridPropertyListingBuilder(Iterable<P> properties) {
-		super(new DefaultPropertyListing((Iterable<Property>) properties));
-		this.properties = (Iterable<Property>) properties;
+		super(new DefaultPropertyListing(properties));
+		this.properties = (Iterable<Property<?>>) properties;
 		// setup datasource
 		properties.forEach(p -> {
 			dataSourceBuilder.withProperty(p, p.getType());

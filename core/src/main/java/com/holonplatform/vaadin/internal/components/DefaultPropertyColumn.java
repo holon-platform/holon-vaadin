@@ -267,7 +267,8 @@ public class DefaultPropertyColumn<T, P> implements PropertyColumn<T, P> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <E extends HasValue<?> & Component> Optional<E> getEditor() {
-		return (Optional<E>) Optional.ofNullable(editor);
+		final E hvc = (E) editor;
+		return Optional.ofNullable(hvc);
 	}
 
 	/*

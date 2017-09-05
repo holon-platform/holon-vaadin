@@ -126,12 +126,14 @@ public interface PropertyColumn<T, P> extends Serializable {
 
 	/**
 	 * Get the editor field to use for this property column.
+	 * @param <E> Editor field type
 	 * @return the optional editor field
 	 */
 	<E extends HasValue<?> & Component> Optional<E> getEditor();
 
 	/**
 	 * Set the editor field to use for this property column.
+	 * @param <E> Editor field type
 	 * @param editor Editor field
 	 */
 	<E extends HasValue<?> & Component> void setEditor(E editor);

@@ -58,7 +58,7 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 
 	private final Map<Property, String> propertyIds;
 
-	public DefaultPropertyListing(Iterable<Property> properties) {
+	public <P extends Property<?>> DefaultPropertyListing(Iterable<P> properties) {
 		super(Grid.withPropertySet(new GridPropertySet(properties)));
 		propertyIds = new HashMap<>();
 		properties.forEach(p -> {
@@ -150,12 +150,12 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 		private final List<PropertyDefinition<PropertyBox, ?>> definitions;
 
 		@SuppressWarnings("unchecked")
-		public GridPropertySet(Iterable<Property> properties) {
+		public <P extends Property<?>> GridPropertySet(Iterable<P> properties) {
 			super();
 			ObjectUtils.argumentNotNull(properties, "Grid property set must be not null");
 			definitions = new LinkedList<>();
 			properties.forEach(p -> {
-				definitions.add(new GridPropertyDefinition<>(this, p));
+				definitions.add(new GridPropertyDefinition<>(this, (Property)p));
 			});
 		}
 

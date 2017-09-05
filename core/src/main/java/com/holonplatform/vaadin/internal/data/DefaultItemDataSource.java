@@ -148,7 +148,6 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 	 * Constructor.
 	 * @param dataProvider {@link ItemDataProvider} to be used as items data source
 	 * @param itemIdentifierProvider Item identifier provider
-	 * @param itemAdapter Item adapter
 	 * @param batchSize Batch size
 	 */
 	public DefaultItemDataSource(ItemDataProvider<ITEM> dataProvider,
@@ -161,7 +160,7 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 
 	/**
 	 * Constructor which do not perform internal initialization. The container initialization must be performed later
-	 * using the {@link #init()} method.
+	 * using the init method.
 	 */
 	protected DefaultItemDataSource() {
 		super();
@@ -204,6 +203,7 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 
 	/**
 	 * Init the data source container, configuring the internal {@link ItemStore}.
+	 * @param batchSize the batch size to use
 	 */
 	protected void init(int batchSize) {
 		this.itemStore = new DefaultItemStore<>(this,

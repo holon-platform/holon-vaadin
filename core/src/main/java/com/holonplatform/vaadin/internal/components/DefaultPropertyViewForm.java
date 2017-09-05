@@ -84,6 +84,7 @@ public class DefaultPropertyViewForm<C extends Component>
 
 	/**
 	 * Sets the backing view group.
+	 * @param <G> PropertyViewGroup type
 	 * @param viewGroup the view group to set
 	 */
 	protected <G extends PropertyViewGroup & PropertyValueComponentSource> void setViewGroup(G viewGroup) {

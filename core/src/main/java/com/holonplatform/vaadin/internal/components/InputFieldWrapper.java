@@ -44,6 +44,7 @@ public class InputFieldWrapper<V> implements Input<V> {
 
 	/**
 	 * Constructor
+	 * @param <H> Wrapped field type
 	 * @param field Wrapped field and component (not null)
 	 */
 	public <H extends HasValue<V> & Component> InputFieldWrapper(H field) {

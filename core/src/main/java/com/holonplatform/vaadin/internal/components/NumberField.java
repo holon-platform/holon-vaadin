@@ -260,8 +260,7 @@ public class NumberField<T extends Number> extends AbstractCustomField<T, String
 	}
 
 	/**
-	 * The text change timeout modifies how often text change events are communicated to the application when
-	 * {@link #getTextChangeEventMode()} is {@link ValueChangeMode#LAZY} or {@link ValueChangeMode#TIMEOUT}.
+	 * The text change timeout modifies how often text change events are communicated to the application.
 	 * @param timeout the timeout in milliseconds
 	 */
 	public void setTextChangeTimeout(int timeout) {
@@ -269,8 +268,7 @@ public class NumberField<T extends Number> extends AbstractCustomField<T, String
 	}
 
 	/**
-	 * Gets the timeout used to fire {@link TextChangeEvent}s when the {@link #getTextChangeEventMode()} is
-	 * {@link ValueChangeMode#LAZY} or {@link ValueChangeMode#TIMEOUT}.
+	 * Gets the timeout used to fire text change events.
 	 * @return the timeout value in milliseconds
 	 */
 	public int getTextChangeTimeout() {

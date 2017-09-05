@@ -164,6 +164,7 @@ public final class ViewNavigationUtils implements Serializable {
 
 	/**
 	 * Fire {@link OnShow} view methods
+	 * @param <E> Actual event type
 	 * @param view View instance (not null)
 	 * @param configuration View configuration (not null)
 	 * @param event View change event
@@ -197,6 +198,7 @@ public final class ViewNavigationUtils implements Serializable {
 
 	/**
 	 * Fire {@link OnLeave} view methods
+	 * @param <E> Actual event type
 	 * @param view View instance (not null)
 	 * @param configuration View configuration (not null)
 	 * @param event View change event

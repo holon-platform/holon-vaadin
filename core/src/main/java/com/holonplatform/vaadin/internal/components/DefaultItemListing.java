@@ -562,6 +562,7 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 
 	/**
 	 * Get the default editor field to use to edit given property value.
+	 * @param <E> Editor field type
 	 * @param property Property id
 	 * @return Optional default editor field
 	 */
@@ -711,6 +712,7 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	/**
 	 * Add an {@link ItemClickListener} to be notified when user clicks on an item row.
 	 * @param listener Listener to add (not null)
+	 * @return the listener registration
 	 */
 	public Registration addItemClickListener(final ItemClickListener<T, P> listener) {
 		ObjectUtils.argumentNotNull(listener, "Listener must be not null");
@@ -721,6 +723,7 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	/**
 	 * Adds a {@link PropertyReorderListener} that gets notified when property columns order changes.
 	 * @param listener Listener to add (not null)
+	 * @return the listener registration
 	 */
 	public Registration addPropertyReorderListener(final PropertyReorderListener<P> listener) {
 		ObjectUtils.argumentNotNull(listener, "Listener must be not null");
@@ -731,6 +734,7 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	/**
 	 * Adds a {@link PropertyResizeListener} that gets notified when a property column is resized.
 	 * @param listener Listener to add (not null)
+	 * @return the listener registration
 	 */
 	public Registration addPropertyResizeListener(final PropertyResizeListener<P> listener) {
 		ObjectUtils.argumentNotNull(listener, "Listener must be not null");
@@ -742,6 +746,7 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	/**
 	 * Adds a {@link PropertyVisibilityListener} that gets notified when a property column is hidden or shown.
 	 * @param listener Listener to add (not null)
+	 * @return the listener registration
 	 */
 	public Registration addPropertyVisibilityListener(final PropertyVisibilityListener<P> listener) {
 		ObjectUtils.argumentNotNull(listener, "Listener must be not null");
