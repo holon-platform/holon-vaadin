@@ -136,16 +136,40 @@ public interface PropertyColumn<T, P> extends Serializable {
 	 */
 	<E extends HasValue<?> & Component> void setEditor(E editor);
 
+	/**
+	 * Add a property editor validator.
+	 * @param validator the valdiator to add
+	 */
 	void addValidator(Validator<?> validator);
 
+	/**
+	 * Get the property editor validators.
+	 * @return property editor validators, empty if none
+	 */
 	List<Validator<?>> getValidators();
 
+	/**
+	 * Get whether the property editor value is required.
+	 * @return whether the property editor value is required
+	 */
 	boolean isRequired();
 
+	/**
+	 * Set whether the property editor value is required.
+	 * @param required <code>true</code> if the property editor value is required
+	 */
 	void setRequired(boolean required);
 
+	/**
+	 * Get the required property editor value validation failed message.
+	 * @return the required property editor value validation failed message
+	 */
 	Localizable getRequiredMessage();
 
+	/**
+	 * Set the required property editor value validation failed message
+	 * @param message required property editor value validation failed message
+	 */
 	void setRequiredMessage(Localizable message);
 
 	/**
@@ -221,8 +245,16 @@ public interface PropertyColumn<T, P> extends Serializable {
 	 */
 	void setStyle(CellStyleGenerator<T, P> cellStyleGenerator);
 
+	/**
+	 * Get the presentation provider.
+	 * @return Optional presentation provider
+	 */
 	Optional<ValueProvider<?, ?>> getPresentationProvider();
 
+	/**
+	 * Set the presentation provider.
+	 * @param presentationProvider the presentation provider to set
+	 */
 	void setPresentationProvider(ValueProvider<?, ?> presentationProvider);
 
 	/**

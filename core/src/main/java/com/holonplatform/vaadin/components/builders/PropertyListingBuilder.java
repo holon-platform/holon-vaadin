@@ -71,6 +71,8 @@ public interface PropertyListingBuilder<B extends PropertyListingBuilder<B, X>, 
 
 		/**
 		 * Set the field to use for given property in edit mode.
+		 * @param <T> Property type
+		 * @param <E> Editor field type
 		 * @param property Item property to set the editor for (not null)
 		 * @param editor Editor field (not null)
 		 * @return this

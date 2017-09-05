@@ -725,7 +725,6 @@ public interface Components {
 		/**
 		 * Builder to create an {@link ItemListing} instance using a {@link Grid} as backing component.
 		 * @param <T> Item data type
-		 * @param <P> Item property type
 		 * @param itemType Item bean type
 		 * @return Grid {@link ItemListing} builder
 		 */

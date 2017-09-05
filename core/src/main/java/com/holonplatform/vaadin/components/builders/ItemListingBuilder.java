@@ -467,7 +467,7 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		 * Set whether the row editor is in buffered mode. In buffered mode, the editor has the <code>SAVE</code> and
 		 * <code>CANCEL</code> buttons to commit or discard the item modifications (default mode). In the unbuffered
 		 * mode, the editor has no buttons and all changed data is committed directly.
-		 * @param caption Localizable caption (not null)
+		 * @param editorBuffered whether the row editor is in buffered mode
 		 * @return this
 		 */
 		B editorBuffered(boolean editorBuffered);
@@ -574,7 +574,6 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		/**
 		 * Set the given property as required. If a property is required, the {@link Input} bound to the property will
 		 * be setted as required, and its validation will fail when empty.
-		 * @param <T> Property type
 		 * @param property Property to set as required (not null)
 		 * @param message The default message to use to notify the required validation failure
 		 * @return this
@@ -636,6 +635,7 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 
 		/**
 		 * Set the field to use for given property in edit mode.
+		 * @param <E> Editor field type
 		 * @param property Item property to set the editor for (not null)
 		 * @param editor Editor field (not null)
 		 * @return this
@@ -663,7 +663,6 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 
 		/**
 		 * Set a custom {@link Renderer} for given item property.
-		 * @param <V> Property value type
 		 * @param property Item property to set the renderer for (not null)
 		 * @param renderer Renderer to use
 		 * @return this

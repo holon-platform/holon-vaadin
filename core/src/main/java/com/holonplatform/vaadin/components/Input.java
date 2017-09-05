@@ -105,7 +105,6 @@ public interface Input<V> extends ValueHolder<V>, ValueComponent<V> {
 		/**
 		 * Render given <code>property</code> as consistent value type {@link HasValue} component to handle the property
 		 * value.
-		 * @param <F> {@link HasValue} component type
 		 * @param property Property to render
 		 * @return property {@link HasValue} component
 		 */

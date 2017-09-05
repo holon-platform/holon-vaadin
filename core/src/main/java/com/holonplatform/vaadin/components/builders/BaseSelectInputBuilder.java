@@ -156,11 +156,11 @@ public interface BaseSelectInputBuilder<T, C extends Input<T>, S, ITEM, B extend
 		B suggestionPopupWidth(String width);
 
 		/**
-		 * Sets the option filtering mode.
+		 * Sets the option filtering strategy.
 		 * <p>
 		 * Only applies to select field with backing components supporting a suggestion popup.
 		 * </p>
-		 * @param filteringMode the filtering mode to use
+		 * @param captionFilter the caption filtering strategy to use
 		 * @return this
 		 */
 		B filteringMode(CaptionFilter captionFilter);
