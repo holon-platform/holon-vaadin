@@ -696,6 +696,63 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag
 [[RenderersPresenters]]
 == Property renderers and presenters
 
+The Vaadin module takes advantage of the platform foundation _property model_ to provide the most suitable UI components and display values when a `Property` is used.
+
+When a `Property` must be rendered in UI, the components made available by the Vaadin module try to use a suitable `PropertyRenderer`, if available.
+
+By default, the following renderers are automatically registered by the module:
+
+* A link:{apidir}/com/holonplatform/vaadin/components/Input.html[Input^] property renderer
+* A link:{apidir}/com/holonplatform/vaadin/components/Field.html[Field^] property renderer, which represents a `HasValue` Vaadin `Component`
+* A link:{apidir}/com/holonplatform/vaadin/components/ViewComponent.html[ViewComponent^] property renderer
+
+The `Input` and `Field` property renderers generate a UI component to edit a property value, relying on the property type.
+
+The following types are supported:
+
+* *String*: renders the property as a `TextField`
+* *Boolean*: renders the property as a `CheckBox`
+* *Enum*: renders the property as a `ComboBox`
+* *LocalDate and LocalDateTime*: renders the property as a `DateField` or a `DateTimeField`
+* *java.util.Date*: renders the property as a `DateField` or a `DateTimeField`  
+* *Number*: renders the property as a `TextField` which only accepts numbers and decimal/group separators
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleRenderers.java[tag=renderers1,indent=0]
+----
+<1> Render the property as `String` type `Input`
+<2> Render the property as `Long` type `Field` (`HasValue` component)
+<3> Render the property as `String` type `ViewComponent`
+
+=== Property localization
+
+When a `LocalizationContext` is available as a Context resource, it is used to _localize_ any element to display which supports localization. Concerning to a `Property` related UI component, it is used to:
+
+* Localize the property *caption*, for example when it is used as a listing column header or as a input field caption
+* Obtain the *date and time format* to use to display a property value or to edit the property value through a a input field
+* Obtain the *number format* to use to display a property value or to edit the property value through a a input field
+* Obtain the default *boolean* localized text for the `true` and `false` values
+
+TIP: See the link:holon-core.html#i18n[Internationalization] documentation for further information about localization.
+
+=== Custom property renderers
+
+Relying on the standard property renderers features, custom renderers can be registered to:
+
+* Customize the rendered UI component under certain conditions for the default provided rendering types (`Input`, `Field` and `ViewComponent`)
+* Provide the rendering for a custom type
+
+For example, to render a specific `String` type property as *text area*, instead of the default _text field_, an appropriate renderer can be registered and bound to a suitable property condition:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleRenderers.java[tag=renderers2,indent=0]
+----
+<1> Create a `Input` property renderer which renders the property as a _text area_
+<2> Register the renderer and bind it to a condition which checks the property is exactly the `TEXT` property
+<3> From now on, rendering the `TEXT` property as an `Input` field will generate a _text area_ input component
+
 == Vaadin session scope
 
 == Device information
