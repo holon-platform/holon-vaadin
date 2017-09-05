@@ -228,12 +228,6 @@ public interface ViewNavigator extends Serializable {
 	Registration addViewChangeListener(ViewChangeListener listener);
 
 	/**
-	 * Removes a view change listener
-	 * @param listener Listener to remove
-	 */
-	void removeViewChangeListener(ViewChangeListener listener);
-
-	/**
 	 * Get the current {@link ViewNavigator}, if available as {@link Context} resource or from current UI.
 	 * @return Current ViewNavigator, or an empty Optinal if not available
 	 */
