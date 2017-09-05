@@ -26,12 +26,12 @@ import com.vaadin.server.SerializableFunction;
  * Builder to create a single selection {@link Input}.
  * 
  * @param <T> Value type
+ * @param <B> Actual builder type
  * 
  * @since 5.0.0
  */
-public interface SingleSelectInputBuilder<T>
-		extends SelectInputBuilder.SingleSelectConfigurator<T, T, SingleSelectInputBuilder<T>>,
-		SelectItemDataSourceBuilder<T, SingleSelect<T>, T, T, SingleSelectInputBuilder<T>> {
+public interface SingleSelectInputBuilder<T, B extends SingleSelectInputBuilder<T, B>> extends
+		SelectInputBuilder.SingleSelectConfigurator<T, T, B>, SelectItemDataSourceBuilder<T, SingleSelect<T>, T, T, B> {
 
 	/**
 	 * Set the selection items data provider.
@@ -39,8 +39,7 @@ public interface SingleSelectInputBuilder<T>
 	 * @param filterProvider Optional caption {@link QueryFilter} provider for {@link RenderingMode#SELECT} type inputs
 	 * @return this
 	 */
-	SingleSelectInputBuilder<T> dataSource(ItemDataProvider<T> dataProvider,
-			SerializableFunction<String, QueryFilter> filterProvider);
+	B dataSource(ItemDataProvider<T> dataProvider, SerializableFunction<String, QueryFilter> filterProvider);
 
 	/**
 	 * Set the selection items data provider.
@@ -49,7 +48,11 @@ public interface SingleSelectInputBuilder<T>
 	 * @param filterProvider Optional caption {@link QueryFilter} provider for {@link RenderingMode#SELECT} type inputs
 	 * @return this
 	 */
-	<F> SingleSelectInputBuilder<T> dataSource(DataProvider<T, F> dataProvider,
-			SerializableFunction<String, F> filterProvider);
+	<F> B dataSource(DataProvider<T, F> dataProvider, SerializableFunction<String, F> filterProvider);
+
+	public interface GenericSingleSelectInputBuilder<T>
+			extends SingleSelectInputBuilder<T, GenericSingleSelectInputBuilder<T>> {
+
+	}
 
 }

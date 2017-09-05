@@ -29,8 +29,14 @@ import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.vaadin.components.Field;
 import com.holonplatform.vaadin.components.MultiSelect;
 import com.holonplatform.vaadin.components.builders.BaseSelectInputBuilder.RenderingMode;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeMultiPropertySelectInputBuilder.OptionsModeMultiPropertySelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeMultiPropertySelectInputBuilder.SelectModeMultiPropertySelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeMultiSelectInputBuilder.OptionsModeMultiSelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeMultiSelectInputBuilder.SelectModeMultiSelectInputBuilder;
 import com.holonplatform.vaadin.components.builders.MultiPropertySelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.MultiPropertySelectInputBuilder.GenericMultiPropertySelectInputBuilder;
 import com.holonplatform.vaadin.components.builders.MultiSelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.MultiSelectInputBuilder.GenericMultiSelectInputBuilder;
 import com.holonplatform.vaadin.data.ItemDataProvider;
 import com.holonplatform.vaadin.internal.components.builders.AbstractSelectFieldBuilder;
 import com.holonplatform.vaadin.internal.data.PropertyItemIdentifier;
@@ -39,6 +45,7 @@ import com.vaadin.data.HasDataProvider;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.Query;
 import com.vaadin.server.SerializableFunction;
+import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.AbstractMultiSelect;
 import com.vaadin.ui.CheckBoxGroup;
 import com.vaadin.ui.ComboBox.CaptionFilter;
@@ -238,15 +245,34 @@ public class MultiSelectField<T, ITEM>
 		});
 	}
 
+	public void setRows(int rows) {
+		if (getInternalField() instanceof ListSelect) {
+			((ListSelect<?>) getInternalField()).setRows(rows);
+		}
+	}
+
+	public void setHtmlContentAllowed(boolean htmlContentAllowed) {
+		if (getInternalField() instanceof CheckBoxGroup) {
+			((CheckBoxGroup<?>) getInternalField()).setHtmlContentAllowed(htmlContentAllowed);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public void setItemEnabledProvider(SerializablePredicate<T> itemEnabledProvider) {
+		if (getInternalField() instanceof CheckBoxGroup) {
+			((CheckBoxGroup<T>) getInternalField()).setItemEnabledProvider(itemEnabledProvider);
+		}
+	}
+
 	// Builder
 
 	/**
 	 * Base {@link MultiSelect} builder.
 	 * @param <T> Selection type
 	 */
-	public static class Builder<T> extends
-			AbstractSelectFieldBuilder<Set<T>, MultiSelect<T>, T, T, MultiSelectField<T, T>, MultiSelectInputBuilder<T>>
-			implements MultiSelectInputBuilder<T> {
+	public static abstract class Builder<T, B extends MultiSelectInputBuilder<T, B>>
+			extends AbstractSelectFieldBuilder<Set<T>, MultiSelect<T>, T, T, MultiSelectField<T, T>, B>
+			implements MultiSelectInputBuilder<T, B> {
 
 		/**
 		 * Constructor
@@ -260,21 +286,12 @@ public class MultiSelectField<T, ITEM>
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.internal.components.builders.AbstractComponentBuilder#builder()
-		 */
-		@Override
-		protected Builder<T> builder() {
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
 		 * @see
 		 * com.holonplatform.vaadin.components.builders.MultiSelectFieldBuilder#dataSource(com.holonplatform.vaadin.
 		 * data.ItemDataProvider)
 		 */
 		@Override
-		public MultiSelectInputBuilder<T> dataSource(ItemDataProvider<T> dataProvider) {
+		public B dataSource(ItemDataProvider<T> dataProvider) {
 			ObjectUtils.argumentNotNull(dataProvider, "Item data provider must be not null");
 			this.itemDataProvider = dataProvider;
 			return builder();
@@ -287,7 +304,7 @@ public class MultiSelectField<T, ITEM>
 		 * DataProvider)
 		 */
 		@Override
-		public MultiSelectInputBuilder<T> dataSource(DataProvider<T, ?> dataProvider) {
+		public B dataSource(DataProvider<T, ?> dataProvider) {
 			this.dataProvider = dataProvider;
 			return builder();
 		}
@@ -297,7 +314,7 @@ public class MultiSelectField<T, ITEM>
 		 * @see com.holonplatform.vaadin.components.builders.SelectFieldBuilder#items(java.lang.Iterable)
 		 */
 		@Override
-		public MultiSelectInputBuilder<T> items(Iterable<T> items) {
+		public B items(Iterable<T> items) {
 			ObjectUtils.argumentNotNull(items, "Items must be not null");
 			this.items.clear();
 			items.forEach(i -> this.items.add(i));
@@ -309,7 +326,7 @@ public class MultiSelectField<T, ITEM>
 		 * @see com.holonplatform.vaadin.components.builders.SelectFieldBuilder#addItem(java.lang.Object)
 		 */
 		@Override
-		public MultiSelectInputBuilder<T> addItem(T item) {
+		public B addItem(T item) {
 			ObjectUtils.argumentNotNull(item, "Item must be not null");
 			this.items.add(item);
 			return builder();
@@ -337,13 +354,99 @@ public class MultiSelectField<T, ITEM>
 
 	}
 
+	public static class GenericBuilder<T> extends Builder<T, GenericMultiSelectInputBuilder<T>>
+			implements GenericMultiSelectInputBuilder<T> {
+
+		public GenericBuilder(Class<? extends T> type, RenderingMode renderingMode) {
+			super(type, renderingMode);
+		}
+
+		@Override
+		protected GenericMultiSelectInputBuilder<T> builder() {
+			return this;
+		}
+
+	}
+
+	public static class SelectModeBuilder<T> extends Builder<T, SelectModeMultiSelectInputBuilder<T>>
+			implements SelectModeMultiSelectInputBuilder<T> {
+
+		public SelectModeBuilder(Class<? extends T> type) {
+			super(type, RenderingMode.SELECT);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.BaseSelectModeMultiSelectInputBuilder.
+		 * SelectModeMultiSelectInputBuilder#rows(int)
+		 */
+		@Override
+		public SelectModeMultiSelectInputBuilder<T> rows(int rows) {
+			getInstance().setRows(rows);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.internal.components.builders.AbstractComponentConfigurator#builder()
+		 */
+		@Override
+		protected SelectModeMultiSelectInputBuilder<T> builder() {
+			return this;
+		}
+
+	}
+
+	public static class OptionsModeBuilder<T> extends Builder<T, OptionsModeMultiSelectInputBuilder<T>>
+			implements OptionsModeMultiSelectInputBuilder<T> {
+
+		public OptionsModeBuilder(Class<? extends T> type) {
+			super(type, RenderingMode.OPTIONS);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.BaseSelectModeMultiSelectInputBuilder.
+		 * OptionsModeMultiSelectInputBuilder#htmlContentAllowed(boolean)
+		 */
+		@Override
+		public OptionsModeMultiSelectInputBuilder<T> htmlContentAllowed(boolean htmlContentAllowed) {
+			getInstance().setHtmlContentAllowed(htmlContentAllowed);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.BaseSelectModeMultiSelectInputBuilder.
+		 * OptionsModeMultiSelectInputBuilder#itemEnabledProvider(com.vaadin.server.SerializablePredicate)
+		 */
+		@Override
+		public OptionsModeMultiSelectInputBuilder<T> itemEnabledProvider(SerializablePredicate<T> itemEnabledProvider) {
+			ObjectUtils.argumentNotNull(itemEnabledProvider, "ItemEnabledProvider must be not null");
+			getInstance().setItemEnabledProvider(itemEnabledProvider);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.internal.components.builders.AbstractComponentConfigurator#builder()
+		 */
+		@Override
+		protected OptionsModeMultiSelectInputBuilder<T> builder() {
+			return this;
+		}
+
+	}
+
+	// Property
+
 	/**
 	 * Base {@link MultiSelect} builder with {@link Property} data source support.
 	 * @param <T> Selection type
 	 */
-	public static class PropertyBuilder<T> extends
-			AbstractSelectFieldBuilder<Set<T>, MultiSelect<T>, T, PropertyBox, MultiSelectField<T, PropertyBox>, MultiPropertySelectInputBuilder<T>>
-			implements MultiPropertySelectInputBuilder<T> {
+	public static abstract class PropertyBuilder<T, B extends MultiPropertySelectInputBuilder<T, B>> extends
+			AbstractSelectFieldBuilder<Set<T>, MultiSelect<T>, T, PropertyBox, MultiSelectField<T, PropertyBox>, B>
+			implements MultiPropertySelectInputBuilder<T, B> {
 
 		/**
 		 * Constructor
@@ -364,7 +467,7 @@ public class MultiSelectField<T, ITEM>
 		 * .data.ItemDataProvider)
 		 */
 		@Override
-		public MultiPropertySelectInputBuilder<T> dataSource(ItemDataProvider<PropertyBox> dataProvider) {
+		public B dataSource(ItemDataProvider<PropertyBox> dataProvider) {
 			ObjectUtils.argumentNotNull(dataProvider, "ItemDataProvider must be not null");
 			this.itemDataProvider = dataProvider;
 			return builder();
@@ -390,12 +493,90 @@ public class MultiSelectField<T, ITEM>
 			return instance;
 		}
 
+	}
+
+	public static class GenericPropertyBuilder<T> extends PropertyBuilder<T, GenericMultiPropertySelectInputBuilder<T>>
+			implements GenericMultiPropertySelectInputBuilder<T> {
+
+		public GenericPropertyBuilder(Property<T> selectProperty, RenderingMode renderingMode) {
+			super(selectProperty, renderingMode);
+		}
+
+		@Override
+		protected GenericMultiPropertySelectInputBuilder<T> builder() {
+			return this;
+		}
+
+	}
+
+	public static class SelectModePropertyBuilder<T>
+			extends PropertyBuilder<T, SelectModeMultiPropertySelectInputBuilder<T>>
+			implements SelectModeMultiPropertySelectInputBuilder<T> {
+
+		public SelectModePropertyBuilder(Property<T> selectProperty) {
+			super(selectProperty, RenderingMode.SELECT);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.BaseSelectModeMultiPropertySelectInputBuilder.
+		 * SelectModeMultiPropertySelectInputBuilder#rows(int)
+		 */
+		@Override
+		public SelectModeMultiPropertySelectInputBuilder<T> rows(int rows) {
+			getInstance().setRows(rows);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.internal.components.builders.AbstractComponentConfigurator#builder()
 		 */
 		@Override
-		protected MultiPropertySelectInputBuilder<T> builder() {
+		protected SelectModeMultiPropertySelectInputBuilder<T> builder() {
+			return this;
+		}
+
+	}
+
+	public static class OptionsModePropertyBuilder<T>
+			extends PropertyBuilder<T, OptionsModeMultiPropertySelectInputBuilder<T>>
+			implements OptionsModeMultiPropertySelectInputBuilder<T> {
+
+		public OptionsModePropertyBuilder(Property<T> selectProperty) {
+			super(selectProperty, RenderingMode.OPTIONS);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.BaseSelectModeMultiPropertySelectInputBuilder.
+		 * OptionsModeMultiPropertySelectInputBuilder#htmlContentAllowed(boolean)
+		 */
+		@Override
+		public OptionsModeMultiPropertySelectInputBuilder<T> htmlContentAllowed(boolean htmlContentAllowed) {
+			getInstance().setHtmlContentAllowed(htmlContentAllowed);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.BaseSelectModeMultiPropertySelectInputBuilder.
+		 * OptionsModeMultiPropertySelectInputBuilder#itemEnabledProvider(com.vaadin.server.SerializablePredicate)
+		 */
+		@Override
+		public OptionsModeMultiPropertySelectInputBuilder<T> itemEnabledProvider(
+				SerializablePredicate<T> itemEnabledProvider) {
+			ObjectUtils.argumentNotNull(itemEnabledProvider, "ItemEnabledProvider must be not null");
+			getInstance().setItemEnabledProvider(itemEnabledProvider);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.internal.components.builders.AbstractComponentConfigurator#builder()
+		 */
+		@Override
+		protected OptionsModeMultiPropertySelectInputBuilder<T> builder() {
 			return this;
 		}
 

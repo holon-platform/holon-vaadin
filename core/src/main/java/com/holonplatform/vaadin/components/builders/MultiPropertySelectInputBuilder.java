@@ -26,11 +26,17 @@ import com.holonplatform.vaadin.components.MultiSelect;
  * Builder to create a multiple selection {@link Input} with {@link Property} data source support.
  * 
  * @param <T> Value type
+ * @param <B> Actual builder type
  * 
  * @since 5.0.0
  */
-public interface MultiPropertySelectInputBuilder<T>
-		extends SelectInputBuilder.MultiSelectConfigurator<T, PropertyBox, MultiPropertySelectInputBuilder<T>>,
-		PropertySelectInputBuilder<Set<T>, MultiSelect<T>, T, MultiPropertySelectInputBuilder<T>> {
+public interface MultiPropertySelectInputBuilder<T, B extends MultiPropertySelectInputBuilder<T, B>>
+		extends SelectInputBuilder.MultiSelectConfigurator<T, PropertyBox, B>,
+		PropertySelectInputBuilder<Set<T>, MultiSelect<T>, T, B> {
+
+	public interface GenericMultiPropertySelectInputBuilder<T>
+			extends MultiPropertySelectInputBuilder<T, GenericMultiPropertySelectInputBuilder<T>> {
+
+	}
 
 }

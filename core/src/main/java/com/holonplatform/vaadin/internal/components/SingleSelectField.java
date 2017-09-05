@@ -20,15 +20,24 @@ import java.util.Optional;
 
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
+import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.vaadin.components.Field;
 import com.holonplatform.vaadin.components.SingleSelect;
 import com.holonplatform.vaadin.components.builders.BaseSelectInputBuilder.RenderingMode;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeSinglePropertySelectInputBuilder.NativeModeSinglePropertySelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeSinglePropertySelectInputBuilder.OptionsModeSinglePropertySelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeSinglePropertySelectInputBuilder.SelectModeSinglePropertySelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeSingleSelectInputBuilder.NativeModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeSingleSelectInputBuilder.OptionsModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeSingleSelectInputBuilder.SelectModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.components.builders.SelectInputBuilder;
 import com.holonplatform.vaadin.components.builders.SinglePropertySelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.SinglePropertySelectInputBuilder.GenericSinglePropertySelectInputBuilder;
 import com.holonplatform.vaadin.components.builders.SingleSelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.SingleSelectInputBuilder.GenericSingleSelectInputBuilder;
 import com.holonplatform.vaadin.data.ItemDataProvider;
 import com.holonplatform.vaadin.internal.components.builders.AbstractSelectFieldBuilder;
 import com.holonplatform.vaadin.internal.data.ItemDataProviderAdapter;
@@ -38,6 +47,7 @@ import com.vaadin.data.HasDataProvider;
 import com.vaadin.data.HasFilterableDataProvider;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.server.SerializableFunction;
+import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.AbstractSingleSelect;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.ComboBox.CaptionFilter;
@@ -258,6 +268,37 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 		}
 	}
 
+	public void setEmptySelectionAllowed(boolean emptySelectionAllowed) {
+		if (getInternalField() instanceof ComboBox) {
+			((ComboBox<?>) getInternalField()).setEmptySelectionAllowed(emptySelectionAllowed);
+		}
+		if (getInternalField() instanceof NativeSelect) {
+			((NativeSelect<?>) getInternalField()).setEmptySelectionAllowed(emptySelectionAllowed);
+		}
+	}
+
+	public void setEmptySelectionCaption(String caption) {
+		if (getInternalField() instanceof ComboBox) {
+			((ComboBox<?>) getInternalField()).setEmptySelectionCaption(caption);
+		}
+		if (getInternalField() instanceof NativeSelect) {
+			((NativeSelect<?>) getInternalField()).setEmptySelectionCaption(caption);
+		}
+	}
+
+	public void setHtmlContentAllowed(boolean htmlContentAllowed) {
+		if (getInternalField() instanceof RadioButtonGroup) {
+			((RadioButtonGroup<?>) getInternalField()).setHtmlContentAllowed(htmlContentAllowed);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public void setItemEnabledProvider(SerializablePredicate<T> itemEnabledProvider) {
+		if (getInternalField() instanceof RadioButtonGroup) {
+			((RadioButtonGroup<T>) getInternalField()).setItemEnabledProvider(itemEnabledProvider);
+		}
+	}
+
 	// Builders
 
 	/**
@@ -271,8 +312,6 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 		protected CaptionFilter captionFilter;
 		protected SerializableFunction<String, ?> filterProvider;
 
-		protected Localizable inputPrompt;
-
 		/**
 		 * Constructor
 		 * @param type Selection value type
@@ -280,75 +319,6 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 		 */
 		public AbstractSingleSelectFieldBuilder(Class<? extends T> type, RenderingMode renderingMode) {
 			super(new SingleSelectField<>(type, renderingMode));
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.internal.components.builders.AbstractLocalizableComponentConfigurator#localize(com.
-		 * vaadin.ui.AbstractComponent)
-		 */
-		@Override
-		protected void localize(SingleSelectField<T, ITEM> instance) {
-			super.localize(instance);
-			if (inputPrompt != null) {
-				getInstance().setInputPrompt(LocalizationContext.translate(inputPrompt, true));
-			}
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.builders.SingleSelectFieldBuilder#disableTextInput()
-		 */
-		@Override
-		public B disableTextInput() {
-			getInstance().setTextInputAllowed(false);
-			return builder();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.builders.SingleSelectFieldBuilder#scrollToSelectedItem(boolean)
-		 */
-		@Override
-		public B scrollToSelectedItem(boolean scrollToSelectedItem) {
-			getInstance().setScrollToSelectedItem(scrollToSelectedItem);
-			return builder();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.components.builders.SingleSelectFieldBuilder#suggestionPopupWidth(java.lang.String)
-		 */
-		@Override
-		public B suggestionPopupWidth(String width) {
-			getInstance().setSuggestionPopupWidth(width);
-			return builder();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.components.builders.BaseSelectInputBuilder.SingleSelectConfigurator#filteringMode(
-		 * com.vaadin.ui.ComboBox.CaptionFilter)
-		 */
-		@Override
-		public B filteringMode(CaptionFilter captionFilter) {
-			this.captionFilter = captionFilter;
-			return builder();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.components.builders.BaseSelectInputBuilder.SingleSelectConfigurator#inputPrompt(com.
-		 * holonplatform.core.i18n.Localizable)
-		 */
-		@Override
-		public B inputPrompt(Localizable inputPrompt) {
-			this.inputPrompt = inputPrompt;
-			return builder();
 		}
 
 		/*
@@ -375,8 +345,8 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 	 * Default {@link SingleSelectInputBuilder} implementation.
 	 * @param <T> Selection type
 	 */
-	public static class Builder<T> extends AbstractSingleSelectFieldBuilder<T, T, SingleSelectInputBuilder<T>>
-			implements SingleSelectInputBuilder<T> {
+	public static abstract class Builder<T, B extends SingleSelectInputBuilder<T, B>>
+			extends AbstractSingleSelectFieldBuilder<T, T, B> implements SingleSelectInputBuilder<T, B> {
 
 		/**
 		 * Constructor
@@ -390,21 +360,12 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.internal.components.builders.AbstractComponentBuilder#builder()
-		 */
-		@Override
-		protected Builder<T> builder() {
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
 		 * @see
 		 * com.holonplatform.vaadin.components.builders.SelectItemDataSourceBuilder#dataSource(com.holonplatform.vaadin.
 		 * data.ItemDataProvider)
 		 */
 		@Override
-		public SingleSelectInputBuilder<T> dataSource(ItemDataProvider<T> dataProvider) {
+		public B dataSource(ItemDataProvider<T> dataProvider) {
 			this.itemDataProvider = dataProvider;
 			return builder();
 		}
@@ -416,7 +377,7 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 		 * DataProvider)
 		 */
 		@Override
-		public SingleSelectInputBuilder<T> dataSource(DataProvider<T, ?> dataProvider) {
+		public B dataSource(DataProvider<T, ?> dataProvider) {
 			this.dataProvider = dataProvider;
 			return builder();
 		}
@@ -428,7 +389,7 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 		 * data.ItemDataProvider, com.vaadin.server.SerializableFunction)
 		 */
 		@Override
-		public SingleSelectInputBuilder<T> dataSource(ItemDataProvider<T> dataProvider,
+		public B dataSource(ItemDataProvider<T> dataProvider,
 				SerializableFunction<String, QueryFilter> filterProvider) {
 			this.itemDataProvider = dataProvider;
 			this.filterProvider = filterProvider;
@@ -442,8 +403,7 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 		 * DataProvider, com.vaadin.server.SerializableFunction)
 		 */
 		@Override
-		public <F> SingleSelectInputBuilder<T> dataSource(DataProvider<T, F> dataProvider,
-				SerializableFunction<String, F> filterProvider) {
+		public <F> B dataSource(DataProvider<T, F> dataProvider, SerializableFunction<String, F> filterProvider) {
 			this.dataProvider = dataProvider;
 			this.filterProvider = filterProvider;
 			return builder();
@@ -471,13 +431,233 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 
 	}
 
+	public static class GenericBuilder<T> extends Builder<T, GenericSingleSelectInputBuilder<T>>
+			implements GenericSingleSelectInputBuilder<T> {
+
+		public GenericBuilder(Class<? extends T> type, RenderingMode renderingMode) {
+			super(type, renderingMode);
+		}
+
+		@Override
+		protected GenericSingleSelectInputBuilder<T> builder() {
+			return this;
+		}
+
+	}
+
+	public static class NativeModeBuilder<T> extends Builder<T, NativeModeSingleSelectInputBuilder<T>>
+			implements NativeModeSingleSelectInputBuilder<T> {
+
+		protected Localizable emptySelectionCaption;
+
+		public NativeModeBuilder(Class<? extends T> type) {
+			super(type, RenderingMode.NATIVE_SELECT);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.internal.components.builders.AbstractComponentConfigurator#builder()
+		 */
+		@Override
+		protected NativeModeSingleSelectInputBuilder<T> builder() {
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.internal.components.SingleSelectField.AbstractSingleSelectFieldBuilder#localize(com.
+		 * holonplatform.vaadin.internal.components.SingleSelectField)
+		 */
+		@Override
+		protected void localize(SingleSelectField<T, T> instance) {
+			super.localize(instance);
+			if (emptySelectionCaption != null) {
+				getInstance().setEmptySelectionCaption(LocalizationContext.translate(emptySelectionCaption, true));
+			}
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.builders.BaseSelectModeSingleSelectInputBuilder#emptySelectionAllowed(
+		 * boolean)
+		 */
+		@Override
+		public NativeModeSingleSelectInputBuilder<T> emptySelectionAllowed(boolean emptySelectionAllowed) {
+			getInstance().setEmptySelectionAllowed(emptySelectionAllowed);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.builders.BaseSelectModeSingleSelectInputBuilder#emptySelectionCaption(com
+		 * .holonplatform.core.i18n.Localizable)
+		 */
+		@Override
+		public NativeModeSingleSelectInputBuilder<T> emptySelectionCaption(Localizable caption) {
+			this.emptySelectionCaption = caption;
+			return this;
+		}
+
+	}
+
+	public static class OptionsModeBuilder<T> extends Builder<T, OptionsModeSingleSelectInputBuilder<T>>
+			implements OptionsModeSingleSelectInputBuilder<T> {
+
+		public OptionsModeBuilder(Class<? extends T> type) {
+			super(type, RenderingMode.OPTIONS);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.BaseSelectModeSingleSelectInputBuilder.
+		 * OptionsModeSingleSelectInputBuilder#htmlContentAllowed(boolean)
+		 */
+		@Override
+		public OptionsModeSingleSelectInputBuilder<T> htmlContentAllowed(boolean htmlContentAllowed) {
+			getInstance().setHtmlContentAllowed(htmlContentAllowed);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.BaseSelectModeSingleSelectInputBuilder.
+		 * OptionsModeSingleSelectInputBuilder#itemEnabledProvider(com.vaadin.server.SerializablePredicate)
+		 */
+		@Override
+		public OptionsModeSingleSelectInputBuilder<T> itemEnabledProvider(
+				SerializablePredicate<T> itemEnabledProvider) {
+			ObjectUtils.argumentNotNull(itemEnabledProvider, "ItemEnabledProvider must be not null");
+			getInstance().setItemEnabledProvider(itemEnabledProvider);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.internal.components.builders.AbstractComponentConfigurator#builder()
+		 */
+		@Override
+		protected OptionsModeSingleSelectInputBuilder<T> builder() {
+			return this;
+		}
+
+	}
+
+	public static class SelectModeBuilder<T> extends Builder<T, SelectModeSingleSelectInputBuilder<T>>
+			implements SelectModeSingleSelectInputBuilder<T> {
+
+		protected Localizable inputPrompt;
+		protected Localizable emptySelectionCaption;
+
+		public SelectModeBuilder(Class<? extends T> type) {
+			super(type, RenderingMode.SELECT);
+		}
+
+		@Override
+		protected SelectModeSingleSelectInputBuilder<T> builder() {
+			return this;
+		}
+
+		@Override
+		protected void localize(SingleSelectField<T, T> instance) {
+			super.localize(instance);
+			if (inputPrompt != null) {
+				getInstance().setInputPrompt(LocalizationContext.translate(inputPrompt, true));
+			}
+			if (emptySelectionCaption != null) {
+				getInstance().setEmptySelectionCaption(LocalizationContext.translate(emptySelectionCaption, true));
+			}
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.SingleSelectFieldBuilder#disableTextInput()
+		 */
+		@Override
+		public SelectModeSingleSelectInputBuilder<T> disableTextInput() {
+			getInstance().setTextInputAllowed(false);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.SingleSelectFieldBuilder#scrollToSelectedItem(boolean)
+		 */
+		@Override
+		public SelectModeSingleSelectInputBuilder<T> scrollToSelectedItem(boolean scrollToSelectedItem) {
+			getInstance().setScrollToSelectedItem(scrollToSelectedItem);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.builders.SingleSelectFieldBuilder#suggestionPopupWidth(java.lang.String)
+		 */
+		@Override
+		public SelectModeSingleSelectInputBuilder<T> suggestionPopupWidth(String width) {
+			getInstance().setSuggestionPopupWidth(width);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.builders.BaseSelectInputBuilder.SingleSelectConfigurator#filteringMode(
+		 * com.vaadin.ui.ComboBox.CaptionFilter)
+		 */
+		@Override
+		public SelectModeSingleSelectInputBuilder<T> filteringMode(CaptionFilter captionFilter) {
+			this.captionFilter = captionFilter;
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.builders.BaseSelectInputBuilder.SingleSelectConfigurator#inputPrompt(com.
+		 * holonplatform.core.i18n.Localizable)
+		 */
+		@Override
+		public SelectModeSingleSelectInputBuilder<T> inputPrompt(Localizable inputPrompt) {
+			this.inputPrompt = inputPrompt;
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.builders.BaseSelectModeSingleSelectInputBuilder#emptySelectionAllowed(
+		 * boolean)
+		 */
+		@Override
+		public SelectModeSingleSelectInputBuilder<T> emptySelectionAllowed(boolean emptySelectionAllowed) {
+			getInstance().setEmptySelectionAllowed(emptySelectionAllowed);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.builders.BaseSelectModeSingleSelectInputBuilder#emptySelectionCaption(com
+		 * .holonplatform.core.i18n.Localizable)
+		 */
+		@Override
+		public SelectModeSingleSelectInputBuilder<T> emptySelectionCaption(Localizable caption) {
+			this.emptySelectionCaption = caption;
+			return this;
+		}
+
+	}
+
 	/**
 	 * Default {@link SinglePropertySelectInputBuilder} implementation.
 	 * @param <T> Selection type
 	 */
-	public static class PropertyBuilder<T>
-			extends AbstractSingleSelectFieldBuilder<T, PropertyBox, SinglePropertySelectInputBuilder<T>>
-			implements SinglePropertySelectInputBuilder<T> {
+	public static abstract class PropertyBuilder<T, B extends SinglePropertySelectInputBuilder<T, B>> extends
+			AbstractSingleSelectFieldBuilder<T, PropertyBox, B> implements SinglePropertySelectInputBuilder<T, B> {
 
 		/**
 		 * Constructor
@@ -498,21 +678,8 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 		 * data.ItemDataProvider)
 		 */
 		@Override
-		public SinglePropertySelectInputBuilder<T> dataSource(ItemDataProvider<PropertyBox> dataProvider) {
+		public B dataSource(ItemDataProvider<PropertyBox> dataProvider) {
 			this.itemDataProvider = dataProvider;
-			return builder();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.components.builders.SinglePropertySelectInputBuilder#captionQueryFilter(com.vaadin.
-		 * server.SerializableFunction)
-		 */
-		@Override
-		public SinglePropertySelectInputBuilder<T> captionQueryFilter(
-				SerializableFunction<String, QueryFilter> filterProvider) {
-			this.filterProvider = filterProvider;
 			return builder();
 		}
 
@@ -536,12 +703,209 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 			return instance;
 		}
 
+	}
+
+	public static class GenericPropertyBuilder<T> extends PropertyBuilder<T, GenericSinglePropertySelectInputBuilder<T>>
+			implements GenericSinglePropertySelectInputBuilder<T> {
+
+		public GenericPropertyBuilder(Property<T> selectProperty, RenderingMode renderingMode) {
+			super(selectProperty, renderingMode);
+		}
+
+		@Override
+		protected GenericSinglePropertySelectInputBuilder<T> builder() {
+			return this;
+		}
+
+	}
+
+	public static class NativeModePropertyBuilder<T>
+			extends PropertyBuilder<T, NativeModeSinglePropertySelectInputBuilder<T>>
+			implements NativeModeSinglePropertySelectInputBuilder<T> {
+
+		protected Localizable emptySelectionCaption;
+
+		public NativeModePropertyBuilder(Property<T> selectProperty) {
+			super(selectProperty, RenderingMode.NATIVE_SELECT);
+		}
+
+		@Override
+		protected NativeModeSinglePropertySelectInputBuilder<T> builder() {
+			return this;
+		}
+
+		@Override
+		protected void localize(SingleSelectField<T, PropertyBox> instance) {
+			super.localize(instance);
+			if (emptySelectionCaption != null) {
+				getInstance().setEmptySelectionCaption(LocalizationContext.translate(emptySelectionCaption, true));
+			}
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.BaseSelectModeSinglePropertySelectInputBuilder#
+		 * emptySelectionAllowed(boolean)
+		 */
+		@Override
+		public NativeModeSinglePropertySelectInputBuilder<T> emptySelectionAllowed(boolean emptySelectionAllowed) {
+			getInstance().setEmptySelectionAllowed(emptySelectionAllowed);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.BaseSelectModeSinglePropertySelectInputBuilder#
+		 * emptySelectionCaption(com.holonplatform.core.i18n.Localizable)
+		 */
+		@Override
+		public NativeModeSinglePropertySelectInputBuilder<T> emptySelectionCaption(Localizable caption) {
+			this.emptySelectionCaption = caption;
+			return this;
+		}
+
+	}
+
+	public static class OptionsModePropertyBuilder<T>
+			extends PropertyBuilder<T, OptionsModeSinglePropertySelectInputBuilder<T>>
+			implements OptionsModeSinglePropertySelectInputBuilder<T> {
+
+		public OptionsModePropertyBuilder(Property<T> selectProperty) {
+			super(selectProperty, RenderingMode.OPTIONS);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.BaseSelectModeSinglePropertySelectInputBuilder.
+		 * OptionsModeSinglePropertySelectInputBuilder#htmlContentAllowed(boolean)
+		 */
+		@Override
+		public OptionsModeSinglePropertySelectInputBuilder<T> htmlContentAllowed(boolean htmlContentAllowed) {
+			getInstance().setHtmlContentAllowed(htmlContentAllowed);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.BaseSelectModeSinglePropertySelectInputBuilder.
+		 * OptionsModeSinglePropertySelectInputBuilder#itemEnabledProvider(com.vaadin.server.SerializablePredicate)
+		 */
+		@Override
+		public OptionsModeSinglePropertySelectInputBuilder<T> itemEnabledProvider(
+				SerializablePredicate<T> itemEnabledProvider) {
+			ObjectUtils.argumentNotNull(itemEnabledProvider, "ItemEnabledProvider must be not null");
+			getInstance().setItemEnabledProvider(itemEnabledProvider);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.internal.components.builders.AbstractComponentConfigurator#builder()
 		 */
 		@Override
-		protected SinglePropertySelectInputBuilder<T> builder() {
+		protected OptionsModeSinglePropertySelectInputBuilder<T> builder() {
+			return this;
+		}
+
+	}
+
+	public static class SelectModePropertyBuilder<T>
+			extends PropertyBuilder<T, SelectModeSinglePropertySelectInputBuilder<T>>
+			implements SelectModeSinglePropertySelectInputBuilder<T> {
+
+		protected Localizable inputPrompt;
+		protected Localizable emptySelectionCaption;
+
+		public SelectModePropertyBuilder(Property<T> selectProperty) {
+			super(selectProperty, RenderingMode.SELECT);
+		}
+
+		@Override
+		protected SelectModeSinglePropertySelectInputBuilder<T> builder() {
+			return this;
+		}
+
+		@Override
+		public SelectModeSinglePropertySelectInputBuilder<T> captionQueryFilter(
+				SerializableFunction<String, QueryFilter> filterProvider) {
+			this.filterProvider = filterProvider;
+			return this;
+		}
+
+		@Override
+		protected void localize(SingleSelectField<T, PropertyBox> instance) {
+			super.localize(instance);
+			if (inputPrompt != null) {
+				getInstance().setInputPrompt(LocalizationContext.translate(inputPrompt, true));
+			}
+			if (emptySelectionCaption != null) {
+				getInstance().setEmptySelectionCaption(LocalizationContext.translate(emptySelectionCaption, true));
+			}
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.BaseSelectModeSinglePropertySelectInputBuilder#
+		 * emptySelectionAllowed(boolean)
+		 */
+		@Override
+		public SelectModeSinglePropertySelectInputBuilder<T> emptySelectionAllowed(boolean emptySelectionAllowed) {
+			getInstance().setEmptySelectionAllowed(emptySelectionAllowed);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.BaseSelectModeSinglePropertySelectInputBuilder#
+		 * emptySelectionCaption(com.holonplatform.core.i18n.Localizable)
+		 */
+		@Override
+		public SelectModeSinglePropertySelectInputBuilder<T> emptySelectionCaption(Localizable caption) {
+			this.emptySelectionCaption = caption;
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.BaseSelectModeSinglePropertySelectInputBuilder.
+		 * SelectModeSinglePropertySelectInputBuilder#inputPrompt(com.holonplatform.core.i18n.Localizable)
+		 */
+		@Override
+		public SelectModeSinglePropertySelectInputBuilder<T> inputPrompt(Localizable inputPrompt) {
+			this.inputPrompt = inputPrompt;
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.BaseSelectModeSinglePropertySelectInputBuilder.
+		 * SelectModeSinglePropertySelectInputBuilder#disableTextInput()
+		 */
+		@Override
+		public SelectModeSinglePropertySelectInputBuilder<T> disableTextInput() {
+			getInstance().setTextInputAllowed(false);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.BaseSelectModeSinglePropertySelectInputBuilder.
+		 * SelectModeSinglePropertySelectInputBuilder#scrollToSelectedItem(boolean)
+		 */
+		@Override
+		public SelectModeSinglePropertySelectInputBuilder<T> scrollToSelectedItem(boolean scrollToSelectedItem) {
+			getInstance().setScrollToSelectedItem(scrollToSelectedItem);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.BaseSelectModeSinglePropertySelectInputBuilder.
+		 * SelectModeSinglePropertySelectInputBuilder#suggestionPopupWidth(java.lang.String)
+		 */
+		@Override
+		public SelectModeSinglePropertySelectInputBuilder<T> suggestionPopupWidth(String width) {
+			getInstance().setSuggestionPopupWidth(width);
 			return this;
 		}
 

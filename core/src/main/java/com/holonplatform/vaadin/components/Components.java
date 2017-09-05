@@ -31,6 +31,16 @@ import com.holonplatform.vaadin.components.PropertyInputGroup.PropertyInputGroup
 import com.holonplatform.vaadin.components.PropertyViewForm.PropertyViewFormBuilder;
 import com.holonplatform.vaadin.components.PropertyViewGroup.PropertyViewGroupBuilder;
 import com.holonplatform.vaadin.components.builders.BaseSelectInputBuilder.RenderingMode;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeMultiPropertySelectInputBuilder.OptionsModeMultiPropertySelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeMultiPropertySelectInputBuilder.SelectModeMultiPropertySelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeMultiSelectInputBuilder.OptionsModeMultiSelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeMultiSelectInputBuilder.SelectModeMultiSelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeSinglePropertySelectInputBuilder.NativeModeSinglePropertySelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeSinglePropertySelectInputBuilder.OptionsModeSinglePropertySelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeSinglePropertySelectInputBuilder.SelectModeSinglePropertySelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeSingleSelectInputBuilder.NativeModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeSingleSelectInputBuilder.OptionsModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeSingleSelectInputBuilder.SelectModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.components.builders.BooleanInputBuilder;
 import com.holonplatform.vaadin.components.builders.ButtonBuilder;
 import com.holonplatform.vaadin.components.builders.ButtonConfigurator;
@@ -51,16 +61,16 @@ import com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridItemL
 import com.holonplatform.vaadin.components.builders.LabelBuilder;
 import com.holonplatform.vaadin.components.builders.LayoutConfigurator;
 import com.holonplatform.vaadin.components.builders.LayoutConfigurator.BaseLayoutConfigurator;
-import com.holonplatform.vaadin.components.builders.MultiPropertySelectInputBuilder;
-import com.holonplatform.vaadin.components.builders.MultiSelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.MultiPropertySelectInputBuilder.GenericMultiPropertySelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.MultiSelectInputBuilder.GenericMultiSelectInputBuilder;
 import com.holonplatform.vaadin.components.builders.NumberInputBuilder;
 import com.holonplatform.vaadin.components.builders.OrderedLayoutConfigurator;
 import com.holonplatform.vaadin.components.builders.OrderedLayoutConfigurator.BaseOrderedLayoutConfigurator;
 import com.holonplatform.vaadin.components.builders.PanelBuilder;
 import com.holonplatform.vaadin.components.builders.PropertyListingBuilder.GridPropertyListingBuilder;
 import com.holonplatform.vaadin.components.builders.SecretInputBuilder;
-import com.holonplatform.vaadin.components.builders.SinglePropertySelectInputBuilder;
-import com.holonplatform.vaadin.components.builders.SingleSelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.SinglePropertySelectInputBuilder.GenericSinglePropertySelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.SingleSelectInputBuilder.GenericSingleSelectInputBuilder;
 import com.holonplatform.vaadin.components.builders.StringInputBuilder;
 import com.holonplatform.vaadin.components.builders.TemporalInputBuilder.TemporalWithTimeFieldBuilder;
 import com.holonplatform.vaadin.components.builders.TemporalInputBuilder.TemporalWithoutTimeFieldBuilder;
@@ -449,18 +459,38 @@ public interface Components {
 		 * @param renderingMode Rendering mode
 		 * @return Input builder
 		 */
-		static <T> SingleSelectInputBuilder<T> singleSelect(Class<? extends T> type, RenderingMode renderingMode) {
+		static <T> GenericSingleSelectInputBuilder<T> singleSelect(Class<? extends T> type, RenderingMode renderingMode) {
 			return SingleSelect.builder(type, renderingMode);
 		}
 
 		/**
-		 * Gets a builder to create a single selection {@link Input} using default {@link RenderingMode#SELECT}.
+		 * Gets a builder to create a single selection {@link Input} using {@link RenderingMode#SELECT}.
 		 * @param <T> Selection value type
 		 * @param type Selection value type
 		 * @return Input builder
 		 */
-		static <T> SingleSelectInputBuilder<T> singleSelect(Class<? extends T> type) {
-			return SingleSelect.builder(type);
+		static <T> SelectModeSingleSelectInputBuilder<T> singleSelect(Class<? extends T> type) {
+			return SingleSelect.select(type);
+		}
+		
+		/**
+		 * Gets a builder to create a single selection {@link Input} using {@link RenderingMode#NATIVE_SELECT}.
+		 * @param <T> Selection value type
+		 * @param type Selection value type
+		 * @return Input builder
+		 */
+		static <T> NativeModeSingleSelectInputBuilder<T> singleNativeSelect(Class<? extends T> type) {
+			return SingleSelect.nativeSelect(type);
+		}
+		
+		/**
+		 * Gets a builder to create a single selection {@link Input} using {@link RenderingMode#OPTIONS}.
+		 * @param <T> Selection value type
+		 * @param type Selection value type
+		 * @return Input builder
+		 */
+		static <T> OptionsModeSingleSelectInputBuilder<T> singleOptionSelect(Class<? extends T> type) {
+			return SingleSelect.options(type);
 		}
 
 		/**
@@ -471,20 +501,42 @@ public interface Components {
 		 * @param renderingMode Rendering mode
 		 * @return {@link SingleSelect} builder
 		 */
-		static <T> SinglePropertySelectInputBuilder<T> singleSelect(Property<T> selectProperty,
+		static <T> GenericSinglePropertySelectInputBuilder<T> singleSelect(Property<T> selectProperty,
 				RenderingMode renderingMode) {
 			return SingleSelect.property(selectProperty, renderingMode);
 		}
 
 		/**
 		 * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
-		 * {@link Property} as item properties. Default {@link RenderingMode#SELECT} is assumed.
+		 * {@link Property} as item properties using {@link RenderingMode#SELECT}.
 		 * @param <T> Selection value type
 		 * @param selectProperty Property to select (not null)
 		 * @return {@link SingleSelect} builder
 		 */
-		static <T> SinglePropertySelectInputBuilder<T> singleSelect(Property<T> selectProperty) {
-			return SingleSelect.property(selectProperty, RenderingMode.SELECT);
+		static <T> SelectModeSinglePropertySelectInputBuilder<T> singleSelect(Property<T> selectProperty) {
+			return SingleSelect.select(selectProperty);
+		}
+		
+		/**
+		 * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
+		 * {@link Property} as item properties using {@link RenderingMode#NATIVE_SELECT}.
+		 * @param <T> Selection value type
+		 * @param selectProperty Property to select (not null)
+		 * @return {@link SingleSelect} builder
+		 */
+		static <T> NativeModeSinglePropertySelectInputBuilder<T> singleNativeSelect(Property<T> selectProperty) {
+			return SingleSelect.nativeSelect(selectProperty);
+		}
+		
+		/**
+		 * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
+		 * {@link Property} as item properties using {@link RenderingMode#OPTIONS}.
+		 * @param <T> Selection value type
+		 * @param selectProperty Property to select (not null)
+		 * @return {@link SingleSelect} builder
+		 */
+		static <T> OptionsModeSinglePropertySelectInputBuilder<T> singleOptionSelect(Property<T> selectProperty) {
+			return SingleSelect.options(selectProperty);
 		}
 
 		/**
@@ -494,7 +546,7 @@ public interface Components {
 		 * @param renderingMode Rendering mode
 		 * @return Input builder
 		 */
-		static <T> MultiSelectInputBuilder<T> multiSelect(Class<? extends T> type, RenderingMode renderingMode) {
+		static <T> GenericMultiSelectInputBuilder<T> multiSelect(Class<? extends T> type, RenderingMode renderingMode) {
 			return MultiSelect.builder(type, renderingMode);
 		}
 
@@ -504,8 +556,18 @@ public interface Components {
 		 * @param type Selection value type
 		 * @return Input builder
 		 */
-		static <T> MultiSelectInputBuilder<T> multiSelect(Class<? extends T> type) {
-			return MultiSelect.builder(type);
+		static <T> OptionsModeMultiSelectInputBuilder<T> multiSelect(Class<? extends T> type) {
+			return MultiSelect.options(type);
+		}
+		
+		/**
+		 * Gets a builder to create a multiple selection {@link Input} using {@link RenderingMode#SELECT}.
+		 * @param <T> Selection value type
+		 * @param type Selection value type
+		 * @return Input builder
+		 */
+		static <T> SelectModeMultiSelectInputBuilder<T> multiSelectList(Class<? extends T> type) {
+			return MultiSelect.list(type);
 		}
 
 		/**
@@ -516,20 +578,31 @@ public interface Components {
 		 * @param renderingMode Rendering mode
 		 * @return {@link MultiSelect} builder
 		 */
-		static <T> MultiPropertySelectInputBuilder<T> multiSelect(Property<T> selectProperty,
+		static <T> GenericMultiPropertySelectInputBuilder<T> multiSelect(Property<T> selectProperty,
 				RenderingMode renderingMode) {
 			return MultiSelect.property(selectProperty, renderingMode);
 		}
 
 		/**
 		 * Gets a builder to create a {@link MultiSelect} with a {@link PropertyBox} items data source with
-		 * {@link Property} as item properties. Default {@link RenderingMode#SELECT} is assumed.
+		 * {@link Property} as item properties using default {@link RenderingMode#OPTIONS}.
 		 * @param <T> Selection value type
 		 * @param selectProperty Property to select (not null)
 		 * @return {@link MultiSelect} builder
 		 */
-		static <T> MultiPropertySelectInputBuilder<T> multiSelect(Property<T> selectProperty) {
-			return MultiSelect.property(selectProperty, RenderingMode.OPTIONS);
+		static <T> OptionsModeMultiPropertySelectInputBuilder<T> multiSelect(Property<T> selectProperty) {
+			return MultiSelect.options(selectProperty);
+		}
+		
+		/**
+		 * Gets a builder to create a {@link MultiSelect} with a {@link PropertyBox} items data source with
+		 * {@link Property} as item properties using default {@link RenderingMode#SELECT}.
+		 * @param <T> Selection value type
+		 * @param selectProperty Property to select (not null)
+		 * @return {@link MultiSelect} builder
+		 */
+		static <T> SelectModeMultiPropertySelectInputBuilder<T> multiSelectList(Property<T> selectProperty) {
+			return MultiSelect.list(selectProperty);
 		}
 
 		/**
@@ -540,7 +613,7 @@ public interface Components {
 		 * @param renderingMode Rendering mode
 		 * @return Input builder
 		 */
-		static <E extends Enum<E>> SingleSelectInputBuilder<E> enumSingle(Class<E> type, RenderingMode renderingMode) {
+		static <E extends Enum<E>> GenericSingleSelectInputBuilder<E> enumSingle(Class<E> type, RenderingMode renderingMode) {
 			return singleSelect(type, renderingMode).items(type.getEnumConstants());
 		}
 
@@ -551,7 +624,7 @@ public interface Components {
 		 * @param type Enum value type
 		 * @return Input builder
 		 */
-		static <E extends Enum<E>> SingleSelectInputBuilder<E> enumSingle(Class<E> type) {
+		static <E extends Enum<E>> SelectModeSingleSelectInputBuilder<E> enumSingle(Class<E> type) {
 			return singleSelect(type).items(type.getEnumConstants());
 		}
 
@@ -563,7 +636,7 @@ public interface Components {
 		 * @param renderingMode Rendering mode
 		 * @return Input builder
 		 */
-		static <E extends Enum<E>> MultiSelectInputBuilder<E> enumMulti(Class<E> type, RenderingMode renderingMode) {
+		static <E extends Enum<E>> GenericMultiSelectInputBuilder<E> enumMulti(Class<E> type, RenderingMode renderingMode) {
 			return multiSelect(type, renderingMode).items(type.getEnumConstants());
 		}
 
@@ -574,7 +647,7 @@ public interface Components {
 		 * @param type Enum value type
 		 * @return Input builder
 		 */
-		static <E extends Enum<E>> MultiSelectInputBuilder<E> enumMulti(Class<E> type) {
+		static <E extends Enum<E>> OptionsModeMultiSelectInputBuilder<E> enumMulti(Class<E> type) {
 			return multiSelect(type).items(type.getEnumConstants());
 		}
 

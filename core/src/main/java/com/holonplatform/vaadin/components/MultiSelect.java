@@ -25,8 +25,12 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.vaadin.components.builders.BaseSelectInputBuilder.RenderingMode;
-import com.holonplatform.vaadin.components.builders.MultiPropertySelectInputBuilder;
-import com.holonplatform.vaadin.components.builders.MultiSelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeMultiPropertySelectInputBuilder.OptionsModeMultiPropertySelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeMultiPropertySelectInputBuilder.SelectModeMultiPropertySelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeMultiSelectInputBuilder.OptionsModeMultiSelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeMultiSelectInputBuilder.SelectModeMultiSelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.MultiPropertySelectInputBuilder.GenericMultiPropertySelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.MultiSelectInputBuilder.GenericMultiSelectInputBuilder;
 import com.holonplatform.vaadin.internal.components.MultiSelectField;
 
 /**
@@ -135,18 +139,28 @@ public interface MultiSelect<T> extends Selectable<T>, Input<Set<T>>, ItemSet {
 	 * @param renderingMode Rendering mode
 	 * @return {@link MultiSelect} builder
 	 */
-	static <T> MultiSelectInputBuilder<T> builder(Class<? extends T> type, RenderingMode renderingMode) {
-		return new MultiSelectField.Builder<>(type, renderingMode);
+	static <T> GenericMultiSelectInputBuilder<T> builder(Class<? extends T> type, RenderingMode renderingMode) {
+		return new MultiSelectField.GenericBuilder<>(type, renderingMode);
 	}
 
 	/**
-	 * Gets a builder to create a {@link MultiSelect}.
+	 * Gets a builder to create a {@link MultiSelect} using {@link RenderingMode#OPTIONS}.
 	 * @param <T> Selection value type
 	 * @param type Selection value type
 	 * @return {@link MultiSelect} builder
 	 */
-	static <T> MultiSelectInputBuilder<T> builder(Class<? extends T> type) {
-		return new MultiSelectField.Builder<>(type, RenderingMode.OPTIONS);
+	static <T> OptionsModeMultiSelectInputBuilder<T> options(Class<? extends T> type) {
+		return new MultiSelectField.OptionsModeBuilder<>(type);
+	}
+
+	/**
+	 * Gets a builder to create a {@link MultiSelect} using {@link RenderingMode#SELECT}.
+	 * @param <T> Selection value type
+	 * @param type Selection value type
+	 * @return {@link MultiSelect} builder
+	 */
+	static <T> SelectModeMultiSelectInputBuilder<T> list(Class<? extends T> type) {
+		return new MultiSelectField.SelectModeBuilder<>(type);
 	}
 
 	/**
@@ -157,21 +171,34 @@ public interface MultiSelect<T> extends Selectable<T>, Input<Set<T>>, ItemSet {
 	 * @param renderingMode Rendering mode
 	 * @return {@link MultiSelect} builder
 	 */
-	static <T> MultiPropertySelectInputBuilder<T> property(Property<T> selectProperty, RenderingMode renderingMode) {
+	static <T> GenericMultiPropertySelectInputBuilder<T> property(Property<T> selectProperty,
+			RenderingMode renderingMode) {
 		ObjectUtils.argumentNotNull(selectProperty, "Selection property must be not null");
-		return new MultiSelectField.PropertyBuilder<>(selectProperty, renderingMode);
+		return new MultiSelectField.GenericPropertyBuilder<>(selectProperty, renderingMode);
 	}
 
 	/**
 	 * Gets a builder to create a {@link MultiSelect} with a {@link PropertyBox} items data source with {@link Property}
-	 * as item properties. Default {@link RenderingMode#SELECT} is assumed.
+	 * as item properties using {@link RenderingMode#OPTIONS}.
 	 * @param <T> Selection value type
 	 * @param selectProperty Property to select (not null)
 	 * @return {@link MultiSelect} builder
 	 */
-	static <T> MultiPropertySelectInputBuilder<T> property(Property<T> selectProperty) {
+	static <T> OptionsModeMultiPropertySelectInputBuilder<T> options(Property<T> selectProperty) {
 		ObjectUtils.argumentNotNull(selectProperty, "Selection property must be not null");
-		return new MultiSelectField.PropertyBuilder<>(selectProperty, RenderingMode.OPTIONS);
+		return new MultiSelectField.OptionsModePropertyBuilder<>(selectProperty);
+	}
+
+	/**
+	 * Gets a builder to create a {@link MultiSelect} with a {@link PropertyBox} items data source with {@link Property}
+	 * as item properties using {@link RenderingMode#SELECT}.
+	 * @param <T> Selection value type
+	 * @param selectProperty Property to select (not null)
+	 * @return {@link MultiSelect} builder
+	 */
+	static <T> SelectModeMultiPropertySelectInputBuilder<T> list(Property<T> selectProperty) {
+		ObjectUtils.argumentNotNull(selectProperty, "Selection property must be not null");
+		return new MultiSelectField.SelectModePropertyBuilder<>(selectProperty);
 	}
 
 }

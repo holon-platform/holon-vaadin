@@ -17,28 +17,24 @@ package com.holonplatform.vaadin.components.builders;
 
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
-import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.vaadin.components.Input;
 import com.holonplatform.vaadin.components.SingleSelect;
-import com.vaadin.server.SerializableFunction;
 
 /**
  * Builder to create a single selection {@link Input} with {@link Property} data source support.
  * 
  * @param <T> Value type
+ * @param <B> Actual builder type
  * 
  * @since 5.0.0
  */
-public interface SinglePropertySelectInputBuilder<T>
-		extends SelectInputBuilder.SingleSelectConfigurator<T, PropertyBox, SinglePropertySelectInputBuilder<T>>,
-		PropertySelectInputBuilder<T, SingleSelect<T>, T, SinglePropertySelectInputBuilder<T>> {
+public interface SinglePropertySelectInputBuilder<T, B extends SinglePropertySelectInputBuilder<T, B>>
+		extends SelectInputBuilder.SingleSelectConfigurator<T, PropertyBox, B>,
+		PropertySelectInputBuilder<T, SingleSelect<T>, T, B> {
 
-	/**
-	 * Set the function to provide the {@link QueryFilter} to use with the data provider when user types a caption
-	 * filter String.
-	 * @param filterProvider caption {@link QueryFilter} provider
-	 * @return this
-	 */
-	SinglePropertySelectInputBuilder<T> captionQueryFilter(SerializableFunction<String, QueryFilter> filterProvider);
+	public interface GenericSinglePropertySelectInputBuilder<T>
+			extends SinglePropertySelectInputBuilder<T, GenericSinglePropertySelectInputBuilder<T>> {
+
+	}
 
 }

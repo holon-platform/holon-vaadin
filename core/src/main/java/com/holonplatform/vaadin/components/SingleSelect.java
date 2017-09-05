@@ -23,8 +23,14 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.vaadin.components.builders.BaseSelectInputBuilder.RenderingMode;
-import com.holonplatform.vaadin.components.builders.SinglePropertySelectInputBuilder;
-import com.holonplatform.vaadin.components.builders.SingleSelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeSinglePropertySelectInputBuilder.NativeModeSinglePropertySelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeSinglePropertySelectInputBuilder.OptionsModeSinglePropertySelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeSinglePropertySelectInputBuilder.SelectModeSinglePropertySelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeSingleSelectInputBuilder.NativeModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeSingleSelectInputBuilder.OptionsModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BaseSelectModeSingleSelectInputBuilder.SelectModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.SinglePropertySelectInputBuilder.GenericSinglePropertySelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.SingleSelectInputBuilder.GenericSingleSelectInputBuilder;
 import com.holonplatform.vaadin.internal.components.SingleSelectField;
 
 /**
@@ -87,18 +93,38 @@ public interface SingleSelect<T> extends Selectable<T>, Input<T>, ItemSet {
 	 * @param renderingMode Rendering mode
 	 * @return {@link SingleSelect} builder
 	 */
-	static <T> SingleSelectInputBuilder<T> builder(Class<? extends T> type, RenderingMode renderingMode) {
-		return new SingleSelectField.Builder<>(type, renderingMode);
+	static <T> GenericSingleSelectInputBuilder<T> builder(Class<? extends T> type, RenderingMode renderingMode) {
+		return new SingleSelectField.GenericBuilder<>(type, renderingMode);
 	}
 
 	/**
-	 * Gets a builder to create a {@link SingleSelect} using default {@link RenderingMode#SELECT}.
+	 * Gets a builder to create a {@link SingleSelect} using {@link RenderingMode#SELECT}.
 	 * @param <T> Selection value type
 	 * @param type Selection value type
 	 * @return {@link SingleSelect} builder
 	 */
-	static <T> SingleSelectInputBuilder<T> builder(Class<? extends T> type) {
-		return new SingleSelectField.Builder<>(type, RenderingMode.SELECT);
+	static <T> SelectModeSingleSelectInputBuilder<T> select(Class<? extends T> type) {
+		return new SingleSelectField.SelectModeBuilder<>(type);
+	}
+	
+	/**
+	 * Gets a builder to create a {@link SingleSelect} using {@link RenderingMode#NATIVE_SELECT}.
+	 * @param <T> Selection value type
+	 * @param type Selection value type
+	 * @return {@link SingleSelect} builder
+	 */
+	static <T> NativeModeSingleSelectInputBuilder<T> nativeSelect(Class<? extends T> type) {
+		return new SingleSelectField.NativeModeBuilder<>(type);
+	}
+	
+	/**
+	 * Gets a builder to create a {@link SingleSelect} using {@link RenderingMode#OPTIONS}.
+	 * @param <T> Selection value type
+	 * @param type Selection value type
+	 * @return {@link SingleSelect} builder
+	 */
+	static <T> OptionsModeSingleSelectInputBuilder<T> options(Class<? extends T> type) {
+		return new SingleSelectField.OptionsModeBuilder<>(type);
 	}
 
 	/**
@@ -109,21 +135,45 @@ public interface SingleSelect<T> extends Selectable<T>, Input<T>, ItemSet {
 	 * @param renderingMode Rendering mode
 	 * @return {@link SingleSelect} builder
 	 */
-	static <T> SinglePropertySelectInputBuilder<T> property(Property<T> selectProperty, RenderingMode renderingMode) {
+	static <T> GenericSinglePropertySelectInputBuilder<T> property(Property<T> selectProperty, RenderingMode renderingMode) {
 		ObjectUtils.argumentNotNull(selectProperty, "Selection property must be not null");
-		return new SingleSelectField.PropertyBuilder<>(selectProperty, renderingMode);
+		return new SingleSelectField.GenericPropertyBuilder<>(selectProperty, renderingMode);
 	}
 
 	/**
 	 * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
-	 * {@link Property} as item properties. Default {@link RenderingMode#SELECT} is assumed.
+	 * {@link Property} as item properties using {@link RenderingMode#SELECT}.
 	 * @param <T> Selection value type
 	 * @param selectProperty Property to select (not null)
 	 * @return {@link SingleSelect} builder
 	 */
-	static <T> SinglePropertySelectInputBuilder<T> property(Property<T> selectProperty) {
+	static <T> SelectModeSinglePropertySelectInputBuilder<T> select(Property<T> selectProperty) {
 		ObjectUtils.argumentNotNull(selectProperty, "Selection property must be not null");
-		return new SingleSelectField.PropertyBuilder<>(selectProperty, RenderingMode.SELECT);
+		return new SingleSelectField.SelectModePropertyBuilder<>(selectProperty);
+	}
+	
+	/**
+	 * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
+	 * {@link Property} as item properties using {@link RenderingMode#NATIVE_SELECT}.
+	 * @param <T> Selection value type
+	 * @param selectProperty Property to select (not null)
+	 * @return {@link SingleSelect} builder
+	 */
+	static <T> NativeModeSinglePropertySelectInputBuilder<T> nativeSelect(Property<T> selectProperty) {
+		ObjectUtils.argumentNotNull(selectProperty, "Selection property must be not null");
+		return new SingleSelectField.NativeModePropertyBuilder<>(selectProperty);
+	}
+	
+	/**
+	 * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
+	 * {@link Property} as item properties using {@link RenderingMode#OPTIONS}.
+	 * @param <T> Selection value type
+	 * @param selectProperty Property to select (not null)
+	 * @return {@link SingleSelect} builder
+	 */
+	static <T> OptionsModeSinglePropertySelectInputBuilder<T> options(Property<T> selectProperty) {
+		ObjectUtils.argumentNotNull(selectProperty, "Selection property must be not null");
+		return new SingleSelectField.OptionsModePropertyBuilder<>(selectProperty);
 	}
 
 }
