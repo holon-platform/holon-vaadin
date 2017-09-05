@@ -542,7 +542,7 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 
 		}
 		// default validators
-		getDefaultPropertyValidators(property).forEach(v -> builder.withValidator(v));
+		getDefaultPropertyValidators(property).forEach(v -> builder.withValidator(new ValidatorWrapper<>(v)));
 		// validators
 		pc.getValidators().forEach(v -> builder.withValidator(v));
 		// bind
@@ -556,7 +556,7 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	 * @param property Property id
 	 * @return property validators, empty if none
 	 */
-	protected Collection<Validator<?>> getDefaultPropertyValidators(P property) {
+	protected Collection<com.holonplatform.core.Validator<?>> getDefaultPropertyValidators(P property) {
 		return Collections.emptySet();
 	}
 

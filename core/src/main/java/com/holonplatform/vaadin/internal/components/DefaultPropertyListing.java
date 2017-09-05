@@ -33,7 +33,6 @@ import com.holonplatform.vaadin.components.PropertyListing;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.PropertyDefinition;
 import com.vaadin.data.PropertySet;
-import com.vaadin.data.Validator;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontIcon;
@@ -134,12 +133,14 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 		return property.renderIfAvailable(Field.class);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.holonplatform.vaadin.internal.components.DefaultItemListing#getDefaultPropertyValidators(java.lang.Object)
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.internal.components.DefaultItemListing#getDefaultPropertyValidators(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	protected Collection<Validator<?>> getDefaultPropertyValidators(Property property) {
+	protected Collection<com.holonplatform.core.Validator<?>> getDefaultPropertyValidators(Property property) {
 		return property.getValidators();
 	}
 
