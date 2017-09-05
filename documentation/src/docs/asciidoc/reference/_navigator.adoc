@@ -1,2 +1,64 @@
 == Navigator
 
+The Holon platform Vaadin module makes available an extension of the default *view navigator*, represented by the link:{apidir}/com/holonplatform/vaadin/navigator/ViewNavigator.html[ViewNavigator^] interface, which provides additional features and configuration capabilities:
+
+* `View` navigation history tracking, allowing to navigate back to the previous view
+* `View` _parameters_ management, allowing to obtain the parameters values by injection in the `View` instance
+* Easy `View` lifecycle management, supporting `OnShow` and `OnLeave` annotated methods to be notified when the view is loaded and unloaded in the UI 
+* _Default_ view support, acting as the application's "home page" 
+* The possibility to show a view in a `Window`, instead of using the default view display component
+* Support for _context_ resources injection in `View` instances
+
+=== View configuration
+
+==== Parameters injection
+
+The _navigation parameters_ can be injected in the `View` class fields using the link:{apidir}/com/holonplatform/vaadin/navigator/annotations/ViewParameter.html[ViewParameter^] annotation.
+
+The parameter *name* for which the value has to be injected in an annotated field is assumed to be equal to the _field name_. Otherwise, it can be specified using the annotation `value()` property.
+
+When a named parameter value is not available (not provided by the current navigation state), the parameter field will be setted to `null` or the default value for primitive types (for example `0` for `int`, `long`, `float` and `double` types, false for `boolean` types).
+
+The supported parameter value types are:
+
+* `String`
+* `Number` s (including primitive types)
+* `Boolean` (including primitive type)
+* `Enum` 
+* `Date`
+* `LocalDate`
+* `LocalTime`
+* `LocalDateTime`
+
+A view parameter can be declared as *required* using the `required()` annotation property. A navigation error will be thrown if a required parameter value is missing.
+
+Furthermore, a *default value* can be provided for a parameter, using the `defaultValue()` annotation property. See the link:{apidir}/com/holonplatform/vaadin/navigator/annotations/ViewParameter.html[ViewParameter^] javadocs for information about the default value representation.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleView.java[tag=viewparams,indent=0]
+----
+<1> View parameter injection using the `myparam` parameter name
+<2> View parameter with a default value. The parameter name will be the `intParam` field name
+<3> A required view parameter declaration
+
+==== View lifecycle hooks
+
+In addition to the standard `enter(...)` method of the `View` interface, two annotations can be used to intercept `View` lifecycle events using `public` View methods:
+
+* link:{apidir}/com/holonplatform/vaadin/navigator/annotations/OnShow.html[OnShow^], called by the view navigator right before the view is shown (i.e. rendered in target display component)
+* link:{apidir}/com/holonplatform/vaadin/navigator/annotations/OnLeave.html[OnLeave^], called by the view navigator  when the view is about to be deactivated (i.e. a navigation to another view was triggered)
+
+If more than one `OnShow` or `OnLeave` annotated method in present in the `View` class or in it's class hierarchy, all these methods will be called and the following behaviour will be adopted:
+
+* Methods will be called following the class hierarchy, starting from the top (the first superclass after Object)
+* For methods of the same class, no calling order is guaranteed
+
+The `OnShow` and `OnLeave` annotated method supports an optional parameter, which can be either of the standard `com.vaadin.navigator.ViewChangeEvent` type or of the extended `ViewNavigatorChangeEvent` type, to obtain informations about the current view navigator, the previous or next `View`, the `View` name and parameters and the optional `Window` in which the View is displayed. 
+
+TODO: examples
+
+=== Navigator Configuration
+
+
+=== View navigation operations
