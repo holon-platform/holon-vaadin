@@ -793,5 +793,20 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleRenderers.java[t
 
 == Vaadin session scope
 
+A *Vaadin session* platform scope is automatically registered by the Holon Vaadin module.
+
+This `ContextScope` is bound to the current `VaadinSession`, looking up context resources using Vaadin Session attributes.
+
+The scope uses `VaadinSession.getCurrent()` to obtain the current Vaadin session, so this scope is active only when invoked within a Vaadin server request thread.
+
+NOTE: See the link:holon-core.html#Context[Context] documentation for further information about context scopes and resources.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleScope.java[tag=sessionscope,indent=0]
+----
+<1> Create a `LocalizationContext` and set it in Vaadin session using the default context key as attribute name
+<2> Get the current `LocalizationContext` context resource, which will be obtained form the Vaadin session, if available
+
 == Device information
 
