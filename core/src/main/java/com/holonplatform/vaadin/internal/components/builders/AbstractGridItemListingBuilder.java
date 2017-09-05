@@ -31,6 +31,9 @@ import com.holonplatform.vaadin.internal.components.DefaultItemListing;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.components.grid.EditorCancelListener;
+import com.vaadin.ui.components.grid.EditorOpenListener;
+import com.vaadin.ui.components.grid.EditorSaveListener;
 import com.vaadin.ui.components.grid.FooterCell;
 import com.vaadin.ui.components.grid.FooterRow;
 import com.vaadin.ui.components.grid.HeaderCell;
@@ -234,6 +237,44 @@ public abstract class AbstractGridItemListingBuilder<T, P, C extends ItemListing
 	public B editorCancelCaption(Localizable caption) {
 		ObjectUtils.argumentNotNull(caption, "Caption must be not null");
 		this.editorCancelCaption = caption;
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder#withEditorSaveListener
+	 * (com.vaadin.ui.components.grid.EditorSaveListener)
+	 */
+	@Override
+	public B withEditorSaveListener(EditorSaveListener<T> listener) {
+		ObjectUtils.argumentNotNull(listener, "EditorSaveListener must be not null");
+		getInstance().addEditorSaveListener(listener);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder#
+	 * withEditorCancelListener(com.vaadin.ui.components.grid.EditorCancelListener)
+	 */
+	@Override
+	public B withEditorCancelListener(EditorCancelListener<T> listener) {
+		ObjectUtils.argumentNotNull(listener, "EditorCancelListener must be not null");
+		getInstance().addEditorCancelListener(listener);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder#withEditorOpenListener
+	 * (com.vaadin.ui.components.grid.EditorOpenListener)
+	 */
+	@Override
+	public B withEditorOpenListener(EditorOpenListener<T> listener) {
+		ObjectUtils.argumentNotNull(listener, "EditorOpenListener must be not null");
+		getInstance().addEditorOpenListener(listener);
 		return builder();
 	}
 

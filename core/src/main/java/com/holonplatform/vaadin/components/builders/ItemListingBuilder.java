@@ -47,6 +47,9 @@ import com.vaadin.data.HasValue;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.components.grid.EditorCancelListener;
+import com.vaadin.ui.components.grid.EditorOpenListener;
+import com.vaadin.ui.components.grid.EditorSaveListener;
 import com.vaadin.ui.components.grid.FooterCell;
 import com.vaadin.ui.components.grid.HeaderCell;
 import com.vaadin.ui.components.grid.MultiSelectionModel.SelectAllCheckBoxVisibility;
@@ -525,6 +528,27 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		}
 
 		/**
+		 * Register an item editor save listener.
+		 * @param listener The listener to add
+		 * @return this
+		 */
+		B withEditorSaveListener(EditorSaveListener<T> listener);
+
+		/**
+		 * Register an item editor cancel listener.
+		 * @param listener The listener to add
+		 * @return this
+		 */
+		B withEditorCancelListener(EditorCancelListener<T> listener);
+
+		/**
+		 * Register an item editor open listener.
+		 * @param listener The listener to add
+		 * @return this
+		 */
+		B withEditorOpenListener(EditorOpenListener<T> listener);
+
+		/**
 		 * Adds an item {@link Validator} to item listing editor.
 		 * @param validator Validator to add (not null)
 		 * @return this
@@ -584,14 +608,14 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 
 		/**
 		 * Sets to call {@link ItemListing#commit()} to confirm item modifications in data source when the editor
-		 * <em>Save</em> action is triggered.
+		 * <em>Save</em> action is triggered and the listing is in <em>buffered</em> mode.
 		 * @return this
 		 */
 		B commitOnSave();
 
 		/**
 		 * Sets to call {@link ItemListing#commit()} to confirm item modifications in data source when an item is
-		 * removed using {@link ItemListing#removeItem(Object)}.
+		 * removed using {@link ItemListing#removeItem(Object)} and the listing is in <em>buffered</em> mode.
 		 * @return this
 		 */
 		B commitOnRemove();

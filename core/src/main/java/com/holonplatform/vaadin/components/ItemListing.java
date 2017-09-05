@@ -111,8 +111,13 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, Component {
 
 	/**
 	 * Get the item identified by given <code>itemId</code>.
+	 * <p>
+	 * This operation is available only in <em>buffered</em> mode.
+	 * </p>
 	 * @param itemId Item id (not null)
 	 * @return Optional item identified by given <code>itemId</code>, empty if not found
+	 * @throws NotBufferedException If the listing is not in buffered mode
+	 * @see #isBuffered()
 	 */
 	Optional<T> getItem(Object itemId);
 
@@ -139,19 +144,41 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, Component {
 
 	/**
 	 * Updates all changes since the previous commit.
+	 * <p>
+	 * This operation is available only in <em>buffered</em> mode.
+	 * </p>
+	 * @throws NotBufferedException If the listing is not in buffered mode
+	 * @see #isBuffered()
 	 */
 	void commit();
 
 	/**
 	 * Discards all changes since last commit.
+	 * <p>
+	 * This operation is available only in <em>buffered</em> mode.
+	 * </p>
+	 * @throws NotBufferedException If the listing is not in buffered mode
+	 * @see #isBuffered()
 	 */
 	void discard();
-	
+
 	/**
-	 * Get whether the listing is in buffered mode.
+	 * Get whether the listing is in <em>buffered</em> mode, i.e. an internal item cache is used.
 	 * @return whether the listing is in buffered mode
 	 */
 	boolean isBuffered();
+
+	/**
+	 * Set whether the listing is editable by the user.
+	 * @param editable <code>true</code> to set the listing as editable, <code>false</code> otherwise
+	 */
+	void setEditable(boolean editable);
+
+	/**
+	 * Get whether the listing is editable by the user.
+	 * @return <code>true</code> if the listing is editable, <code>false</code> otherwise
+	 */
+	boolean isEditable();
 
 	// -------
 
@@ -305,6 +332,23 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, Component {
 		 * @return Row details component
 		 */
 		Component getItemDetails(T item);
+
+	}
+
+	/**
+	 * Exception thrown when a listing operation is invoked and it is valid only in <em>buffered </em> mode.
+	 */
+	public class NotBufferedException extends RuntimeException {
+
+		private static final long serialVersionUID = 6014290672296737254L;
+
+		/**
+		 * Constructor
+		 * @param message Error message
+		 */
+		public NotBufferedException(String message) {
+			super(message);
+		}
 
 	}
 

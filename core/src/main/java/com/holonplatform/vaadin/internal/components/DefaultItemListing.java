@@ -41,6 +41,7 @@ import com.vaadin.data.HasValue;
 import com.vaadin.data.SelectionModel.Multi;
 import com.vaadin.data.Validator;
 import com.vaadin.data.ValueProvider;
+import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.DataProviderListener;
 import com.vaadin.data.provider.GridSortOrder;
 import com.vaadin.shared.Registration;
@@ -52,6 +53,9 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.components.grid.Editor;
+import com.vaadin.ui.components.grid.EditorCancelListener;
+import com.vaadin.ui.components.grid.EditorOpenListener;
+import com.vaadin.ui.components.grid.EditorSaveListener;
 import com.vaadin.ui.components.grid.MultiSelectionModel;
 import com.vaadin.ui.components.grid.MultiSelectionModel.SelectAllCheckBoxVisibility;
 import com.vaadin.ui.renderers.Renderer;
@@ -177,19 +181,38 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		}
 	}
 
+	/**
+	 * Get the internal {@link Grid}.
+	 * @return the internal {@link Grid}
+	 */
 	public Grid<T> getGrid() {
 		return grid;
 	}
 
+	/**
+	 * Get the column id which corresponds to given property id.
+	 * @param property The property id
+	 * @return the column id which corresponds to given property id, or <code>null</code> if not found
+	 */
 	public String getColumnId(P property) {
 		return (property != null) ? property.toString() : null;
 	}
 
+	/**
+	 * Get the property id which corresponds to given column id.
+	 * @param columnId Column id
+	 * @return the property id which corresponds to given column id, or <code>null</code> if not found
+	 */
 	@SuppressWarnings("unchecked")
 	protected P getColumnProperty(String columnId) {
 		return (P) columnId;
 	}
 
+	/**
+	 * Get the property/column type of given property id.
+	 * @param property Property id
+	 * @return property/column type which corresponds to given property id
+	 */
 	protected Class<?> getPropertyColumnType(P property) {
 		if (property != null) {
 			if (Property.class.isAssignableFrom(property.getClass())) {
@@ -256,6 +279,10 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		return () -> rowStyleGenerators.remove(rowStyleGenerator);
 	}
 
+	/**
+	 * Add an item-level validator.
+	 * @param validator The validator to add (not null)
+	 */
 	public void addValidator(Validator<T> validator) {
 		ObjectUtils.argumentNotNull(validator, "Validator must be not null");
 		getGrid().getEditor().getBinder().withValidator(validator);
@@ -344,10 +371,9 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	 */
 	@Override
 	public void deselectAll() {
-		if (getSelectionMode() == SelectionMode.NONE) {
-			throw new IllegalStateException("The item listing is not selectable");
+		if (getSelectionMode() != SelectionMode.NONE) {
+			getGrid().deselectAll();
 		}
-		getGrid().deselectAll();
 	}
 
 	/*
@@ -519,19 +545,38 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		column.setEditable(!readOnly);
 	}
 
-	protected <E extends HasValue<?> & Component> Optional<E> getDefaultPropertyEditor(
-			@SuppressWarnings("unused") P property) {
+	/**
+	 * Get the default editor field to use to edit given property value.
+	 * @param property Property id
+	 * @return Optional default editor field
+	 */
+	protected <E extends HasValue<?> & Component> Optional<E> getDefaultPropertyEditor(P property) {
 		return Optional.empty();
 	}
 
-	protected Optional<ValueProvider<?, ?>> getDefaultPropertyPresenter(@SuppressWarnings("unused") P property) {
+	/**
+	 * Get the default presenter to use for given property value.
+	 * @param property Property id
+	 * @return Optional default editor presenter
+	 */
+	protected Optional<ValueProvider<?, ?>> getDefaultPropertyPresenter(P property) {
 		return Optional.empty();
 	}
 
-	protected Optional<Renderer<?>> getDefaultPropertyRenderer(@SuppressWarnings("unused") P property) {
+	/**
+	 * Get the default property {@link Renderer} to use for given property value.
+	 * @param property Property id
+	 * @return Optional default editor renderer
+	 */
+	protected Optional<Renderer<?>> getDefaultPropertyRenderer(P property) {
 		return Optional.empty();
 	}
 
+	/**
+	 * Get the presenter to use with given property id.
+	 * @param property Property id
+	 * @return Optional property value presenter
+	 */
 	protected Optional<ValueProvider<?, ?>> getPropertyPresenter(P property) {
 		Optional<ValueProvider<?, ?>> propertyPresenter = getPropertyColumn(property).getPresentationProvider();
 		if (propertyPresenter.isPresent()) {
@@ -540,6 +585,11 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		return getDefaultPropertyPresenter(property);
 	}
 
+	/**
+	 * Get the renderer to use with given property id.
+	 * @param property Property id
+	 * @return Optional property renderer
+	 */
 	protected Optional<Renderer<?>> getPropertyRenderer(P property) {
 		Optional<Renderer<?>> propertyRenderer = getPropertyColumn(property).getRenderer();
 		if (propertyRenderer.isPresent()) {
@@ -548,6 +598,10 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		return getDefaultPropertyRenderer(property);
 	}
 
+	/**
+	 * Configure and set the listing columns according to given visible property set.
+	 * @param columns Columns property set
+	 */
 	public void setPropertyColumns(Iterable<P> columns) {
 		ObjectUtils.argumentNotNull(columns, "Property columns must be not null");
 
@@ -689,6 +743,10 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		getGrid().setDescriptionGenerator(row -> rowDescriptionGenerator.getItemDescription(row));
 	}
 
+	/**
+	 * Set the item details component generator.
+	 * @param itemDetailsGenerator the item details component generator to set (not null)
+	 */
 	public void setDetailsGenerator(ItemDetailsGenerator<T> itemDetailsGenerator) {
 		ObjectUtils.argumentNotNull(itemDetailsGenerator, "Generator must be not null");
 		getGrid().setDetailsGenerator(item -> itemDetailsGenerator.getItemDetails(item));
@@ -710,20 +768,81 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		getGrid().setColumnReorderingAllowed(columnReorderingAllowed);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.ItemListing#setEditable(boolean)
+	 */
+	@Override
+	public void setEditable(boolean editable) {
+		setEditorEnabled(editable);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.ItemListing#isEditable()
+	 */
+	@Override
+	public boolean isEditable() {
+		return getGrid().getEditor().isEnabled();
+	}
+
+	/**
+	 * Set whether the item editor is enabled.
+	 * @param enabled whether the item editor is enabled
+	 */
 	public void setEditorEnabled(boolean enabled) {
 		getGrid().getEditor().setEnabled(enabled);
 	}
 
+	/**
+	 * Set whether the item editor is in buffered mode.
+	 * @param buffered whether the item editor is in buffered mode
+	 */
 	public void setEditorBuffered(boolean buffered) {
 		getGrid().getEditor().setBuffered(buffered);
 	}
 
+	/**
+	 * Set the item editor <em>save</em> button caption
+	 * @param caption the caption to set
+	 */
 	public void setEditorSaveCaption(String caption) {
 		getGrid().getEditor().setSaveCaption(caption);
 	}
 
+	/**
+	 * Set the item editor <em>cancel</em> button caption
+	 * @param caption the caption to set
+	 */
 	public void setEditorCancelCaption(String caption) {
 		getGrid().getEditor().setCancelCaption(caption);
+	}
+
+	/**
+	 * Register an item editor save listener.
+	 * @param listener The listener to add
+	 * @return the listener registration
+	 */
+	public Registration addEditorSaveListener(EditorSaveListener<T> listener) {
+		return getGrid().getEditor().addSaveListener(listener);
+	}
+
+	/**
+	 * Register an item editor cancel listener.
+	 * @param listener The listener to add
+	 * @return the listener registration
+	 */
+	public Registration addEditorCancelListener(EditorCancelListener<T> listener) {
+		return getGrid().getEditor().addCancelListener(listener);
+	}
+
+	/**
+	 * Register an item editor open listener.
+	 * @param listener The listener to add
+	 * @return the listener registration
+	 */
+	public Registration addEditorOpenListener(EditorOpenListener<T> listener) {
+		return getGrid().getEditor().addOpenListener(listener);
 	}
 
 	public void setRowHeight(double rowHeight) {
@@ -921,6 +1040,9 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		setupDataProvider();
 	}
 
+	/**
+	 * Setup the Grid {@link DataProvider} according to buffered mode and current data source.
+	 */
 	protected void setupDataProvider() {
 		if (this.dataSource != null) {
 			if (isBuffered()) {
@@ -968,7 +1090,7 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	@Override
 	public Optional<T> getItem(Object itemId) {
 		if (!isBuffered()) {
-			throw new IllegalStateException("The item listing is not in buffered mode");
+			throw new NotBufferedException("The item listing is not in buffered mode");
 		}
 		return requireDataSource().get(itemId);
 	}
@@ -1057,7 +1179,7 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	@Override
 	public void commit() {
 		if (!isBuffered()) {
-			throw new IllegalStateException("The item listing is not in buffered mode");
+			throw new NotBufferedException("The item listing is not in buffered mode");
 		}
 		requireDataSource().commit();
 	}
@@ -1069,7 +1191,7 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	@Override
 	public void discard() {
 		if (!isBuffered()) {
-			throw new IllegalStateException("The item listing is not in buffered mode");
+			throw new NotBufferedException("The item listing is not in buffered mode");
 		}
 		requireDataSource().discard();
 	}
