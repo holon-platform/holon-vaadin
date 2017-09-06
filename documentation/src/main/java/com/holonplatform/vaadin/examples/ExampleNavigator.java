@@ -17,12 +17,23 @@ package com.holonplatform.vaadin.examples;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
+import com.holonplatform.auth.AuthContext;
+import com.holonplatform.core.i18n.LocalizationContext;
+import com.holonplatform.vaadin.navigator.SubViewContainer;
 import com.holonplatform.vaadin.navigator.ViewNavigator;
+import com.holonplatform.vaadin.navigator.ViewNavigator.ViewNavigationException;
+import com.holonplatform.vaadin.navigator.annotations.SubViewOf;
+import com.holonplatform.vaadin.navigator.annotations.ViewContext;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewProvider;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings({ "serial", "unused" })
 public class ExampleNavigator {
@@ -110,6 +121,60 @@ public class ExampleNavigator {
 		}); // <3>
 		// end::nav3[]
 	}
+
+	// tag::ctx[]
+	class ViewContextExample implements View {
+
+		@ViewContext
+		private LocalizationContext localizationContext;
+
+		@ViewContext
+		private AuthContext authContext;
+
+	}
+	// end::ctx[]
+
+	public void obtain() {
+		// tag::obtain[]
+		Optional<ViewNavigator> navigator = ViewNavigator.getCurrent(); // <1>
+
+		ViewNavigator viewNavigator = ViewNavigator.require(); // <2>
+		// end::obtain[]
+	}
+
+	// tag::sub[]
+	class SubViewContainerExample extends TabSheet implements SubViewContainer { // <1>
+
+		public SubViewContainerExample() {
+			super();
+			setSizeFull();
+		}
+
+		@Override
+		public boolean display(View view, String viewName, Map<String, String> parameters)
+				throws ViewNavigationException {
+			addTab(ViewNavigator.getViewContent(view), viewName, VaadinIcons.PIN);
+			return true;
+		}
+
+		@Override
+		public View getCurrentView() {
+			return (View) getSelectedTab();
+		}
+
+	}
+
+	@SubViewOf("mycontainer")
+	public class SubViewExample extends VerticalLayout implements View { // <2>
+
+		public SubViewExample() {
+			super();
+			setMargin(true);
+			addComponent(new Label("The sub view 1"));
+		}
+
+	}
+	// end::sub[]
 
 	private static final ViewNavigator getViewNavigator() {
 		return null;

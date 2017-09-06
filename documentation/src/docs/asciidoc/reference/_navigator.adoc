@@ -216,8 +216,50 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleNavigator.java[t
 
 * The `navigateBack()` method can be used to navigate back to previous `View`, if any. In no previous `View` is available and a default view is defined, navigator will navigate to the default view.
 
+=== Sub views
+
+The `ViewNavigator` supports the concept of *sub view*: a sub view is a `View` which is always displayed using a parent _view container_, and the sub view display strategy is delegated to the container.
+
+A sub view container is a conventional `View` which implements the link:{apidir}/com/holonplatform/vaadin/navigator/SubViewOf.html[SubViewOf^] interface. 
+
+Any sub view must declare its parent container view name using the link:{apidir}/com/holonplatform/vaadin/navigator/annotations/WindowView.html[WindowView^] annotation.
+
+When the navigation to a sub view is triggered, the `ViewNavigator` first of all will navigate to the declared sub view container, displaying it as a normal `View`, than the `display(View view, String viewName, Map<String, String> parameters)` method of the sub view container is invoked providing the sub view instance, the sub view name and any navigation parameter. At this point, the container should display the sub view contents in a suitable way.
+
+TIP: The `getViewContent(View view)` static method of the `ViewNavigator` interface can be used to obtain the view contents from a `View` instance.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleNavigator.java[tag=sub,indent=0]
+----
+<1> A view declared as `SubViewContainer` using a `TabSheet` to display each sub view in a new tab. We suppose this view is bound to the `mycontainer` view name
+<2> A sub view bound to the `mycontainer` sub view container using the `@SubViewOf` annotation
+
 === Context resources injection
+
+The `ViewNavigator` supports *Context* resources injection into the `View` instances. A resource available form the Holon platform `Context` registry can be injected in a `View` using the link:{apidir}/com/holonplatform/vaadin/navigator/annotations/ViewContext.html[ViewContext^] annotation on a `View` field.
+
+The resource to be injected is looked up by _key_, and by the default the resource key is assumed to be the fully qualified class name of the injectable field *type*. To override this strategy, the `value()` annotation attribute of the `ViewContext` annotation can be used to provide the resource key to look up.
+
+TIP: See the link:holon-core.html#Context[Context] documentation for further information about context resources.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleNavigator.java[tag=ctx,indent=0]
+----
 
 === Obtain the ViewNavigator
 
+The `ViewNavigator` interface provides methods to obtain the current navigator using the following strategy:
 
+* If the `ViewNavigator` is available as _Context_ resource using the default navigator resource key, that instance is returned;
+* If a current Vaadin `UI` is available and a `ViewNavigator` is bound to the `UI`, that instance is returned.
+
+TIP: See the link:holon-core.html#Context[Context] documentation for further information about context resources.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleNavigator.java[tag=obtain,indent=0]
+----
+<1> Try to obtain the `ViewNavigator` from context or current `UI`
+<2> Obtain the `ViewNavigator` from context or current `UI`, failing with an exception if not found
