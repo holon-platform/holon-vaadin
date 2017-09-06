@@ -18,6 +18,8 @@ package com.holonplatform.vaadin.examples;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import com.holonplatform.vaadin.device.DeviceInfo;
+import com.holonplatform.vaadin.navigator.ViewContentProvider;
 import com.holonplatform.vaadin.navigator.ViewNavigator;
 import com.holonplatform.vaadin.navigator.ViewNavigator.ViewNavigatorChangeEvent;
 import com.holonplatform.vaadin.navigator.annotations.OnLeave;
@@ -25,6 +27,9 @@ import com.holonplatform.vaadin.navigator.annotations.OnShow;
 import com.holonplatform.vaadin.navigator.annotations.ViewParameter;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 @SuppressWarnings({ "serial", "unused" })
@@ -88,5 +93,34 @@ public class ExampleView {
 
 	}
 	// end::showleave[]
+
+	// tag::viewcontent[]
+	class ViewExampleContent extends VerticalLayout implements View { // <1>
+
+		public ViewExampleContent() {
+			super();
+			addComponent(new Label("View content"));
+		}
+
+	}
+
+	class ViewExampleContentProvider implements View, ViewContentProvider { // <2>
+
+		@Override
+		public Component getViewContent() { // <3>
+			boolean mobile = DeviceInfo.get().map(info -> info.isMobile()).orElse(false);
+			return mobile ? buildMobileViewContent() : buildDefaultViewContent();
+		}
+
+	}
+	// end::viewcontent[]
+
+	private static final Component buildDefaultViewContent() {
+		return null;
+	}
+
+	private static final Component buildMobileViewContent() {
+		return null;
+	}
 
 }

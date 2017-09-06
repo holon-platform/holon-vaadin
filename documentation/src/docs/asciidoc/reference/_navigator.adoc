@@ -82,10 +82,26 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleView.java[tag=sh
 <10> `onLeave` method with a `ViewNavigatorChangeEvent` parameter
 <11> Get the View being activated
 
+==== Providing the View contents
+
+By default, the `View` is rendered as the UI component which is represented by the `View` class.
+
+The link:{apidir}/com/holonplatform/vaadin/navigator/ViewContentProvider.html[ViewContentProvider^] interface can be implemented by a `View` class to control which UI content to provide through the `getViewContent()` method. The method is called by the `ViewNavigator` to display the `View` when it is activated.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleView.java[tag=viewcontent,indent=0]
+----
+<1> Default `View` implementation extending a `Component` class (a `VerticalLayout`). The displayed `View` content will be the component itself
+<2> A `View` implementing the `ViewContentProvider` interface: the displayed UI content will be provided by the `getViewContent()` method
+<3> Provide the `View` content. In this example, a different UI component is provided according to the device type, checking if the user is running the application in a _mobile_ device
+
 === Navigator Configuration
 
 
 === View navigation operations
+
+=== Exclude a View form navigation history
 
 === Opening Views in a Window
 
