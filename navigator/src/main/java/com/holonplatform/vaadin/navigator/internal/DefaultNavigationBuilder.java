@@ -22,7 +22,7 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.navigator.ViewNavigator;
 import com.holonplatform.vaadin.navigator.ViewNavigator.NavigationBuilder;
 import com.holonplatform.vaadin.navigator.ViewNavigator.ViewNavigationException;
-import com.holonplatform.vaadin.navigator.internal.ViewConfiguration.ViewWindowConfiguration;
+import com.holonplatform.vaadin.navigator.ViewWindowConfiguration;
 import com.vaadin.ui.Window;
 
 /**

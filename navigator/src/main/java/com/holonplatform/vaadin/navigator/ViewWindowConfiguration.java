@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2016 Holon TDCN.
+ * Copyright 2000-2017 Holon TDCN.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,53 +13,57 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.holonplatform.vaadin.navigator.annotations;
+package com.holonplatform.vaadin.navigator;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.io.Serializable;
 
-import com.holonplatform.vaadin.navigator.ViewWindowConfiguration;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Sizeable;
-import com.vaadin.ui.Window;
 
 /**
- * Force a {@link View} annotated with this annotation to be opened in a {@link Window}.
- * 
+ * Configuration settings for a Window used as a {@link View} display.
+ *
  * @since 5.0.0
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-@Documented
-@Inherited
-public @interface WindowView {
+public interface ViewWindowConfiguration extends Serializable {
+
+	/**
+	 * Default View Window style name
+	 */
+	public static final String DEFAULT_WINDOW_STYLE_NAME = "navigation-view-window";
+
+	/**
+	 * Default window width
+	 */
+	public static final String DEFAULT_WINDOW_WIDTH = "95%";
+
+	/**
+	 * Default window height
+	 */
+	public static final String DEFAULT_WINDOW_HEIGHT = "95%";
 
 	/**
 	 * Whether to show a close button in the view Window header
 	 * @return <code>true</code> to show a close button in the view Window header
 	 */
-	boolean closable() default true;
+	boolean isClosable();
 
 	/**
 	 * Whether to allow the view Window to be resized
 	 * @return <code>true</code> to allow the view Window to be resized
 	 */
-	boolean resizable() default true;
+	boolean isResizable();
 
 	/**
 	 * View Window width using String representation. See {@link Sizeable#setWidth(String)} for details.
 	 * @return View Window width. Default is {@link ViewWindowConfiguration#DEFAULT_WINDOW_WIDTH}
 	 */
-	String windowWidth() default ViewWindowConfiguration.DEFAULT_WINDOW_WIDTH;
+	String getWindowWidth();
 
 	/**
 	 * View Window height using String representation. See {@link Sizeable#setHeight(String)} for details.
 	 * @return View Window height. Default is {@link ViewWindowConfiguration#DEFAULT_WINDOW_HEIGHT}
 	 */
-	String windowHeigth() default ViewWindowConfiguration.DEFAULT_WINDOW_HEIGHT;
+	String getWindowHeight();
 
 }

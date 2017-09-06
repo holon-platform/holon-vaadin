@@ -26,13 +26,13 @@ import com.holonplatform.auth.annotations.Authenticate;
 import com.holonplatform.core.i18n.Caption;
 import com.holonplatform.vaadin.navigator.SubViewContainer;
 import com.holonplatform.vaadin.navigator.ViewContentProvider;
+import com.holonplatform.vaadin.navigator.ViewWindowConfiguration;
 import com.holonplatform.vaadin.navigator.annotations.OnLeave;
 import com.holonplatform.vaadin.navigator.annotations.OnShow;
 import com.holonplatform.vaadin.navigator.annotations.ViewContext;
 import com.holonplatform.vaadin.navigator.annotations.VolatileView;
 import com.holonplatform.vaadin.navigator.annotations.WindowView;
 import com.vaadin.navigator.View;
-import com.vaadin.server.Sizeable;
 
 /**
  * {@link View} configuration representation.
@@ -186,52 +186,6 @@ public interface ViewConfiguration extends Serializable {
 		 * @return Field write method, or <code>null</code> if not available
 		 */
 		Method getWriteMethod();
-
-	}
-
-	/**
-	 * Configuration settings for Window used a {@link View} display.
-	 */
-	public interface ViewWindowConfiguration extends Serializable {
-
-		/**
-		 * Default View Window style name
-		 */
-		public static final String DEFAULT_WINDOW_STYLE_NAME = "navigation-view-window";
-
-		/**
-		 * Default window width
-		 */
-		public static final String DEFAULT_WINDOW_WIDTH = "95%";
-
-		/**
-		 * Default window height
-		 */
-		public static final String DEFAULT_WINDOW_HEIGHT = "95%";
-
-		/**
-		 * Whether to show a close button in the view Window header
-		 * @return <code>true</code> to show a close button in the view Window header
-		 */
-		boolean isClosable();
-
-		/**
-		 * Whether to allow the view Window to be resized
-		 * @return <code>true</code> to allow the view Window to be resized
-		 */
-		boolean isResizable();
-
-		/**
-		 * View Window width using String representation. See {@link Sizeable#setWidth(String)} for details.
-		 * @return View Window width. Default is {@link ViewWindowConfiguration#DEFAULT_WINDOW_WIDTH}
-		 */
-		String getWindowWidth();
-
-		/**
-		 * View Window height using String representation. See {@link Sizeable#setHeight(String)} for details.
-		 * @return View Window height. Default is {@link ViewWindowConfiguration#DEFAULT_WINDOW_HEIGHT}
-		 */
-		String getWindowHeight();
 
 	}
 

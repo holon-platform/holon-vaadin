@@ -15,7 +15,7 @@
  */
 package com.holonplatform.vaadin.navigator.internal;
 
-import com.holonplatform.vaadin.navigator.internal.ViewConfiguration.ViewWindowConfiguration;
+import com.holonplatform.vaadin.navigator.ViewWindowConfiguration;
 import com.vaadin.server.Sizeable;
 
 /**

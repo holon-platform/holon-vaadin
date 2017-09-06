@@ -25,6 +25,7 @@ import java.util.Optional;
 import com.holonplatform.auth.annotations.Authenticate;
 import com.holonplatform.vaadin.navigator.SubViewContainer;
 import com.holonplatform.vaadin.navigator.ViewContentProvider;
+import com.holonplatform.vaadin.navigator.ViewWindowConfiguration;
 import com.holonplatform.vaadin.navigator.annotations.OnLeave;
 import com.holonplatform.vaadin.navigator.annotations.OnShow;
 import com.holonplatform.vaadin.navigator.annotations.ViewContext;

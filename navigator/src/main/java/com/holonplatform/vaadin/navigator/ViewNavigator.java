@@ -33,7 +33,6 @@ import com.holonplatform.vaadin.navigator.annotations.SubViewOf;
 import com.holonplatform.vaadin.navigator.annotations.ViewParameter;
 import com.holonplatform.vaadin.navigator.internal.DefaultNavigationBuilder;
 import com.holonplatform.vaadin.navigator.internal.DefaultViewNavigator;
-import com.holonplatform.vaadin.navigator.internal.ViewConfiguration.ViewWindowConfiguration;
 import com.holonplatform.vaadin.navigator.internal.ViewDisplayUtils;
 import com.holonplatform.vaadin.navigator.internal.ViewNavigationUtils;
 import com.vaadin.navigator.NavigationStateManager;
