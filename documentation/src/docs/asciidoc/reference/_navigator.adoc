@@ -1,6 +1,6 @@
 == Navigator
 
-The Holon platform Vaadin module makes available an extension of the default *view navigator*, represented by the link:{apidir}/com/holonplatform/vaadin/navigator/ViewNavigator.html[ViewNavigator^] interface, which provides additional features and configuration capabilities:
+The `holon-vaadin-navigator` artifact makes available an extension of the default *view navigator*, represented by the link:{apidir}/com/holonplatform/vaadin/navigator/ViewNavigator.html[ViewNavigator^] interface, which provides additional features and configuration capabilities:
 
 * `View` navigation history tracking, allowing to navigate back to the previous view
 * `View` _parameters_ management, allowing to obtain the parameters values by injection in the `View` instance
@@ -8,6 +8,14 @@ The Holon platform Vaadin module makes available an extension of the default *vi
 * _Default_ view support, acting as the application's "home page" 
 * The possibility to show a view in a `Window`, instead of using the default view display component
 * Support for _context_ resources injection in `View` instances
+
+_Maven coordinates_:
+[source, xml, subs="attributes+"]
+----
+<groupId>com.holon-platform.vaadin</groupId>
+<artifactId>holon-vaadin-navigator</artifactId>
+<version>{revnumber}</version>
+----
 
 === View configuration
 
@@ -51,14 +59,36 @@ In addition to the standard `enter(...)` method of the `View` interface, two ann
 
 If more than one `OnShow` or `OnLeave` annotated method in present in the `View` class or in it's class hierarchy, all these methods will be called and the following behaviour will be adopted:
 
-* Methods will be called following the class hierarchy, starting from the top (the first superclass after Object)
+* Methods will be called following the class hierarchy, starting from the top (the first superclass after `Object`)
 * For methods of the same class, no calling order is guaranteed
 
-The `OnShow` and `OnLeave` annotated method supports an optional parameter, which can be either of the standard `com.vaadin.navigator.ViewChangeEvent` type or of the extended `ViewNavigatorChangeEvent` type, to obtain informations about the current view navigator, the previous or next `View`, the `View` name and parameters and the optional `Window` in which the View is displayed. 
+The `OnShow` and `OnLeave` annotated method supports an optional parameter, which can be either of the standard `com.vaadin.navigator.ViewChangeEvent` type or of the extended `ViewNavigatorChangeEvent` type, to obtain informations about the current view navigator, the previous or next `View`, the `View` name and parameters and the optional `Window` in which the View is displayed.
 
-TODO: examples
+The `OnShow` annotation provides an additional `onRefresh()` property which, if setted to `true`, instruct the navigator to invoke the `OnShow` annotated method also at browser page refresh.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleView.java[tag=showleave,indent=0]
+----
+<1> Basic `OnShow` annotated method, invoked right before the view is shown
+<2> `OnShow` method with `onRefresh()` setted to `true`: this method will be invoked also at browser page refresh
+<3> `OnShow` method with a default `ViewChangeEvent` parameter
+<4> Get the View name
+<5> Get the previous View
+<6> `OnShow` method with a `ViewNavigatorChangeEvent` parameter
+<7> Get the `ViewNavigator`
+<8> Get the `Window` in which the view is displayed if it was requested to open the View in a window
+<9> Basic `onLeave` annotated method
+<10> `onLeave` method with a `ViewNavigatorChangeEvent` parameter
+<11> Get the View being activated
 
 === Navigator Configuration
 
 
 === View navigation operations
+
+=== Opening Views in a Window
+
+=== Stateful Views
+
+=== Context resources injection

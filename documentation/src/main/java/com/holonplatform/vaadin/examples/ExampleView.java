@@ -16,11 +16,18 @@
 package com.holonplatform.vaadin.examples;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
+import com.holonplatform.vaadin.navigator.ViewNavigator;
+import com.holonplatform.vaadin.navigator.ViewNavigator.ViewNavigatorChangeEvent;
+import com.holonplatform.vaadin.navigator.annotations.OnLeave;
+import com.holonplatform.vaadin.navigator.annotations.OnShow;
 import com.holonplatform.vaadin.navigator.annotations.ViewParameter;
 import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.ui.Window;
 
-@SuppressWarnings("serial")
+@SuppressWarnings({ "serial", "unused" })
 public class ExampleView {
 
 	// tag::viewparams[]
@@ -37,6 +44,49 @@ public class ExampleView {
 
 	}
 	// end::viewparams[]
-	
-	
+
+	// tag::showleave[]
+	class ViewExample2 implements View {
+
+		@ViewParameter
+		private String myparam;
+
+		@OnShow
+		public void onShow() { // <1>
+			// ...
+		}
+
+		@OnShow(onRefresh = true) // <2>
+		public void onShowAtRefreshToo() {
+			// ...
+		}
+
+		@OnShow
+		public void onShow2(ViewChangeEvent event) { // <3>
+			String name = event.getViewName(); // <4>
+			View oldView = event.getOldView(); // <5>
+			// ...
+		}
+
+		@OnShow
+		public void onShow3(ViewNavigatorChangeEvent event) { // <6>
+			ViewNavigator navigator = event.getViewNavigator(); // <7>
+			Optional<Window> viewWindow = event.getWindow(); // <8>
+			// ...
+		}
+
+		@OnLeave
+		public void onLeave() { // <9>
+			// ...
+		}
+
+		@OnLeave
+		public void onLeave2(ViewNavigatorChangeEvent event) { // <10>
+			View nextView = event.getNewView(); // <11>
+			// ...
+		}
+
+	}
+	// end::showleave[]
+
 }
