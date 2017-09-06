@@ -42,7 +42,7 @@ public abstract class AbstractFieldConfigurator<T, C extends AbstractField<T>, B
 	public AbstractFieldConfigurator(C instance) {
 		super(instance);
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.builders.InputConfigurator#readOnly()

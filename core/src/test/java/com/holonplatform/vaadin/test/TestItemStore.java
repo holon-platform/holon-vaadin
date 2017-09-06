@@ -58,7 +58,7 @@ public class TestItemStore {
 
 		assertEquals(1, scount.get());
 		assertEquals(0, qcount.get());
-		
+
 		String itm = store.getItem(0);
 		assertNotNull(itm);
 		assertEquals("a", itm);
@@ -181,7 +181,8 @@ public class TestItemStore {
 		 * ItemDataSource.Configuration, int, int)
 		 */
 		@Override
-		public Stream<String> load(QueryConfigurationProvider configuration, int offset, int limit) throws DataAccessException {
+		public Stream<String> load(QueryConfigurationProvider configuration, int offset, int limit)
+				throws DataAccessException {
 			qcount.incrementAndGet();
 			return data.stream().skip(offset).limit(limit);
 		}
@@ -192,8 +193,7 @@ public class TestItemStore {
 		 * Configuration, java.lang.Object)
 		 */
 		@Override
-		public String refresh(String item)
-				throws UnsupportedOperationException, DataAccessException {
+		public String refresh(String item) throws UnsupportedOperationException, DataAccessException {
 			rcount.incrementAndGet();
 			return item;
 		}
@@ -201,7 +201,7 @@ public class TestItemStore {
 	}
 
 	private final class TestConfiguration implements QueryConfigurationProvider {
-		
+
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.core.query.QueryConfigurationProvider#getQueryFilter()

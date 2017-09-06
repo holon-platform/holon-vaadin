@@ -31,7 +31,7 @@ public class NotificationValidationStatusHandler implements ValidationStatusHand
 
 	private final Notification notification;
 	private final boolean showAllErrors;
-	
+
 	/**
 	 * Constructor
 	 * @param notification The notification instance to use, <code>null</code> for default

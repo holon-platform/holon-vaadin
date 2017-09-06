@@ -139,7 +139,7 @@ public abstract class AbstractStringFieldBuilder<I extends AbstractTextField>
 		}
 		return builder();
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see

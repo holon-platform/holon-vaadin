@@ -120,8 +120,10 @@ public class DateTimeField extends AbstractCalendarField<LocalDateTime> {
 			return instance;
 		}
 
-		/* (non-Javadoc)
-		 * @see com.holonplatform.vaadin.internal.components.builders.AbstractFieldBuilder#buildAsField(com.vaadin.ui.AbstractField)
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.internal.components.builders.AbstractFieldBuilder#buildAsField(com.vaadin.ui.
+		 * AbstractField)
 		 */
 		@Override
 		protected Field<Date> buildAsField(DateTimeField instance) {

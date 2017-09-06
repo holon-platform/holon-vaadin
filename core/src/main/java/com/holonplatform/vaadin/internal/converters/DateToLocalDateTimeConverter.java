@@ -73,7 +73,8 @@ public class DateToLocalDateTimeConverter implements TimeZonedConverter<Date, Lo
 		this.timeZone = timeZone;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see com.vaadin.data.Converter#convertToModel(java.lang.Object, com.vaadin.data.ValueContext)
 	 */
 	@Override
@@ -84,7 +85,8 @@ public class DateToLocalDateTimeConverter implements TimeZonedConverter<Date, Lo
 		return Result.ok(null);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see com.vaadin.data.Converter#convertToPresentation(java.lang.Object, com.vaadin.data.ValueContext)
 	 */
 	@Override

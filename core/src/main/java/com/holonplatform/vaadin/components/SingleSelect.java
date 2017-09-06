@@ -106,7 +106,7 @@ public interface SingleSelect<T> extends Selectable<T>, Input<T>, ItemSet {
 	static <T> SelectModeSingleSelectInputBuilder<T> select(Class<? extends T> type) {
 		return new SingleSelectField.SelectModeBuilder<>(type);
 	}
-	
+
 	/**
 	 * Gets a builder to create a {@link SingleSelect} using {@link RenderingMode#NATIVE_SELECT}.
 	 * @param <T> Selection value type
@@ -116,7 +116,7 @@ public interface SingleSelect<T> extends Selectable<T>, Input<T>, ItemSet {
 	static <T> NativeModeSingleSelectInputBuilder<T> nativeSelect(Class<? extends T> type) {
 		return new SingleSelectField.NativeModeBuilder<>(type);
 	}
-	
+
 	/**
 	 * Gets a builder to create a {@link SingleSelect} using {@link RenderingMode#OPTIONS}.
 	 * @param <T> Selection value type
@@ -135,7 +135,8 @@ public interface SingleSelect<T> extends Selectable<T>, Input<T>, ItemSet {
 	 * @param renderingMode Rendering mode
 	 * @return {@link SingleSelect} builder
 	 */
-	static <T> GenericSinglePropertySelectInputBuilder<T> property(Property<T> selectProperty, RenderingMode renderingMode) {
+	static <T> GenericSinglePropertySelectInputBuilder<T> property(Property<T> selectProperty,
+			RenderingMode renderingMode) {
 		ObjectUtils.argumentNotNull(selectProperty, "Selection property must be not null");
 		return new SingleSelectField.GenericPropertyBuilder<>(selectProperty, renderingMode);
 	}
@@ -151,7 +152,7 @@ public interface SingleSelect<T> extends Selectable<T>, Input<T>, ItemSet {
 		ObjectUtils.argumentNotNull(selectProperty, "Selection property must be not null");
 		return new SingleSelectField.SelectModePropertyBuilder<>(selectProperty);
 	}
-	
+
 	/**
 	 * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
 	 * {@link Property} as item properties using {@link RenderingMode#NATIVE_SELECT}.
@@ -163,7 +164,7 @@ public interface SingleSelect<T> extends Selectable<T>, Input<T>, ItemSet {
 		ObjectUtils.argumentNotNull(selectProperty, "Selection property must be not null");
 		return new SingleSelectField.NativeModePropertyBuilder<>(selectProperty);
 	}
-	
+
 	/**
 	 * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
 	 * {@link Property} as item properties using {@link RenderingMode#OPTIONS}.

@@ -94,7 +94,7 @@ public class DefaultItemStore<ITEM> implements ItemStore<ITEM> {
 	 * Freezed state
 	 */
 	private boolean freezed;
-	
+
 	/**
 	 * Batch size
 	 */

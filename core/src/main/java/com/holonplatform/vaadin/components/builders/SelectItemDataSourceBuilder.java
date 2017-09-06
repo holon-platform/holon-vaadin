@@ -40,7 +40,7 @@ public interface SelectItemDataSourceBuilder<T, C extends Input<T>, S, ITEM, B e
 	 * @return this
 	 */
 	B dataSource(ItemDataProvider<ITEM> dataProvider);
-	
+
 	/**
 	 * Set the selection items data provider.
 	 * @param dataProvider Items data provider (not null)

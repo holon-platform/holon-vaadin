@@ -459,7 +459,8 @@ public interface Components {
 		 * @param renderingMode Rendering mode
 		 * @return Input builder
 		 */
-		static <T> GenericSingleSelectInputBuilder<T> singleSelect(Class<? extends T> type, RenderingMode renderingMode) {
+		static <T> GenericSingleSelectInputBuilder<T> singleSelect(Class<? extends T> type,
+				RenderingMode renderingMode) {
 			return SingleSelect.builder(type, renderingMode);
 		}
 
@@ -472,7 +473,7 @@ public interface Components {
 		static <T> SelectModeSingleSelectInputBuilder<T> singleSelect(Class<? extends T> type) {
 			return SingleSelect.select(type);
 		}
-		
+
 		/**
 		 * Gets a builder to create a single selection {@link Input} using {@link RenderingMode#NATIVE_SELECT}.
 		 * @param <T> Selection value type
@@ -482,7 +483,7 @@ public interface Components {
 		static <T> NativeModeSingleSelectInputBuilder<T> singleNativeSelect(Class<? extends T> type) {
 			return SingleSelect.nativeSelect(type);
 		}
-		
+
 		/**
 		 * Gets a builder to create a single selection {@link Input} using {@link RenderingMode#OPTIONS}.
 		 * @param <T> Selection value type
@@ -516,7 +517,7 @@ public interface Components {
 		static <T> SelectModeSinglePropertySelectInputBuilder<T> singleSelect(Property<T> selectProperty) {
 			return SingleSelect.select(selectProperty);
 		}
-		
+
 		/**
 		 * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
 		 * {@link Property} as item properties using {@link RenderingMode#NATIVE_SELECT}.
@@ -527,7 +528,7 @@ public interface Components {
 		static <T> NativeModeSinglePropertySelectInputBuilder<T> singleNativeSelect(Property<T> selectProperty) {
 			return SingleSelect.nativeSelect(selectProperty);
 		}
-		
+
 		/**
 		 * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
 		 * {@link Property} as item properties using {@link RenderingMode#OPTIONS}.
@@ -559,7 +560,7 @@ public interface Components {
 		static <T> OptionsModeMultiSelectInputBuilder<T> multiSelect(Class<? extends T> type) {
 			return MultiSelect.options(type);
 		}
-		
+
 		/**
 		 * Gets a builder to create a multiple selection {@link Input} using {@link RenderingMode#SELECT}.
 		 * @param <T> Selection value type
@@ -593,7 +594,7 @@ public interface Components {
 		static <T> OptionsModeMultiPropertySelectInputBuilder<T> multiSelect(Property<T> selectProperty) {
 			return MultiSelect.options(selectProperty);
 		}
-		
+
 		/**
 		 * Gets a builder to create a {@link MultiSelect} with a {@link PropertyBox} items data source with
 		 * {@link Property} as item properties using default {@link RenderingMode#SELECT}.
@@ -613,7 +614,8 @@ public interface Components {
 		 * @param renderingMode Rendering mode
 		 * @return Input builder
 		 */
-		static <E extends Enum<E>> GenericSingleSelectInputBuilder<E> enumSingle(Class<E> type, RenderingMode renderingMode) {
+		static <E extends Enum<E>> GenericSingleSelectInputBuilder<E> enumSingle(Class<E> type,
+				RenderingMode renderingMode) {
 			return singleSelect(type, renderingMode).items(type.getEnumConstants());
 		}
 
@@ -636,7 +638,8 @@ public interface Components {
 		 * @param renderingMode Rendering mode
 		 * @return Input builder
 		 */
-		static <E extends Enum<E>> GenericMultiSelectInputBuilder<E> enumMulti(Class<E> type, RenderingMode renderingMode) {
+		static <E extends Enum<E>> GenericMultiSelectInputBuilder<E> enumMulti(Class<E> type,
+				RenderingMode renderingMode) {
 			return multiSelect(type, renderingMode).items(type.getEnumConstants());
 		}
 

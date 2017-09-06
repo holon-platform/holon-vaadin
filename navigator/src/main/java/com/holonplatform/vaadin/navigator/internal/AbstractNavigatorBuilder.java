@@ -76,8 +76,7 @@ public abstract class AbstractNavigatorBuilder<B extends NavigatorBuilder<B>, C 
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.navigator.ViewNavigator.NavigatorBuilder#navigateToDefaultViewWhenViewNotAvailable(
+	 * @see com.holonplatform.vaadin.navigator.ViewNavigator.NavigatorBuilder#navigateToDefaultViewWhenViewNotAvailable(
 	 * boolean)
 	 */
 	@Override

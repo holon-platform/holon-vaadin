@@ -102,13 +102,14 @@ public abstract class AbstractSelectField<T, S, ITEM, I, F extends HasValue<I> &
 	}
 
 	public abstract void setDataProvider(DataProvider<ITEM, ?> dataProvider);
-	
-	public abstract void setDataProvider(DataProvider<ITEM, ?> dataProvider, SerializableFunction<String, ?> filterConverter);
+
+	public abstract void setDataProvider(DataProvider<ITEM, ?> dataProvider,
+			SerializableFunction<String, ?> filterConverter);
 
 	public abstract Optional<DataProvider<ITEM, ?>> getDataProvider();
 
 	public abstract void setItems(Collection<ITEM> items);
-	
+
 	public abstract void setItems(Collection<ITEM> items, CaptionFilter filter);
 
 	/**

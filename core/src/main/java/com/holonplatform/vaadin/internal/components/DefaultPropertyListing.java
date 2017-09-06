@@ -155,7 +155,7 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 			ObjectUtils.argumentNotNull(properties, "Grid property set must be not null");
 			definitions = new LinkedList<>();
 			properties.forEach(p -> {
-				definitions.add(new GridPropertyDefinition<>(this, (Property)p));
+				definitions.add(new GridPropertyDefinition<>(this, (Property) p));
 			});
 		}
 

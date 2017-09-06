@@ -56,7 +56,7 @@ public abstract class AbstractSelectFieldBuilder<T, C extends Input<T>, S, ITEM,
 	 * Item data provider
 	 */
 	protected ItemDataProvider<ITEM> itemDataProvider = null;
-	
+
 	/**
 	 * Vaadin data provider
 	 */

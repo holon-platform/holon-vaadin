@@ -91,7 +91,7 @@ public class ItemDataProviderAdapter<ITEM> extends AbstractBackEndDataProvider<I
 	@Override
 	public Object getId(ITEM item) {
 		if (getItemIdentifier().isPresent()) {
-			return  getItemIdentifier().get().getItemId(item);
+			return getItemIdentifier().get().getItemId(item);
 		}
 		return super.getId(item);
 	}

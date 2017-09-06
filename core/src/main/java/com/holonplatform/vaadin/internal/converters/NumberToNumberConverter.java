@@ -47,7 +47,8 @@ public class NumberToNumberConverter<PRESENTATION extends Number, MODEL extends 
 		this.modelType = modelType;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see com.vaadin.data.Converter#convertToModel(java.lang.Object, com.vaadin.data.ValueContext)
 	 */
 	@Override
@@ -58,7 +59,8 @@ public class NumberToNumberConverter<PRESENTATION extends Number, MODEL extends 
 		return Result.ok(null);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see com.vaadin.data.Converter#convertToPresentation(java.lang.Object, com.vaadin.data.ValueContext)
 	 */
 	@Override

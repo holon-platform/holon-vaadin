@@ -110,7 +110,8 @@ public interface BaseSelectModeSinglePropertySelectInputBuilder<T, B extends Bas
 		 * @param itemEnabledProvider the item enabled provider to set (not null)
 		 * @return this
 		 */
-		OptionsModeSinglePropertySelectInputBuilder<T> itemEnabledProvider(SerializablePredicate<T> itemEnabledProvider);
+		OptionsModeSinglePropertySelectInputBuilder<T> itemEnabledProvider(
+				SerializablePredicate<T> itemEnabledProvider);
 
 	}
 

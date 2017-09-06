@@ -29,7 +29,7 @@ import com.holonplatform.vaadin.components.Input;
  */
 public interface TemporalInputBuilder<T extends Temporal, B extends TemporalInputBuilder<T, B>>
 		extends CalendarInputBuilder<T, B> {
-	
+
 	/**
 	 * A {@link TemporalInputBuilder} for Fields not supporting time.
 	 * 

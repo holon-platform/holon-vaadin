@@ -32,7 +32,7 @@ import com.vaadin.data.ValueContext;
 public class DefaultPropertyBoxConverter<T> implements Converter<T, PropertyBox> {
 
 	private static final long serialVersionUID = 4380616372709849093L;
-	
+
 	private final Property<T> property;
 
 	public DefaultPropertyBoxConverter(Property<T> property) {
