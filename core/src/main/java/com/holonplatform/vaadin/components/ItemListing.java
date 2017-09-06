@@ -94,7 +94,11 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, Component {
 	void sort(ItemSort<P>... sorts);
 
 	/**
-	 * Clear items in data source and listing rows.
+	 * When in <em>buffered</em> mode, clear the buffered items in the internal cache.
+	 * <p>
+	 * When not in <em>buffered</em> mode, simply reset the selection, if the listing is slectable.
+	 * </p>
+	 * @see #isBuffered()
 	 */
 	void clear();
 
