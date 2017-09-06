@@ -98,6 +98,36 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleView.java[tag=vi
 
 === Navigator Configuration
 
+Just like the standard Vaadin navigator, the `ViewNavigator` requires two elements which must be configured in order to work properly:
+
+* A `ViewProvider` to provide th `View` instances by view _name_
+* A `View` display component to show the view contents in the UI, which can be a `ComponentContainer` (replacing the contents of the container with the active `View` content), a `SingleComponentContainer` (using the `setContent(...)` method to set the active `View` content) or a `ViewDisplay` object to implement a custom `View` display logic.
+
+In addition to the required configuration elements, the `ViewNavigator` supports:
+
+* Setting a *default view* name, which will be used as target of the `ViewNavigator.navigateToDefault()` method and as a fallback by the `ViewNavigator.navigateBack()` method if no other `View` is available in navigation history
+* Setting a *error view* or a error `ViewProvider` to provide the `View` to be displayed when no other `View` matches a navigation state
+* Setting the max *navigation history* size
+* Register a `ViewChangeListener` for listening to `View` changes before and after they occur
+
+The `builder()` method of the `ViewNavigator` interface provides a _fluent_ builder to configure a navigator and bind it to a Vaadin `UI`.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleNavigator.java[tag=config,indent=0]
+----
+<1> Obtain the `ViewNavigator` builder
+<2> Set the component to which the `View` contents display is delegated
+<3> Add a `ViewProvider`
+<4> Set the _default_ `View` name
+<5> Set the error `View`
+<6> Set the error `View` provider
+<7> Set the max navigation history size
+<8> Configure the navigator to navigate to _default_ `View` (if availablr) when a view is not available according to current navigation state
+<9> Add a `ViewChangeListener`
+<10> Build the `ViewNavigator` and bind it to the `UI`
+
+TODO DefaultViewProvider
 
 === View navigation operations
 
