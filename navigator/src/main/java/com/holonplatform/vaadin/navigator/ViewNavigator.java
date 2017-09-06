@@ -164,7 +164,6 @@ public interface ViewNavigator extends Serializable {
 	 * Registered {@link ViewChangeListener}s are called upon successful view change.
 	 * </p>
 	 * @param viewName View name
-	 * @param parameters Optional view parameters
 	 * @throws ViewNavigationException View with given name cannot be found or other view handling error
 	 */
 	default void navigateTo(String viewName) throws ViewNavigationException {

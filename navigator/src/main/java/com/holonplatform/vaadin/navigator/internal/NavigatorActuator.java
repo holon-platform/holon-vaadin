@@ -943,7 +943,7 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 	 * @param view View to display
 	 * @param viewName View name
 	 * @param viewConfiguration View configurator
-	 * @param windowConfiguration Optional Window configuration
+	 * @param windowConfigurator Optional Window configurator
 	 * @return Window to use to display the given View
 	 */
 	@SuppressWarnings("serial")

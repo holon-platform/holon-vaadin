@@ -29,11 +29,6 @@ public class DefaultViewWindowConfigurator extends AbstractComponentConfigurator
 
 	private static final long serialVersionUID = -2308438834734648256L;
 
-	/**
-	 * Constructor
-	 * @param caption Window caption
-	 * @param navigationState Navigation state
-	 */
 	public DefaultViewWindowConfigurator(Window window) {
 		super(window);
 	}
