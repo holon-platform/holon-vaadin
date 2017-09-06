@@ -19,6 +19,7 @@ _Maven coordinates_:
 
 === View configuration
 
+[[ViewParameters]]
 ==== Parameters injection
 
 The _navigation parameters_ can be injected in the `View` class fields using the link:{apidir}/com/holonplatform/vaadin/navigator/annotations/ViewParameter.html[ViewParameter^] annotation.
@@ -127,14 +128,96 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleNavigator.java[t
 <9> Add a `ViewChangeListener`
 <10> Build the `ViewNavigator` and bind it to the `UI`
 
-TODO DefaultViewProvider
+The `ViewNavigator` builder makes available a default `View` provider, which supports a fixed set of `Views` configured using a View _name_ bound to a View _class_.
+
+_Stateful_ views are supported by this provider. To declare a View as stateful, the link:{apidir}/com/holonplatform/vaadin/navigator/annotations/StatefulView.html[StatefulView^] annotation can be used on the View class.
+
+View instances will be created according to view scope: for _stateful_ views, an instance is created at first request (for each UI) and the same instance is returned to subsequent view requests. On the contrary, for standard views, a new instance is created and returned to navigator for every view request.
+
+To register this view provider and configure the `View` set, the `ViewNavigator` builder method `withView(String viewName, Class<? extends View> viewClass)` can be used.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleNavigator.java[tag=config2,indent=0]
+----
+<1> Register the view class `View1` and bind it the `view1` name
+<2> Register the view class `View2` and bind it the `view2` name
+<3> Set the `view1` View as the default view
+
+=== Excluding a View form navigation history
+
+By default, the `ViewNavigator` tacks views navigation history, to made available navigation operations such `navigateBack()` to navigate to the previous view.
+
+To exclude a `View` from the navigation history, skipping such View when a `navigateBack()` operation is performed or the user presses the browser _back_ button, the link:{apidir}/com/holonplatform/vaadin/navigator/annotations/VolatileView.html[VolatileView^] annotation can be used on the `View` class.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleView.java[tag=volatile,indent=0]
+----
+
+=== Opening Views in a `Window`
+
+The `ViewNavigator` supports displaying a `View` content in a application `Window`. The view navigation is tracked in navigator history just like any other navigation operation.
+
+To open a `View` in a `Window`, the `navigateInWindow(...)` view navigator methods can be used (see the next section), or a `View` class can be forced to be always opened in a window using the link:{apidir}/com/holonplatform/vaadin/navigator/annotations/WindowView.html[WindowView^] annotation. 
+
+If the `@WindowView` annotation is found on a view class, such view will be always opened in a window, regardless of the navigation operation that is used.
+
+The `Window` is automatically created by the `ViewNavigator`, and can be configured using either a `ViewWindowConfigurator`, when the navigator method is used, or the `@WindowView` annotation attributes.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleView.java[tag=window,indent=0]
+----
 
 === View navigation operations
 
-=== Exclude a View form navigation history
+The `ViewNavigator` API provides navigation methods to provide a set of *parameters* to the `View` being activated. 
 
-=== Opening Views in a Window
+These parameters are serialized in the navigation state String, and are automatically bound to the any `View` class field annotated with the `@ViewParameter` annotation.
 
-=== Stateful Views
+See <<ViewParameters>> for further informations about `View` parameters injection.
+
+NOTE: When using `@ViewParameter` annotated `View` methods, the parameter value types provided to a view navigation method through the _name-value Map_ must be consistent with the corresponding `@ViewParameter` view class field type.
+
+The `ViewNavigator` API provides the following operations for `View` navigation:
+
+* `navigateTo(String viewName, Map<String, Object> parameters)`: navigate to given `View` name, providing an optional Map of parameters with parameters names and corresponding values.
+
+* `navigateTo(String viewName)`: navigate to given `View` name without providing any view parameter.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleNavigator.java[tag=nav1,indent=0]
+----
+<1> Navigate to the view named `myView`
+<2> Navigate to the view named `myView` providing a map of *parameters* (names and values)
+
+* `navigateInWindow(...)`: `View` navigation methods that force the View content to be displayed in an `Window`, supporting a `ViewWindowConfiguration` Consumer function to setup the view `Window` features.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleNavigator.java[tag=nav2,indent=0]
+----
+<1> Navigate to the view named `myView` and display the view in a Window
+<2> Navigate to the view named `myView`  and display the view in a Window, providing a window configuration consumer and a map of *parameters*
+
+* Using the `NavigationBuilder` through the `toView(String viewName)` method, which accepts the view name and the optional view parameters using a _fluent_ builder style.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleNavigator.java[tag=nav3,indent=0]
+----
+<1> Navigate to the view named `myView` using given parameters
+<2> Navigate to the view named `myView` and display the view in a Window
+<3> Navigate to the view named `myView` and display the view in a Window, providing a window configuration consumer
+
+* The `navigateToDefault()` method can be used to navigate to the default view, if configured.
+
+* The `navigateBack()` method can be used to navigate back to previous `View`, if any. In no previous `View` is available and a default view is defined, navigator will navigate to the default view.
 
 === Context resources injection
+
+=== Obtain the ViewNavigator
+
+

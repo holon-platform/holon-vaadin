@@ -25,6 +25,8 @@ import com.holonplatform.vaadin.navigator.ViewNavigator.ViewNavigatorChangeEvent
 import com.holonplatform.vaadin.navigator.annotations.OnLeave;
 import com.holonplatform.vaadin.navigator.annotations.OnShow;
 import com.holonplatform.vaadin.navigator.annotations.ViewParameter;
+import com.holonplatform.vaadin.navigator.annotations.VolatileView;
+import com.holonplatform.vaadin.navigator.annotations.WindowView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
@@ -114,6 +116,20 @@ public class ExampleView {
 
 	}
 	// end::viewcontent[]
+
+	// tag::volatile[]
+	@VolatileView
+	class VolatileViewExample implements View {
+
+	}
+	// end::volatile[]
+
+	// tag::window[]
+	@WindowView(windowWidth = "50%")
+	class WindowViewExample implements View {
+
+	}
+	// end::window[]
 
 	private static final Component buildDefaultViewContent() {
 		return null;
