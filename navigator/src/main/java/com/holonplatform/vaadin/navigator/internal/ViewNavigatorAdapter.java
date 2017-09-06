@@ -36,12 +36,6 @@ public interface ViewNavigatorAdapter extends ViewNavigator, ViewConfigurationPr
 	void updateCurrentNavigationState(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent event);
 
 	/**
-	 * Navigate to given state
-	 * @param navigationState Navigation state
-	 */
-	void navigateToState(String navigationState);
-
-	/**
 	 * Navigate to given View
 	 * @param view View instance
 	 * @param viewName View name
