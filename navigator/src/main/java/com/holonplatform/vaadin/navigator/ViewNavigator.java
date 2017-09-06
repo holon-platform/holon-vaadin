@@ -185,6 +185,32 @@ public interface ViewNavigator extends Serializable {
 			Map<String, Object> parameters) throws ViewNavigationException;
 
 	/**
+	 * Navigate to the {@link View} identified by given <code>viewName</code> using the same behaviour of
+	 * {@link #navigateTo(String, Map)} but rendering the View contents in an application Window, using optional
+	 * <code>windowConfiguration</code> to setup Window features.
+	 * @param viewName View name
+	 * @param windowConfiguration Optional Window configuration settings
+	 * @return The UI Window in which the View is displayed
+	 * @throws ViewNavigationException View with given name cannot be found or other view handling error
+	 */
+	default Window navigateInWindow(String viewName, ViewWindowConfiguration windowConfiguration)
+			throws ViewNavigationException {
+		return navigateInWindow(viewName, windowConfiguration, null);
+	}
+
+	/**
+	 * Navigate to the {@link View} identified by given <code>viewName</code> using the same behaviour of
+	 * {@link #navigateTo(String, Map)} but rendering the View contents in an application Window, using default Window
+	 * configuration.
+	 * @param viewName View name
+	 * @return The UI Window in which the View is displayed
+	 * @throws ViewNavigationException View with given name cannot be found or other view handling error
+	 */
+	default Window navigateInWindow(String viewName) throws ViewNavigationException {
+		return navigateInWindow(viewName, null, null);
+	}
+
+	/**
 	 * Navigates back to previous {@link View}, if any. In no previous View is available and a default view is defined,
 	 * navigator will navigate to the default view.
 	 * @return <code>true</code> if a previous view in navigation history, or the default view, was available and back
