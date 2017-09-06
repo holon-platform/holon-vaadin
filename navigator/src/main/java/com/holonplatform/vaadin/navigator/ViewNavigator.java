@@ -186,6 +186,19 @@ public interface ViewNavigator extends Serializable {
 
 	/**
 	 * Navigate to the {@link View} identified by given <code>viewName</code> using the same behaviour of
+	 * {@link #navigateTo(String, Map)} but rendering the View contents in an application Window, using default Window
+	 * configuration.
+	 * @param viewName View name
+	 * @param parameters Optional view parameters
+	 * @return The UI Window in which the View is displayed
+	 * @throws ViewNavigationException View with given name cannot be found or other view handling error
+	 */
+	default Window navigateInWindow(String viewName, Map<String, Object> parameters) throws ViewNavigationException {
+		return navigateInWindow(viewName, null, parameters);
+	}
+
+	/**
+	 * Navigate to the {@link View} identified by given <code>viewName</code> using the same behaviour of
 	 * {@link #navigateTo(String, Map)} but rendering the View contents in an application Window, using optional
 	 * <code>windowConfiguration</code> to setup Window features.
 	 * @param viewName View name
