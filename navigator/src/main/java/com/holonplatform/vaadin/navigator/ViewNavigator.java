@@ -321,6 +321,20 @@ public interface ViewNavigator extends Serializable {
 	public interface Builder extends NavigatorBuilder<Builder> {
 
 		/**
+		 * Add a default {@link ViewProvider} (if not already present) and register the given {@link View} class bound
+		 * to given view name. This {@link ViewProvider} supports {@link StatefulView} view instances.
+		 * <p>
+		 * View instances will be created according to view scope: for stateful views, an instance is created at
+		 * first request (for each UI) and the same instance is returned to subsequent view requests. On the contrary,
+		 * for standard views, a new instance is created and returned to navigator for every view request.
+		 * </p>
+		 * @param viewName View name (not null)
+		 * @param viewClass View class (not null)
+		 * @return this
+		 */
+		Builder withView(String viewName, Class<? extends View> viewClass);
+
+		/**
 		 * Set the NavigationStateManager keeping track of the active view and enabling bookmarking and direct
 		 * navigation.
 		 * @param navigationStateManager NavigationStateManager or <code>null</code> to use the default implementation

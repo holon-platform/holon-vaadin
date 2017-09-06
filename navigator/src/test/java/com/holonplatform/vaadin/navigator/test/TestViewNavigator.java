@@ -353,15 +353,12 @@ public class TestViewNavigator extends AbstractVaadinTest {
 
 		final VerticalLayout vd = new VerticalLayout();
 
-		DefaultViewProvider provider = new DefaultViewProvider();
-		provider.registerView(VIEW_ONE, ViewOne.class);
-		provider.registerView(VIEW_SEVEN, ViewSeven.class);
-
 		Context.get().scope(Context.CLASSLOADER_SCOPE_NAME)
 				.map(s -> s.put(ContextTestData.class.getName(), new ContextTestData(1)));
 
-		ViewNavigator navigator = ViewNavigator.builder().viewDisplay(vd).addProvider(provider)
-				.maxNavigationHistorySize(10).defaultViewName(VIEW_ONE).buildAndBind(ui);
+		ViewNavigator navigator = ViewNavigator.builder().viewDisplay(vd).withView(VIEW_ONE, ViewOne.class)
+				.withView(VIEW_SEVEN, ViewSeven.class).maxNavigationHistorySize(10).defaultViewName(VIEW_ONE)
+				.buildAndBind(ui);
 
 		navigator.navigateToDefault();
 

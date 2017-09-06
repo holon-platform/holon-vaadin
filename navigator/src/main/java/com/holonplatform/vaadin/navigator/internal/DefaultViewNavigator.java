@@ -17,6 +17,7 @@ package com.holonplatform.vaadin.navigator.internal;
 
 import java.util.Map;
 
+import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.navigator.ViewNavigator;
 import com.holonplatform.vaadin.navigator.internal.ViewConfiguration.ViewWindowConfiguration;
 import com.vaadin.navigator.NavigationStateManager;
@@ -311,6 +312,7 @@ public class DefaultViewNavigator extends Navigator implements ViewNavigatorAdap
 
 		protected NavigationStateManager navigationStateManager;
 		protected ViewDisplay viewDisplay;
+		protected DefaultViewProvider defaultViewProvider;
 
 		public ViewNavigatorBuilder() {
 			super(new DefaultViewNavigator());
@@ -322,6 +324,22 @@ public class DefaultViewNavigator extends Navigator implements ViewNavigatorAdap
 		 */
 		@Override
 		protected Builder builder() {
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.navigator.ViewNavigator.Builder#withView(java.lang.String, java.lang.Class)
+		 */
+		@Override
+		public Builder withView(String viewName, Class<? extends View> viewClass) {
+			ObjectUtils.argumentNotNull(viewName, "View name must be not null");
+			ObjectUtils.argumentNotNull(viewClass, "View class must be not null");
+			if (defaultViewProvider == null) {
+				defaultViewProvider = new DefaultViewProvider();
+				addProvider(defaultViewProvider);
+			}
+			defaultViewProvider.registerView(viewName, viewClass);
 			return this;
 		}
 
