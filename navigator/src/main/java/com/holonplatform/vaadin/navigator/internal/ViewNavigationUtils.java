@@ -658,17 +658,7 @@ public final class ViewNavigationUtils implements Serializable {
 		WindowView wv = viewClass.getAnnotation(WindowView.class);
 		if (wv != null) {
 			cfg.setForceInWindow(true);
-
-			DefaultViewWindowConfiguration wCfg = new DefaultViewWindowConfiguration();
-			wCfg.setClosable(wv.closable());
-			wCfg.setResizable(wv.resizable());
-			if (!AnnotationUtils.isEmpty(wv.windowWidth())) {
-				wCfg.setWindowWidth(wv.windowWidth());
-			}
-			if (!AnnotationUtils.isEmpty(wv.windowHeigth())) {
-				wCfg.setWindowHeight(wv.windowHeigth());
-			}
-			cfg.setWindowConfiguration(wCfg);
+			cfg.setWindowConfiguration(wv);
 		}
 
 		Caption cpt = viewClass.getAnnotation(Caption.class);

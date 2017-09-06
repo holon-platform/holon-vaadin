@@ -17,12 +17,13 @@ package com.holonplatform.vaadin.navigator.internal;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.navigator.ViewNavigator;
 import com.holonplatform.vaadin.navigator.ViewNavigator.NavigationBuilder;
 import com.holonplatform.vaadin.navigator.ViewNavigator.ViewNavigationException;
-import com.holonplatform.vaadin.navigator.ViewWindowConfiguration;
+import com.holonplatform.vaadin.navigator.ViewWindowConfigurator;
 import com.vaadin.ui.Window;
 
 /**
@@ -71,11 +72,12 @@ public class DefaultNavigationBuilder implements NavigationBuilder {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.navigator.ViewNavigator.NavigationBuilder#navigateInWindow(com.holonplatform.
-	 * vaadin.navigator.ViewWindowConfiguration)
+	 * @see
+	 * com.holonplatform.vaadin.navigator.ViewNavigator.NavigationBuilder#navigateInWindow(java.util.function.Consumer)
 	 */
 	@Override
-	public Window navigateInWindow(ViewWindowConfiguration windowConfiguration) throws ViewNavigationException {
+	public Window navigateInWindow(Consumer<ViewWindowConfigurator> windowConfiguration)
+			throws ViewNavigationException {
 		return navigator.navigateInWindow(viewName, windowConfiguration, parameters);
 	}
 

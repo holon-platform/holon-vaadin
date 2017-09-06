@@ -23,12 +23,14 @@ import java.util.List;
 import java.util.Optional;
 
 import com.holonplatform.auth.annotations.Authenticate;
+import com.holonplatform.core.internal.utils.AnnotationUtils;
 import com.holonplatform.vaadin.navigator.SubViewContainer;
 import com.holonplatform.vaadin.navigator.ViewContentProvider;
-import com.holonplatform.vaadin.navigator.ViewWindowConfiguration;
+import com.holonplatform.vaadin.navigator.ViewWindowConfigurator;
 import com.holonplatform.vaadin.navigator.annotations.OnLeave;
 import com.holonplatform.vaadin.navigator.annotations.OnShow;
 import com.holonplatform.vaadin.navigator.annotations.ViewContext;
+import com.holonplatform.vaadin.navigator.annotations.WindowView;
 
 /**
  * Default {@link ViewConfiguration} implementation.
@@ -49,7 +51,7 @@ public class DefaultViewConfiguration implements ViewConfiguration {
 	private Collection<ViewParameterDefinition> parameters;
 	private List<Method> onShowMethods;
 	private List<Method> onLeaveMethods;
-	private ViewWindowConfiguration windowConfiguration;
+	private WindowView windowConfiguration;
 	private List<Method> fireOnRefreshMethods;
 	private Collection<ViewContextField> contextInjectionFields;
 	private Authenticate authentication;
@@ -156,7 +158,7 @@ public class DefaultViewConfiguration implements ViewConfiguration {
 	 * Set view Window configuration
 	 * @param windowConfiguration View Window configuration
 	 */
-	public void setWindowConfiguration(ViewWindowConfiguration windowConfiguration) {
+	public void setWindowConfiguration(WindowView windowConfiguration) {
 		this.windowConfiguration = windowConfiguration;
 	}
 
@@ -295,18 +297,6 @@ public class DefaultViewConfiguration implements ViewConfiguration {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.ui.navigator.ViewConfiguration#getWindowConfiguration()
-	 */
-	@Override
-	public ViewWindowConfiguration getWindowConfiguration() {
-		if (windowConfiguration == null) {
-			return new DefaultViewWindowConfiguration();
-		}
-		return windowConfiguration;
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.ui.navigator.ViewConfiguration#getContextInjectionFields()
 	 */
 	@Override
@@ -324,6 +314,24 @@ public class DefaultViewConfiguration implements ViewConfiguration {
 	@Override
 	public Optional<Authenticate> getAuthentication() {
 		return Optional.ofNullable(authentication);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.util.function.Consumer#accept(java.lang.Object)
+	 */
+	@Override
+	public void accept(ViewWindowConfigurator t) {
+		if (windowConfiguration != null) {
+			t.closable(windowConfiguration.closable());
+			t.resizable(windowConfiguration.resizable());
+			if (!AnnotationUtils.isEmpty(windowConfiguration.windowWidth())) {
+				t.width(windowConfiguration.windowWidth());
+			}
+			if (!AnnotationUtils.isEmpty(windowConfiguration.windowHeigth())) {
+				t.height(windowConfiguration.windowHeigth());
+			}
+		}
 	}
 
 }

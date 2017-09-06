@@ -21,12 +21,13 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import com.holonplatform.auth.annotations.Authenticate;
 import com.holonplatform.core.i18n.Caption;
 import com.holonplatform.vaadin.navigator.SubViewContainer;
 import com.holonplatform.vaadin.navigator.ViewContentProvider;
-import com.holonplatform.vaadin.navigator.ViewWindowConfiguration;
+import com.holonplatform.vaadin.navigator.ViewWindowConfigurator;
 import com.holonplatform.vaadin.navigator.annotations.OnLeave;
 import com.holonplatform.vaadin.navigator.annotations.OnShow;
 import com.holonplatform.vaadin.navigator.annotations.ViewContext;
@@ -43,7 +44,7 @@ import com.vaadin.navigator.View;
  * 
  * @since 5.0.0
  */
-public interface ViewConfiguration extends Serializable {
+public interface ViewConfiguration extends Consumer<ViewWindowConfigurator>, Serializable {
 
 	/**
 	 * Gets whether this view is volatile (not to be tracked in navigation history)
@@ -121,12 +122,6 @@ public interface ViewConfiguration extends Serializable {
 	 * @return OnLeave methods in call order, or an empty list if none
 	 */
 	List<Method> getOnLeaveMethods();
-
-	/**
-	 * Get optional Window configuration when View display {@link #isForceInWindow()} is <code>true</code>
-	 * @return Optional View Window configuration, or <code>null</code>
-	 */
-	ViewWindowConfiguration getWindowConfiguration();
 
 	/**
 	 * View class fields which declare {@link ViewContext} data injection

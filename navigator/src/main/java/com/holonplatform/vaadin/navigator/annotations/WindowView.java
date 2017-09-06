@@ -22,7 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.holonplatform.vaadin.navigator.ViewWindowConfiguration;
+import com.holonplatform.vaadin.navigator.ViewWindowConfigurator;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Window;
@@ -52,14 +52,14 @@ public @interface WindowView {
 
 	/**
 	 * View Window width using String representation. See {@link Sizeable#setWidth(String)} for details.
-	 * @return View Window width. Default is {@link ViewWindowConfiguration#DEFAULT_WINDOW_WIDTH}
+	 * @return View Window width. Default is {@link ViewWindowConfigurator#DEFAULT_WINDOW_WIDTH}
 	 */
-	String windowWidth() default ViewWindowConfiguration.DEFAULT_WINDOW_WIDTH;
+	String windowWidth() default ViewWindowConfigurator.DEFAULT_WINDOW_WIDTH;
 
 	/**
 	 * View Window height using String representation. See {@link Sizeable#setHeight(String)} for details.
-	 * @return View Window height. Default is {@link ViewWindowConfiguration#DEFAULT_WINDOW_HEIGHT}
+	 * @return View Window height. Default is {@link ViewWindowConfigurator#DEFAULT_WINDOW_HEIGHT}
 	 */
-	String windowHeigth() default ViewWindowConfiguration.DEFAULT_WINDOW_HEIGHT;
+	String windowHeigth() default ViewWindowConfigurator.DEFAULT_WINDOW_HEIGHT;
 
 }

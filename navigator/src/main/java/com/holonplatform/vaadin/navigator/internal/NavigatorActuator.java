@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Stack;
+import java.util.function.Consumer;
 
 import com.holonplatform.auth.AuthContext;
 import com.holonplatform.auth.annotations.Authenticate;
@@ -37,7 +38,7 @@ import com.holonplatform.vaadin.internal.VaadinLogger;
 import com.holonplatform.vaadin.navigator.SubViewContainer;
 import com.holonplatform.vaadin.navigator.ViewNavigator;
 import com.holonplatform.vaadin.navigator.ViewNavigator.ViewNavigationException;
-import com.holonplatform.vaadin.navigator.ViewWindowConfiguration;
+import com.holonplatform.vaadin.navigator.ViewWindowConfigurator;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -509,12 +510,12 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 	 * {@link #navigateTo(String)} but rendering the View contents in an application Window, using optional
 	 * <code>windowConfiguration</code> to setup Window features.
 	 * @param viewName View name
-	 * @param windowConfiguration Optional Window configuration settings
+	 * @param windowConfiguration Optional Window configurator
 	 * @param parameters Optional view parameters
 	 * @return The UI Window in which the View is displayed
 	 * @throws ViewNavigationException View with given name cannot be found or other view handling error
 	 */
-	public Window navigateInWindow(String viewName, ViewWindowConfiguration windowConfiguration,
+	public Window navigateInWindow(String viewName, Consumer<ViewWindowConfigurator> windowConfiguration,
 			Map<String, Object> parameters) throws ViewNavigationException {
 
 		// Get view instance
@@ -920,24 +921,46 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 	 * @param navigationState Navigation state
 	 * @param view View to display
 	 * @param viewName View name
-	 * @param viewConfiguration View configuration
+	 * @param viewConfiguration View configurator
 	 * @param windowConfiguration Optional Window configuration
 	 * @return Window to use to display the given View
 	 */
 	@SuppressWarnings("serial")
 	protected Window buildViewWindow(final String navigationState, final View view, final String viewName,
-			final ViewConfiguration viewConfiguration, ViewWindowConfiguration windowConfiguration) {
+			final ViewConfiguration viewConfiguration, Consumer<ViewWindowConfigurator> windowConfigurator) {
 
-		// window configuration
-		ViewWindowConfiguration viewWindowConfiguration = windowConfiguration;
-		if (viewWindowConfiguration == null && viewConfiguration != null) {
-			viewWindowConfiguration = viewConfiguration.getWindowConfiguration();
+		// window
+		String caption = null;
+		if (viewConfiguration != null) {
+			caption = LocalizationContext.translate(viewConfiguration.getCaptionMessageCode(),
+					viewConfiguration.getCaption(), true);
 		}
 
-		final Window window = createViewWindow(navigationState, viewConfiguration, viewWindowConfiguration);
-		window.setModal(true);
+		final DefaultViewWindow wnd = new DefaultViewWindow(caption, navigationState);
 
-		window.addCloseListener(new CloseListener() {
+		wnd.setWidth(ViewWindowConfigurator.DEFAULT_WINDOW_WIDTH);
+		wnd.setHeight(ViewWindowConfigurator.DEFAULT_WINDOW_WIDTH);
+
+		wnd.setClosable(true);
+		wnd.setResizable(true);
+		wnd.setDraggable(true);
+
+		wnd.addStyleName(ViewWindowConfigurator.DEFAULT_WINDOW_STYLE_NAME);
+
+		final ViewWindowConfigurator configurator = new DefaultViewWindowConfigurator(wnd);
+
+		// window configuration
+		if (viewConfiguration != null) {
+			viewConfiguration.accept(configurator);
+		}
+		if (windowConfigurator != null) {
+			windowConfigurator.accept(configurator);
+		}
+
+		// force modal
+		wnd.setModal(true);
+
+		wnd.addCloseListener(new CloseListener() {
 
 			@Override
 			public void windowClose(CloseEvent e) {
@@ -945,50 +968,8 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 			}
 		});
 
-		return window;
-
-	}
-
-	/**
-	 * Create a {@link Window} to display a View.
-	 * @param navigationState Navigation state
-	 * @param viewConfiguration View Configuration
-	 * @param windowConfiguration Window configuration settings, can be <code>null</code>
-	 * @return Window to display a View
-	 */
-	protected Window createViewWindow(String navigationState, ViewConfiguration viewConfiguration,
-			ViewWindowConfiguration windowConfiguration) throws ViewNavigationException {
-		String caption = null;
-		if (viewConfiguration != null) {
-			caption = LocalizationContext.translate(viewConfiguration.getCaptionMessageCode(),
-					viewConfiguration.getCaption(), true);
-		}
-
-		final Window wnd = new DefaultViewWindow(caption, navigationState);
-
-		String w = ViewWindowConfiguration.DEFAULT_WINDOW_WIDTH;
-		String h = ViewWindowConfiguration.DEFAULT_WINDOW_WIDTH;
-
-		boolean closable = true;
-		boolean resizable = true;
-
-		if (windowConfiguration != null) {
-			w = windowConfiguration.getWindowWidth();
-			h = windowConfiguration.getWindowHeight();
-			closable = windowConfiguration.isClosable();
-			resizable = windowConfiguration.isResizable();
-		}
-
-		wnd.setWidth(w);
-		wnd.setHeight(h);
-
-		wnd.setClosable(closable);
-		wnd.setResizable(resizable);
-		wnd.setDraggable(true);
-
-		wnd.addStyleName(ViewWindowConfiguration.DEFAULT_WINDOW_STYLE_NAME);
-
 		return wnd;
+
 	}
 
 	/**

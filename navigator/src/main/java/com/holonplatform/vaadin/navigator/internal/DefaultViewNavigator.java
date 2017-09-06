@@ -16,10 +16,11 @@
 package com.holonplatform.vaadin.navigator.internal;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.navigator.ViewNavigator;
-import com.holonplatform.vaadin.navigator.ViewWindowConfiguration;
+import com.holonplatform.vaadin.navigator.ViewWindowConfigurator;
 import com.vaadin.navigator.NavigationStateManager;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
@@ -238,13 +239,11 @@ public class DefaultViewNavigator extends Navigator implements ViewNavigatorAdap
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.ui.navigator.ViewNavigator#navigateInWindow(java.lang.String,
-	 * com.holonplatform.vaadin.ui.navigator.ViewWindowConfiguration, java.util.Map)
+	/* (non-Javadoc)
+	 * @see com.holonplatform.vaadin.navigator.ViewNavigator#navigateInWindow(java.lang.String, java.util.function.Consumer, java.util.Map)
 	 */
 	@Override
-	public Window navigateInWindow(String viewName, ViewWindowConfiguration windowConfiguration,
+	public Window navigateInWindow(String viewName, Consumer<ViewWindowConfigurator> windowConfiguration,
 			Map<String, Object> parameters) throws ViewNavigationException {
 		return actuator.navigateInWindow(viewName, windowConfiguration, parameters);
 	}

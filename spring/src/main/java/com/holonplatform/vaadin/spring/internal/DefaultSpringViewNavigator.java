@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.spring.internal;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -23,7 +24,7 @@ import org.springframework.context.ApplicationContext;
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.vaadin.internal.VaadinLogger;
 import com.holonplatform.vaadin.navigator.ViewNavigator;
-import com.holonplatform.vaadin.navigator.ViewWindowConfiguration;
+import com.holonplatform.vaadin.navigator.ViewWindowConfigurator;
 import com.holonplatform.vaadin.navigator.internal.AbstractNavigatorBuilder;
 import com.holonplatform.vaadin.navigator.internal.ContainerViewDisplay;
 import com.holonplatform.vaadin.navigator.internal.NavigatorActuator;
@@ -304,7 +305,7 @@ public class DefaultSpringViewNavigator extends SpringNavigator implements ViewN
 	 * com.holonplatform.vaadin.ui.navigator.ViewWindowConfiguration, java.util.Map)
 	 */
 	@Override
-	public Window navigateInWindow(String viewName, ViewWindowConfiguration windowConfiguration,
+	public Window navigateInWindow(String viewName, Consumer<ViewWindowConfigurator> windowConfiguration,
 			Map<String, Object> parameters) throws ViewNavigationException {
 		return actuator.navigateInWindow(viewName, windowConfiguration, parameters);
 	}
