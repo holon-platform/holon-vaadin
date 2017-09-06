@@ -464,6 +464,14 @@ public interface ViewNavigator extends Serializable {
 		B navigateToDefaultViewWhenViewNotAvailable(boolean navigateToDefaultViewWhenViewNotAvailable);
 
 		/**
+		 * Set the default {@link ViewWindowConfigurator} consumer to used for all the view Windows created by this
+		 * navigator.
+		 * @param configurator View window configurator
+		 * @return this
+		 */
+		B defaultViewWindowConfigurator(Consumer<ViewWindowConfigurator> configurator);
+
+		/**
 		 * Set the view to be displayed when no other view matches the navigation state.
 		 * @param errorView Error view
 		 * @return this
