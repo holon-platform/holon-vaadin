@@ -186,7 +186,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[
 The data source of the available items for a _selectable_ input can be configured in the following ways:
 
 * Using a fixed set of items, which can be provided using the `addItem(...)` or `items(...)` methods of the select input builder;
-* Using a Holon platform `ItemDataSource` data provider;
+* Using a Holon platform `ItemDataProvider` data provider;
 * Using a standard Vaadin `DataProvider`.
 
 [source, java]
@@ -194,7 +194,7 @@ The data source of the available items for a _selectable_ input can be configure
 include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[tag=selectable4,indent=0]
 ----
 <1> Create a select input using an explicitly provided items set
-<2> Create a select input using a Holon platform `ItemDataSource`
+<2> Create a select input using a Holon platform `ItemDataProvider`
 <3> Create a select input using a Vaadin `DataProvider`
 
 ==== Item captions and icons
@@ -470,6 +470,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag
 <1> Create a `BeanListing` using the `TestData` bean class
 <2> Set the column header for the `id` item (bean) property
 <3> Set the column header for the `description` item (bean) property
+<4> Refresh the items set
 
 === PropertyListing
 
