@@ -504,11 +504,11 @@ public interface ViewNavigator extends Serializable {
 		 * provided through {@link Authenticate#redirectURI()}, the navigation is redirected to that URI. If the URI
 		 * does not specify a scheme, or the scheme is equal to <code>view://</code>, the navigation is redirected to
 		 * the navigation state following the <code>view://</code> scheme or to the navigation state equal to the
+		 * {@link Authenticate#redirectURI()} attribute if a URI scheme is not specified.
 		 * </p>
 		 * <p>
 		 * The authentication support is enabled by default.
 		 * </p>
-		 * {@link Authenticate#redirectURI()} attribute if a URI scheme is not specified.
 		 * @param authenticationEnabled <code>true</code> to enable the {@link Authenticate} support, <code>false</code>
 		 *        to disable.
 		 * @return this
