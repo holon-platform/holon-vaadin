@@ -1,2 +1,80 @@
-== Spring
+== Spring integration
 
+The `holon-vaadin-spring` artifact provides support and integration with the https://spring.io[Spring^] framework.
+
+_Maven coordinates_:
+[source, xml, subs="attributes+"]
+----
+<groupId>com.holon-platform.vaadin</groupId>
+<artifactId>holon-vaadin-spring</artifactId>
+<version>{revnumber}</version>
+----
+
+This artifact provides a `ViewNavigator` extension with Spring support, represented by the link:{apidir}/com/holonplatform/vaadin/spring/SpringViewNavigator.html[SpringViewNavigator^] interface.
+
+The `SpringViewNavigator` implementation relies upon the standard Vaadin Spring integration add-on, and supports all its functionalities and configuration features.
+
+See http://vaadin.github.io/spring-tutorial[the Vaadin Spring tutorial^] for the documentation.
+
+The following annotations are available for `View` configuration:
+
+* link:{apidir}/com/holonplatform/vaadin/spring/DefaultView.html[DefaultView^]: can be used on a `View` class to declare it as the *default* view, i.e the view which will be used as target of the `ViewNavigator.navigateToDefault()` method and as a fallback by the `ViewNavigator.navigateBack()` method if no other `View` is available in navigation history.
+
+* link:{apidir}/com/holonplatform/vaadin/spring/ErrorView.html[ErrorView^]: can be used on a `View` class to declare it as the default *error* view, i.e. the `View` to be displayed when no other `View` matches a navigation state.
+
+=== Spring view navigator configuration
+
+The `SpringViewNavigator` API provides a _builder_ to create a navigator instance, and can be used to explicitly build and configure a `SpringViewNavigator` instance. The bulder can be obtained through the static `builder()` method of the `SpringViewNavigator` interface.
+
+The easiest way to setup a Spring view navigator, is to use the provided link:{apidir}/com/holonplatform/vaadin/spring/config/EnableViewNavigator.html[EnableViewNavigator^] configuration annotation.
+
+The `@EnableViewNavigator` can be used on Spring configuration classes to automatically setup the default Vaadin Spring integration and registering a UI-scoped `SpringViewNavigator` bean. The standard `@SpringViewDisplay` annotation can be used to configure the views display component and the default Vaadin Spring `ViewProvider` will be used.
+
+NOTE: The `@EnableViewNavigator` annotation includes the standard `com.vaadin.spring.annotation.@EnableVaadin` annotation behaviour, which is not required anymore on configuration classes.
+
+The `@EnableViewNavigator` annotation makes available a number of properties to control the navigator configuration, for example to explicitly configure the default and error views or to set the max navigation history size. See the link:{apidir}/com/holonplatform/vaadin/spring/config/EnableViewNavigator.html[EnableViewNavigator^] javadocs for further information.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSpring.java[tag=spring1,indent=0]
+----
+<1> Declare the class as a Spring configuration class
+<2> Set the _component scan_ rule to auto detect the `View` beans
+<3> Enable the Spring `ViewNavigator`
+<4> Enable the Holon platform Spring _context_ scope, to provide context resource instances as Spring beans
+<5> Declare the view as Spring view (which will be automatically registered in the navigator view provider), and bind it to the `view1` name
+<6> Declare the view as the default view
+<7> Create another view and enable it as a Spring view using the `view2` name
+<8> Declare the view bean scope as `UI`
+<9> Create the application `UI` and declare it as a Spring `UI`, which will be automatically detected and configured by Spring
+<10> Use the `UI` as `View` display container
+<11> The `ViewNavigator` will be made avaialable as Spring (UI-scoped) bean, so it can be obtained using dependency injection
+
+=== View context resources
+
+The link:{apidir}/com/holonplatform/vaadin/spring/config/EnableViewContext.html[EnableViewContext^] annotation can be used on Spring configuration classes to enable `View` context resource injection using the link:{apidir}/com/holonplatform/vaadin/navigator/annotations/ViewContext.html[ViewContext^] annotation.
+
+See <<ViewContext>> for further information. 
+
+=== View authorization support
+
+In addition to the `ViewNavigator` authentication support (see <<ViewAuthentication>>), the Spring view navigator provides View *authorization* support using default `javax.annotation.security.*` annotations (`@RolesAllowed`, `@PermitAll`, `@DenyAll`).
+
+The authorization support can be enabled using the link:{apidir}/com/holonplatform/vaadin/spring/config/EnableViewAuthorization.html[EnableViewAuthorization^] annotation and, just like the authentication support, relies on the current `AuthContext` to perform authorization control, so it must be available as a _context_ resource.
+
+TIP: By using the `@EnableBeanContext` configuration annotation, Spring beans can be automatically configured as _context_ resources. See the link:holon-core.html#SpringContextScope[SpringContextScope] documentation for further information.
+
+NOTE: The default Vaadin Spring `ViewAccessControl` and `ViewInstanceAccessControl` view access control methods are fully supported too, and can be used along with the security annotations.
+
+The link:{apidir}/com/holonplatform/vaadin/spring/AccessDeniedView.html[AccessDeniedView^] annotation can be used on a Spring `View` class to declare it as the view to show when the user is not authorized to access a view, either according to a `javax.annotation.security.*` annotation or to a `ViewAccessControl` or `ViewInstanceAccessControl` rule.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSpringAuthz.java[tag=authz,indent=0]
+----
+<1> Use `@EnableBeanContext` to enable Spring beans as context resources (in this example, the `AuthContext` bean will be available as context resource)
+<2> Enable views authorization using `javax.annotation.security.*` annotations
+<3> Configure the `AuthContext` and declare it as a session-scoped Spring bean
+<4> Use `@PermitAll` on this view to skip authorization control
+<5> Use `@RolesAllowed` to declare that the view is available only for the authenticated subjects with the `role1` role
+<6> Create a custom _access denied_ view using the `@AccessDeniedView` annotation

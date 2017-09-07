@@ -235,6 +235,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleNavigator.java[t
 <1> A view declared as `SubViewContainer` using a `TabSheet` to display each sub view in a new tab. We suppose this view is bound to the `mycontainer` view name
 <2> A sub view bound to the `mycontainer` sub view container using the `@SubViewOf` annotation
 
+[[ViewContext]]
 === Context resources injection
 
 The `ViewNavigator` supports *Context* resources injection into the `View` instances. A resource available form the Holon platform `Context` registry can be injected in a `View` using the link:{apidir}/com/holonplatform/vaadin/navigator/annotations/ViewContext.html[ViewContext^] annotation on a `View` field.
@@ -263,3 +264,25 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleNavigator.java[t
 ----
 <1> Try to obtain the `ViewNavigator` from context or current `UI`
 <2> Obtain the `ViewNavigator` from context or current `UI`, failing with an exception if not found
+
+[[ViewAuthentication]]
+=== Authentication support
+
+The `ViewNavigator` architecture provides support for `View` authentication, relying on the default Holon platform `AuthContext` API.
+
+TIP: See the link:holon-core.html#Realm[Realm] and link:holon-core.html#AuthContext[AuthContext] documentation for information about the Holon platform authentication and authorization architecture.
+
+In order for the authentication to work, an `AuthContext` instance must be available as a _context_ resource, and it will be used to perform user authentication and resource access control, relying on the `Realm` bound to the auth context. 
+
+The authentication support is enabled by default, but it can be configured using the `authenticationEnabled(...)` `ViewNavigator` builder method.
+
+The *authentication* support is enabled through the standard `com.holonplatform.auth.annotations.Authenticate` annotation, which can be used on a `View` class or on the application `UI` class.
+
+When the `Authenticate` annotation is used at `UI` level, all the views managed by the navigator bound to such `UI` will be under authentication, and the access to any `View` will be denied if an authenticated subject is not available from the current `AuthContext`.
+
+Each time the navigation to a protected `View` is requested, the `AuthContext` is checked, and if it not authenticated, the following strategy is implemented:
+
+1. An _implicit_ authentication attempt is performed, using the current `VaadinRequest` and the optional authentication schemes which can be specified using the `schemes()` attribute of the `Authenticate` annotation. This behaviour can be used, for example, to support authentication using the current HTTP request and schemes such the `Authorization` HTTP header.
+
+2. If the _implicit_ authentication is not successfull and a valid *redirect URI* is provided through the `redirectURI()` property of the `Authenticate` annotation, the navigation is redirected to that URI. If the redirect URI does not specify a scheme, or the scheme is equal to the special `view://` scheme, the navigation is redirected to the navigation state specified by the redirect URI (escluding the `view://` part, if present). This way, the redirect URI can be used to delegate to a `View` an _explicit_ authentication entry point (for example using conventional username and password credentials). 
+
