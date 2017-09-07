@@ -238,6 +238,16 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 	B style(P property, CellStyleGenerator<T, P> cellStyleGenerator);
 
 	/**
+	 * Set the column cell style name for given <code>property</code>
+	 * @param property Item property to set the style for (not null)
+	 * @param styleName The property column style name
+	 * @return this
+	 */
+	default B style(P property, String styleName) {
+		return style(property, (p, item) -> styleName);
+	}
+
+	/**
 	 * Set the listing selection mode.
 	 * @param selectionMode Selection mode to set (not null). Use {@link SelectionMode#NONE} to disable selection.
 	 * @return this
