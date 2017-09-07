@@ -41,6 +41,18 @@ public interface LayoutConfigurator<B extends LayoutConfigurator<B>> extends Cli
 	B margin();
 
 	/**
+	 * Disable spacing between child components within the layout.
+	 * @return this
+	 */
+	B withoutSpacing();
+
+	/**
+	 * Disable layout margins. Affects all four sides of the layout.
+	 * @return this
+	 */
+	B withoutMargin();
+
+	/**
 	 * Enable layout top margin.
 	 * @return this
 	 */

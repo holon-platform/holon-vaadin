@@ -67,6 +67,26 @@ public abstract class AbstractLayoutConfigurator<I extends AbstractLayout & Layo
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.LayoutConfigurator#withoutSpacing()
+	 */
+	@Override
+	public B withoutSpacing() {
+		getInstance().setSpacing(false);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.LayoutConfigurator#withoutMargin()
+	 */
+	@Override
+	public B withoutMargin() {
+		getInstance().setMargin(false);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.builders.LayoutBuilder#marginTop()
 	 */
 	@Override
