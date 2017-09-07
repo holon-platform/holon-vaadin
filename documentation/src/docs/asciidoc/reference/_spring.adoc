@@ -78,3 +78,53 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSpringAuthz.java
 <4> Use `@PermitAll` on this view to skip authorization control
 <5> Use `@RolesAllowed` to declare that the view is available only for the authenticated subjects with the `role1` role
 <6> Create a custom _access denied_ view using the `@AccessDeniedView` annotation
+
+== Spring Boot integration
+
+The `holon-vaadin-spring-boot` artifact provides integration with https://projects.spring.io/spring-boot[Spring Boot^] for Vaadin application and view navigator auto configuration.
+
+To enable Spring Boot auto-configuration the following artifact must be included in your project dependencies:
+
+_Maven coordinates_:
+[source, xml, subs="attributes+"]
+----
+<groupId>com.holon-platform.vaadin</groupId>
+<artifactId>holon-vaadin-spring-boot</artifactId>
+<version>{revnumber}</version>
+----
+
+The Spring Boot auto-configuration includes the default Spring Boot Vaadin add-on auto configuration features, with the following additional behaviour:
+
+* The configured view navigator will be a Spring `ViewNavigator`
+* The `View` authorization support using the `javax.annotation.security.*` annotations is enabled by default
+
+To disable this auto-configuration feature the `HolonVaadinAutoConfiguration` class can be excluded:
+
+[source, java]
+----
+@EnableAutoConfiguration(exclude={HolonVaadinAutoConfiguration.class})
+----
+
+=== Spring Boot starters
+
+The following _starter_ artifacts are available to provide a quick project configuration setup using Maven dependency system:
+
+*1.* The *Holon Vaadin application starter* provides the dependencies to the Holon Vaadin Spring Boot integration artifact, in addition to default Holon _core_ Spring Boot starters, the default `spring-boot-starter-web` starter and the `spring-boot-starter-tomcat` to use Tomcat as the embedded servlet container:
+
+_Maven coordinates_:
+[source, xml, subs="attributes+"]
+----
+<groupId>com.holon-platform.vaadin</groupId>
+<artifactId>holon-starter-vaadin</artifactId>
+<version>{revnumber}</version>
+----
+
+*2.* The *Holon Vaadin application starter using Undertow*, to use Undertow instead of Tomcat as embedded servlet container:
+
+_Maven coordinates_:
+[source, xml, subs="attributes+"]
+----
+<groupId>com.holon-platform.vaadin</groupId>
+<artifactId>holon-starter-vaadin-undertow</artifactId>
+<version>{revnumber}</version>
+----
