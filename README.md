@@ -4,7 +4,7 @@ This is the __Vaadin UI__ module of the [Holon Platform](https://holon-platform.
 
 The module main features are:
 
-* A Java API to build (using _fleunt_ builders), manage and use the web application UI components.
+* A Java API to build (using _fluent_ builders), manage and use the web application UI components.
 * Integration with the platform foundation architecture, such as the `Property` model and the `Datastore` API, the authentication, authorization and localization support.
 * A powerful and easy to use `View` _navigator_ to manage the web application _virtual pages_
 * __Spring__ and __Spring Boot__ integration
