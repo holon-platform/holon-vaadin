@@ -13,7 +13,7 @@
 
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Holon Vaadin integration</description>
-	
+
 	<url>https://holon-platform.com</url>
 
 	<dependencyManagement>
@@ -74,7 +74,7 @@
 			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
@@ -82,7 +82,7 @@
 		</dependency>
 
 		<!-- Test -->
-		
+
 		<dependency>
 			<groupId>com.holon-platform.jdbc</groupId>
 			<artifactId>holon-datastore-jdbc-spring</artifactId>
@@ -110,6 +110,12 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jul-to-slf4j</artifactId>
 			<scope>test</scope>
 		</dependency>
 

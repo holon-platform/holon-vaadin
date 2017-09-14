@@ -20,7 +20,9 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Optional;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -28,11 +30,11 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.holonplatform.auth.Account;
+import com.holonplatform.auth.Account.AccountProvider;
 import com.holonplatform.auth.AuthContext;
 import com.holonplatform.auth.AuthenticationToken;
 import com.holonplatform.auth.Credentials;
 import com.holonplatform.auth.Realm;
-import com.holonplatform.auth.Account.AccountProvider;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.spring.EnableBeanContext;
 import com.holonplatform.vaadin.navigator.ViewNavigator;
@@ -84,6 +86,12 @@ public class TestViewAuthorizationWithError extends AbstractVaadinSpringTest {
 
 	private ViewNavigator navigator;
 	private Panel viewer;
+
+	@BeforeClass
+	public static void setupLogger() {
+		SLF4JBridgeHandler.removeHandlersForRootLogger();
+		SLF4JBridgeHandler.install();
+	}
 
 	@Override
 	public void setup() throws Exception {

@@ -33,7 +33,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import com.holonplatform.auth.AuthContext;
 import com.holonplatform.auth.Realm;
@@ -78,6 +80,12 @@ public class TestViewNavigator extends AbstractVaadinTest {
 	public TestViewNavigator() {
 		super();
 		viewer = new Panel();
+	}
+
+	@BeforeClass
+	public static void setupLogger() {
+		SLF4JBridgeHandler.removeHandlersForRootLogger();
+		SLF4JBridgeHandler.install();
 	}
 
 	@Test

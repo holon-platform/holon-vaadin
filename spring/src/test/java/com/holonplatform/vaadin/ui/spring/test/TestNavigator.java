@@ -26,7 +26,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -102,6 +104,12 @@ public class TestNavigator extends AbstractVaadinSpringTest {
 	private Panel viewer;
 
 	private UI ui;
+
+	@BeforeClass
+	public static void setupLogger() {
+		SLF4JBridgeHandler.removeHandlersForRootLogger();
+		SLF4JBridgeHandler.install();
+	}
 
 	@Override
 	public void setup() throws Exception {
