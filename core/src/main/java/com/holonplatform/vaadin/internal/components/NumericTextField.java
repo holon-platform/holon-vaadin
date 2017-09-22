@@ -66,6 +66,25 @@ public class NumericTextField extends TextField {
 		this.elementPropertyHandler = new ElementPropertyHandler(this);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.vaadin.ui.AbstractTextField#setValue(java.lang.String)
+	 */
+	@Override
+	public void setValue(String value) {
+		super.setValue((value != null) ? value : "");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.vaadin.ui.AbstractTextField#getValue()
+	 */
+	@Override
+	public String getValue() {
+		String value = super.getValue();
+		return (value != null && value.trim().length() == 0) ? null : value;
+	}
+
 	/**
 	 * Gets whether to set html5 input type property as "number"
 	 * @return <code>true</code> to set html5 input type property as "number"
