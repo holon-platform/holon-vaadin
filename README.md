@@ -9,11 +9,11 @@ The module main features are:
 * A powerful and easy to use `View` _navigator_ to manage the web application _virtual pages_
 * __Spring__ and __Spring Boot__ integration
 
-See the module [documentation](https://holon-platform.com/docs/current/reference/holon-vaadin.html) for details.
+See the module [documentation](https://docs.holon-platform.com/current/reference/holon-vaadin.html) for details.
 
 Just like any other platform module, this artifact is part of the [Holon Platform](https://holon-platform.com) ecosystem, but can be also used as a _stand-alone_ library.
 
-See the [platform documentation](https://holon-platform.com/docs/current/reference) for further details.
+See the [platform documentation](https://docs.holon-platform.com/current/reference) for further details.
 
 NOTE: This module requires __Vaadin 8.1 or higher__, a Vaadin 7 compatible version of the module is available [here](https://github.com/holon-platform/holon-vaadin7). 
 
@@ -81,7 +81,7 @@ You can build the sources using Maven (version 3.3.x or above is recommended) li
 
 ## Getting help
 
-* Check the [platform documentation](https://holon-platform.com/docs/current/reference) or the specific [module documentation](https://holon-platform.com/docs/current/reference/holon-vaadin.html).
+* Check the [platform documentation](https://docs.holon-platform.com/current/reference) or the specific [module documentation](https://docs.holon-platform.com/current/reference/holon-vaadin.html).
 
 * Ask a question on [Stack Overflow](http://stackoverflow.com). We monitor the [`holon-platform`](http://stackoverflow.com/tags/holon-platform) tag.
 
