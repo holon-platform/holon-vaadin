@@ -38,9 +38,11 @@ import com.holonplatform.vaadin.navigator.internal.ViewNavigationUtils;
 import com.vaadin.navigator.NavigationStateManager;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewBeforeLeaveEvent;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.navigator.ViewDisplay;
+import com.vaadin.navigator.ViewLeaveAction;
 import com.vaadin.navigator.ViewProvider;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.Registration;
@@ -234,6 +236,19 @@ public interface ViewNavigator extends Serializable {
 	 * @throws ViewNavigationException If no default View is available or other view handling error
 	 */
 	void navigateToDefault() throws ViewNavigationException;
+
+	/**
+	 * Triggers {@link View#beforeLeave(ViewBeforeLeaveEvent)} for the current view with the given action.
+	 * <p>
+	 * This method can be called from application code when you want to e.g. show a confirmation dialog before perfoming
+	 * an action which is not a navigation but which would cause the view to be hidden, e.g. logging out.
+	 * </p>
+	 * <p>
+	 * Note that this method will not trigger any {@link ViewChangeListener}s as it does not navigate to a new view.
+	 * </p>
+	 * @param action the action to execute when the view confirms it is ok to leave
+	 */
+	void runAfterLeaveConfirmation(ViewLeaveAction action);
 
 	/**
 	 * Get a {@link NavigationBuilder} to create a navigation declaration to navigate to given <code>viewName</code>
