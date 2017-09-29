@@ -187,7 +187,7 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 		try {
 			if (showInWindow != null) {
 				// set window contents
-				showInWindow.setContent(ViewDisplayUtils.getViewContent(view));
+				showInWindow.setContent(view.getViewComponent());
 				// open window
 				UI ui = navigator.getUI();
 				if (ui == null) {

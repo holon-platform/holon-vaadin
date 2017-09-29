@@ -34,7 +34,6 @@ import com.holonplatform.vaadin.navigator.annotations.SubViewOf;
 import com.holonplatform.vaadin.navigator.annotations.ViewParameter;
 import com.holonplatform.vaadin.navigator.internal.DefaultNavigationBuilder;
 import com.holonplatform.vaadin.navigator.internal.DefaultViewNavigator;
-import com.holonplatform.vaadin.navigator.internal.ViewDisplayUtils;
 import com.holonplatform.vaadin.navigator.internal.ViewNavigationUtils;
 import com.vaadin.navigator.NavigationStateManager;
 import com.vaadin.navigator.Navigator;
@@ -45,7 +44,6 @@ import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.navigator.ViewProvider;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.Registration;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.SingleComponentContainer;
 import com.vaadin.ui.UI;
@@ -303,18 +301,6 @@ public interface ViewNavigator extends Serializable {
 	 */
 	static Builder builder() {
 		return new DefaultViewNavigator.ViewNavigatorBuilder();
-	}
-
-	/**
-	 * Helper method to get given <code>view</code> content: if View is a {@link ViewContentProvider}, than
-	 * {@link ViewContentProvider#getViewContent()} is returned, else if view is a {@link Component}, view instance
-	 * itself is returned. Otherwise, a {@link IllegalArgumentException} is thrown.
-	 * @param view View for which retrieve the content
-	 * @return View content as {@link Component}, or <code>null</code> if given view was <code>null</code>
-	 * @throws IllegalArgumentException if view instance is not a {@link ViewContentProvider} nor a {@link Component}
-	 */
-	static Component getViewContent(View view) {
-		return ViewDisplayUtils.getViewContent(view);
 	}
 
 	// Events

@@ -47,7 +47,6 @@ import com.holonplatform.vaadin.navigator.ViewNavigator;
 import com.holonplatform.vaadin.navigator.ViewNavigator.ViewNavigationException;
 import com.holonplatform.vaadin.navigator.internal.DefaultViewConfigurationCache;
 import com.holonplatform.vaadin.navigator.internal.DefaultViewProvider;
-import com.holonplatform.vaadin.navigator.internal.ViewDisplayUtils;
 import com.holonplatform.vaadin.navigator.internal.ViewNavigationUtils;
 import com.holonplatform.vaadin.navigator.test.components.ContextTestData;
 import com.holonplatform.vaadin.navigator.test.components.NavigatorTestUI;
@@ -90,12 +89,8 @@ public class TestViewNavigator extends AbstractVaadinTest {
 
 	@Test
 	public void testUtils() {
-
-		TestUtils.checkUtilityClass(ViewDisplayUtils.class);
 		TestUtils.checkUtilityClass(ViewNavigationUtils.class);
-
 		TestUtils.checkEnum(DefaultViewConfigurationCache.class);
-
 	}
 
 	@SuppressWarnings("serial")

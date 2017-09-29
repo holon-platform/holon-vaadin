@@ -26,7 +26,6 @@ import java.util.function.Consumer;
 import com.holonplatform.auth.annotations.Authenticate;
 import com.holonplatform.core.i18n.Caption;
 import com.holonplatform.vaadin.navigator.SubViewContainer;
-import com.holonplatform.vaadin.navigator.ViewContentProvider;
 import com.holonplatform.vaadin.navigator.ViewWindowConfigurator;
 import com.holonplatform.vaadin.navigator.annotations.OnLeave;
 import com.holonplatform.vaadin.navigator.annotations.OnShow;
@@ -59,12 +58,6 @@ public interface ViewConfiguration extends Consumer<ViewWindowConfigurator>, Ser
 	 * @see WindowView
 	 */
 	boolean isForceInWindow();
-
-	/**
-	 * Gets whether the view class extends {@link ViewContentProvider} to delegate View contents supplying
-	 * @return <code>true</code> if the view class is a ViewContentProvider
-	 */
-	boolean isViewContentProvider();
 
 	/**
 	 * Gets whether the view class is a sub view

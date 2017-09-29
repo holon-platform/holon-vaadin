@@ -26,9 +26,7 @@ import com.holonplatform.vaadin.internal.VaadinLogger;
 import com.holonplatform.vaadin.navigator.ViewNavigator;
 import com.holonplatform.vaadin.navigator.ViewWindowConfigurator;
 import com.holonplatform.vaadin.navigator.internal.AbstractNavigatorBuilder;
-import com.holonplatform.vaadin.navigator.internal.ContainerViewDisplay;
 import com.holonplatform.vaadin.navigator.internal.NavigatorActuator;
-import com.holonplatform.vaadin.navigator.internal.SingleContainerViewDisplay;
 import com.holonplatform.vaadin.navigator.internal.ViewConfiguration;
 import com.holonplatform.vaadin.navigator.internal.ViewConfiguration.ViewConfigurationException;
 import com.holonplatform.vaadin.navigator.internal.ViewNavigatorAdapter;
@@ -154,7 +152,7 @@ public class DefaultSpringViewNavigator extends SpringNavigator implements ViewN
 	 */
 	@Override
 	public void init(UI ui, ComponentContainer container) {
-		init(ui, new UriFragmentManager(ui.getPage()), new ContainerViewDisplay(container));
+		init(ui, new UriFragmentManager(ui.getPage()), new ComponentContainerViewDisplay(container));
 	}
 
 	/*
@@ -163,7 +161,7 @@ public class DefaultSpringViewNavigator extends SpringNavigator implements ViewN
 	 */
 	@Override
 	public void init(UI ui, SingleComponentContainer container) {
-		init(ui, new UriFragmentManager(ui.getPage()), new SingleContainerViewDisplay(container));
+		init(ui, new UriFragmentManager(ui.getPage()), new SingleComponentContainerViewDisplay(container));
 	}
 
 	/*

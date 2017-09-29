@@ -15,7 +15,6 @@
  */
 package com.holonplatform.vaadin.ui.spring.test.components;
 
-import com.holonplatform.vaadin.navigator.ViewContentProvider;
 import com.holonplatform.vaadin.navigator.annotations.OnShow;
 import com.holonplatform.vaadin.navigator.annotations.ViewParameter;
 import com.holonplatform.vaadin.navigator.annotations.WindowView;
@@ -28,7 +27,7 @@ import com.vaadin.ui.Label;
 
 @WindowView(resizable = false)
 @SpringView(name = TestNavigator.VIEW_FIVE)
-public class ViewFive implements View, ViewContentProvider {
+public class ViewFive implements View {
 
 	private static final long serialVersionUID = 1L;
 
@@ -51,7 +50,7 @@ public class ViewFive implements View, ViewContentProvider {
 	}
 
 	@Override
-	public Component getViewContent() {
+	public Component getViewComponent() {
 		return new Label((testPar != null) ? testPar : "FIVE");
 	}
 

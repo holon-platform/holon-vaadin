@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.holonplatform.vaadin.device.DeviceInfo;
-import com.holonplatform.vaadin.navigator.ViewContentProvider;
 import com.holonplatform.vaadin.navigator.ViewNavigator;
 import com.holonplatform.vaadin.navigator.ViewNavigator.ViewNavigatorChangeEvent;
 import com.holonplatform.vaadin.navigator.annotations.OnLeave;
@@ -106,10 +105,10 @@ public class ExampleView {
 
 	}
 
-	class ViewExampleContentProvider implements View, ViewContentProvider { // <2>
+	class ViewExampleContentProvider implements View {
 
 		@Override
-		public Component getViewContent() { // <3>
+		public Component getViewComponent() { // <2>
 			boolean mobile = DeviceInfo.get().map(info -> info.isMobile()).orElse(false);
 			return mobile ? buildMobileViewContent() : buildDefaultViewContent();
 		}

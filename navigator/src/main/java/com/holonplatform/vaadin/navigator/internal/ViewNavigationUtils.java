@@ -61,7 +61,6 @@ import com.holonplatform.core.internal.utils.TypeUtils;
 import com.holonplatform.core.temporal.TemporalType;
 import com.holonplatform.vaadin.internal.VaadinLogger;
 import com.holonplatform.vaadin.navigator.SubViewContainer;
-import com.holonplatform.vaadin.navigator.ViewContentProvider;
 import com.holonplatform.vaadin.navigator.ViewNavigator;
 import com.holonplatform.vaadin.navigator.ViewNavigator.ViewNavigatorChangeEvent;
 import com.holonplatform.vaadin.navigator.annotations.OnLeave;
@@ -77,7 +76,6 @@ import com.holonplatform.vaadin.navigator.internal.ViewConfiguration.ViewParamet
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 
 /**
@@ -608,20 +606,7 @@ public final class ViewNavigationUtils implements Serializable {
 			throw new ViewConfigurationException("Null view class");
 		}
 
-		// check valid navigation view
-		boolean viewContentProvider = false;
-		if (ViewContentProvider.class.isAssignableFrom(viewClass)) {
-			viewContentProvider = true;
-		} else {
-			if (!Component.class.isAssignableFrom(viewClass)) {
-				throw new ViewConfigurationException(
-						"Invalid navigation view class " + viewClass.getName() + ": View class must be a "
-								+ Component.class.getName() + " or a " + ViewContentProvider.class.getName());
-			}
-		}
-
 		DefaultViewConfiguration cfg = new DefaultViewConfiguration();
-		cfg.setViewContentProvider(viewContentProvider);
 
 		cfg.setSubViewContainer(SubViewContainer.class.isAssignableFrom(viewClass));
 

@@ -25,7 +25,6 @@ import java.util.Optional;
 import com.holonplatform.auth.annotations.Authenticate;
 import com.holonplatform.core.internal.utils.AnnotationUtils;
 import com.holonplatform.vaadin.navigator.SubViewContainer;
-import com.holonplatform.vaadin.navigator.ViewContentProvider;
 import com.holonplatform.vaadin.navigator.ViewWindowConfigurator;
 import com.holonplatform.vaadin.navigator.annotations.OnLeave;
 import com.holonplatform.vaadin.navigator.annotations.OnShow;
@@ -43,7 +42,6 @@ public class DefaultViewConfiguration implements ViewConfiguration {
 
 	private boolean _volatile = false;
 	private boolean forceInWindow = false;
-	private boolean viewContentProvider;
 	private boolean subViewContainer = false;
 	private String parentViewName;
 	private String caption;
@@ -77,14 +75,6 @@ public class DefaultViewConfiguration implements ViewConfiguration {
 	 */
 	public void setForceInWindow(boolean forceInWindow) {
 		this.forceInWindow = forceInWindow;
-	}
-
-	/**
-	 * Set whether the view class extends {@link ViewContentProvider} to delegate View contents supplying
-	 * @param viewContentProvider <code>true</code> if the view class is a ViewContentProvider
-	 */
-	public void setViewContentProvider(boolean viewContentProvider) {
-		this.viewContentProvider = viewContentProvider;
 	}
 
 	/**
@@ -194,15 +184,6 @@ public class DefaultViewConfiguration implements ViewConfiguration {
 	@Override
 	public boolean isForceInWindow() {
 		return forceInWindow;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.ui.navigator.ViewConfiguration#isViewContentProvider()
-	 */
-	@Override
-	public boolean isViewContentProvider() {
-		return viewContentProvider;
 	}
 
 	/*

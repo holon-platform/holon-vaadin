@@ -15,7 +15,6 @@
  */
 package com.holonplatform.vaadin.navigator.test.components;
 
-import com.holonplatform.vaadin.navigator.ViewContentProvider;
 import com.holonplatform.vaadin.navigator.annotations.OnShow;
 import com.holonplatform.vaadin.navigator.annotations.ViewParameter;
 import com.holonplatform.vaadin.navigator.annotations.WindowView;
@@ -25,7 +24,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 
 @WindowView(resizable = false)
-public class ViewFive implements View, ViewContentProvider {
+public class ViewFive implements View {
 
 	private static final long serialVersionUID = 1L;
 
@@ -48,7 +47,7 @@ public class ViewFive implements View, ViewContentProvider {
 	}
 
 	@Override
-	public Component getViewContent() {
+	public Component getViewComponent() {
 		return new Label((testPar != null) ? testPar : "FIVE");
 	}
 

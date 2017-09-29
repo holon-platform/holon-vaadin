@@ -239,8 +239,10 @@ public class DefaultViewNavigator extends Navigator implements ViewNavigatorAdap
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see com.holonplatform.vaadin.navigator.ViewNavigator#navigateInWindow(java.lang.String, java.util.function.Consumer, java.util.Map)
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.navigator.ViewNavigator#navigateInWindow(java.lang.String,
+	 * java.util.function.Consumer, java.util.Map)
 	 */
 	@Override
 	public Window navigateInWindow(String viewName, Consumer<ViewWindowConfigurator> windowConfiguration,
@@ -371,7 +373,7 @@ public class DefaultViewNavigator extends Navigator implements ViewNavigatorAdap
 		 */
 		@Override
 		public Builder viewDisplay(SingleComponentContainer container) {
-			this.viewDisplay = new SingleContainerViewDisplay(container);
+			this.viewDisplay = new SingleComponentContainerViewDisplay(container);
 			return builder();
 		}
 
@@ -382,7 +384,7 @@ public class DefaultViewNavigator extends Navigator implements ViewNavigatorAdap
 		 */
 		@Override
 		public Builder viewDisplay(ComponentContainer container) {
-			this.viewDisplay = new ContainerViewDisplay(container);
+			this.viewDisplay = new ComponentContainerViewDisplay(container);
 			return builder();
 		}
 

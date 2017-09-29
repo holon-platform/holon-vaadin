@@ -87,15 +87,14 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleView.java[tag=sh
 
 By default, the `View` is rendered as the UI component which is represented by the `View` class.
 
-The link:{apidir}/com/holonplatform/vaadin/navigator/ViewContentProvider.html[ViewContentProvider^] interface can be implemented by a `View` class to control which UI content to provide through the `getViewContent()` method. The method is called by the `ViewNavigator` to display the `View` when it is activated.
+You can override the standard Vaadin 8 `getViewComponent()` method of the `View` class to control which `Component` to provide as `View` content.
 
 [source, java]
 ----
 include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleView.java[tag=viewcontent,indent=0]
 ----
 <1> Default `View` implementation extending a `Component` class (a `VerticalLayout`). The displayed `View` content will be the component itself
-<2> A `View` implementing the `ViewContentProvider` interface: the displayed UI content will be provided by the `getViewContent()` method
-<3> Provide the `View` content. In this example, a different UI component is provided according to the device type, checking if the user is running the application in a _mobile_ device
+<3> Provide the `View` content using the `getViewComponent()` method. In this example, a different UI component is provided according to the device type, checking if the user is running the application in a _mobile_ device
 
 === Navigator Configuration
 

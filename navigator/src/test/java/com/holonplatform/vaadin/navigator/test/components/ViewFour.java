@@ -15,7 +15,6 @@
  */
 package com.holonplatform.vaadin.navigator.test.components;
 
-import com.holonplatform.vaadin.navigator.ViewContentProvider;
 import com.holonplatform.vaadin.navigator.annotations.VolatileView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -23,7 +22,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 
 @VolatileView
-public class ViewFour implements View, ViewContentProvider {
+public class ViewFour implements View {
 
 	private static final long serialVersionUID = 1L;
 
@@ -40,7 +39,7 @@ public class ViewFour implements View, ViewContentProvider {
 	 * @see com.holonplatform.vaadin.navigator.ViewContentProvider#getViewContent()
 	 */
 	@Override
-	public Component getViewContent() {
+	public Component getViewComponent() {
 		return new Label("FOUR");
 	}
 

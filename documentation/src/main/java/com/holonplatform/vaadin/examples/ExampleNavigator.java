@@ -153,7 +153,7 @@ public class ExampleNavigator {
 		@Override
 		public boolean display(View view, String viewName, Map<String, String> parameters)
 				throws ViewNavigationException {
-			addTab(ViewNavigator.getViewContent(view), viewName, VaadinIcons.PIN);
+			addTab(view.getViewComponent(), viewName, VaadinIcons.PIN);
 			return true;
 		}
 
