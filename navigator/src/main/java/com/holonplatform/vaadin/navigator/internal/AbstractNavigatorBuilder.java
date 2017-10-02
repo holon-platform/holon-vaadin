@@ -18,6 +18,7 @@ package com.holonplatform.vaadin.navigator.internal;
 import java.util.function.Consumer;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.vaadin.navigator.DefaultViewNavigationStrategy;
 import com.holonplatform.vaadin.navigator.ViewNavigator.NavigatorBuilder;
 import com.holonplatform.vaadin.navigator.ViewWindowConfigurator;
 import com.vaadin.navigator.Navigator;
@@ -74,6 +75,18 @@ public abstract class AbstractNavigatorBuilder<B extends NavigatorBuilder<B>, C 
 	@Override
 	public B defaultViewName(String defaultViewName) {
 		navigator.getActuator().setDefaultViewName(defaultViewName);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.navigator.ViewNavigator.NavigatorBuilder#defaultViewNavigationStrategy(com.holonplatform
+	 * .vaadin.navigator.DefaultViewNavigationStrategy)
+	 */
+	@Override
+	public B defaultViewNavigationStrategy(DefaultViewNavigationStrategy defaultViewNavigationStrategy) {
+		navigator.getActuator().setDefaultViewNavigationStrategy(defaultViewNavigationStrategy);
 		return builder();
 	}
 

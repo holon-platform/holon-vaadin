@@ -23,6 +23,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.vaadin.internal.VaadinLogger;
+import com.holonplatform.vaadin.navigator.DefaultViewNavigationStrategy;
 import com.holonplatform.vaadin.navigator.ViewNavigator;
 import com.holonplatform.vaadin.navigator.ViewWindowConfigurator;
 import com.holonplatform.vaadin.navigator.internal.AbstractNavigatorBuilder;
@@ -372,27 +373,48 @@ public class DefaultSpringViewNavigator extends SpringNavigator implements ViewN
 		ApplicationContext applicationContext = getWebApplicationContext();
 		if (applicationContext != null) {
 
+			// default navigation strategy
+			if (getActuator().getDefaultViewNavigationStrategy() == null) {
+				String[] beanNames = applicationContext.getBeanNamesForType(DefaultViewNavigationStrategy.class);
+				if (beanNames != null && beanNames.length > 0) {
+					if (beanNames.length > 1) {
+						throw new ViewConfigurationException(
+								"More than one DefaultViewNavigationStrategy type bean found [" + beanNames.length
+										+ "]");
+					}
+					getActuator().setDefaultViewNavigationStrategy(
+							applicationContext.getBean(DefaultViewNavigationStrategy.class));
+					LOGGER.info("Found DefaultViewNavigationStrategy bean [" + beanNames[0] + "]");
+				}
+			}
+
 			// default view
 			if (getActuator().getDefaultViewName() == null) {
 				// if not explicitly setted, lookup in context
 				String[] beanNames = applicationContext.getBeanNamesForAnnotation(DefaultView.class);
 				if (beanNames != null && beanNames.length > 0) {
-					if (beanNames.length > 1) {
-						LOGGER.warn("More than one bean annotated with @DefaultView was found in context " + "("
-								+ beanNames.length + "), no default view will be configured in Navigator.");
+					if (getActuator().getDefaultViewNavigationStrategy() == null) {
+						if (beanNames.length > 1) {
+							LOGGER.warn("More than one bean annotated with @DefaultView was found in context " + "("
+									+ beanNames.length + "), no default view will be configured in Navigator.");
+						} else {
+							Class<?> type = applicationContext.getType(beanNames[0]);
+							if (!View.class.isAssignableFrom(type)) {
+								throw new ViewConfigurationException(
+										"A bean annotated with @DefaultView was found but does "
+												+ "not implement navigator View class: " + type.getName());
+							}
+							// set default view name
+							String viewName = Conventions.deriveMappingForView(type,
+									type.getAnnotation(SpringView.class));
+							if (viewName != null) {
+								getActuator().setDefaultViewName(viewName);
+								LOGGER.info("Configured default view " + type.getName() + " with name: " + viewName);
+							}
+						}
+
 					} else {
-						Class<?> type = applicationContext.getType(beanNames[0]);
-						if (!View.class.isAssignableFrom(type)) {
-							throw new ViewConfigurationException(
-									"A bean annotated with @DefaultView was found but does "
-											+ "not implement navigator View class: " + type.getName());
-						}
-						// set default view name
-						String viewName = Conventions.deriveMappingForView(type, type.getAnnotation(SpringView.class));
-						if (viewName != null) {
-							getActuator().setDefaultViewName(viewName);
-							LOGGER.info("Configured default view " + type.getName() + " with name: " + viewName);
-						}
+						LOGGER.warn("A DefaultViewNavigationStrategy is configured, @DefaultView will be ignored");
 					}
 				}
 			}

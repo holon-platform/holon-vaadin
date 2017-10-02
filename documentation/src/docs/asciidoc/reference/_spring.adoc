@@ -22,6 +22,12 @@ The following annotations are available for `View` configuration:
 
 * link:{apidir}/com/holonplatform/vaadin/spring/ErrorView.html[ErrorView^]: can be used on a `View` class to declare it as the default *error* view, i.e. the `View` to be displayed when no other `View` matches a navigation state.
 
+=== Default View navigation strategy
+
+When a statically declared _default_ `View` (using for example the `@DefaultView` annotation) is not suitable for an application, the link:{apidir}/com/holonplatform/vaadin/navigator/DefaultViewNavigationStrategy.html[DefaultViewNavigationStrategy^] interface can be used to implement a custom strategy to provide the default navigation state.
+
+When a `DefaultViewNavigationStrategy` type Spring bean is found in application context, it is automatically configured in View navigator as default view navigation stategy implementation.
+
 === Spring view navigator configuration
 
 The `SpringViewNavigator` API provides a _builder_ to create a navigator instance, and can be used to explicitly build and configure a `SpringViewNavigator` instance. The bulder can be obtained through the static `builder()` method of the `SpringViewNavigator` interface.

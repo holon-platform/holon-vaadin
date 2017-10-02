@@ -35,6 +35,7 @@ import com.holonplatform.core.internal.utils.AnnotationUtils;
 import com.holonplatform.core.utils.SizedStack;
 import com.holonplatform.vaadin.VaadinHttpRequest;
 import com.holonplatform.vaadin.internal.VaadinLogger;
+import com.holonplatform.vaadin.navigator.DefaultViewNavigationStrategy;
 import com.holonplatform.vaadin.navigator.SubViewContainer;
 import com.holonplatform.vaadin.navigator.ViewNavigator;
 import com.holonplatform.vaadin.navigator.ViewNavigator.ViewNavigationException;
@@ -115,6 +116,11 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 	 * Default view name
 	 */
 	private String defaultViewName;
+
+	/**
+	 * Default view navigation strategy
+	 */
+	private DefaultViewNavigationStrategy defaultViewNavigationStrategy;
 
 	/**
 	 * Display current view in window
@@ -515,6 +521,21 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 	 * @throws ViewNavigationException Navigation error
 	 */
 	public void navigateToDefault() throws ViewNavigationException {
+		// default view navigation strategy
+		DefaultViewNavigationStrategy strategy = getDefaultViewNavigationStrategy();
+		if (strategy != null) {
+			String navigationState = strategy.getDefaultNavigationState(UI.getCurrent(), navigator);
+			if (navigationState != null) {
+				try {
+					navigateToState(null, navigationState);
+				} catch (Exception e) {
+					throw new ViewNavigationException(navigationState, e);
+				}
+			}
+			return;
+		}
+
+		// default view
 		String viewName = getDefaultViewName();
 		if (viewName == null) {
 			throw new ViewNavigationException(null, "No default view name defined");
@@ -700,11 +721,28 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 	}
 
 	/**
+	 * Get the navigation strategy to use to navigate to the default view.
+	 * @return the defaultViewNavigationStrategy The default view navigation strategy, <code>null</code> if not
+	 *         configured
+	 */
+	public DefaultViewNavigationStrategy getDefaultViewNavigationStrategy() {
+		return defaultViewNavigationStrategy;
+	}
+
+	/**
+	 * Set the navigation strategy to use to navigate to the default view.
+	 * @param defaultViewNavigationStrategy the default view navigation strategy to set
+	 */
+	public void setDefaultViewNavigationStrategy(DefaultViewNavigationStrategy defaultViewNavigationStrategy) {
+		this.defaultViewNavigationStrategy = defaultViewNavigationStrategy;
+	}
+
+	/**
 	 * Check if a default View is available
 	 * @return <code>true</code> if a default View is available
 	 */
 	protected boolean isDefaultViewAvailable() {
-		return getDefaultViewName() != null;
+		return getDefaultViewNavigationStrategy() != null || getDefaultViewName() != null;
 	}
 
 	/**
@@ -974,12 +1012,12 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 		if (viewConfiguration != null) {
 			viewConfiguration.accept(configurator);
 		}
-		
+
 		// default
 		if (defaultViewWindowConfigurator != null) {
 			defaultViewWindowConfigurator.accept(configurator);
 		}
-		
+
 		// provided
 		if (windowConfigurator != null) {
 			windowConfigurator.accept(configurator);

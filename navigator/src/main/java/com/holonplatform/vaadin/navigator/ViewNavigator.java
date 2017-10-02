@@ -455,6 +455,14 @@ public interface ViewNavigator extends Serializable {
 		B defaultViewName(String defaultViewName);
 
 		/**
+		 * Set the strategy to use to navigate to the default view. If a strategy is configured, the
+		 * {@link #defaultViewName(String)} is ignored.
+		 * @param defaultViewNavigationStrategy The strategy to set
+		 * @return this
+		 */
+		B defaultViewNavigationStrategy(DefaultViewNavigationStrategy defaultViewNavigationStrategy);
+
+		/**
 		 * Set whether to navigate to default view (if setted) when a view is not available from current navigation
 		 * state
 		 * @param navigateToDefaultViewWhenViewNotAvailable <code>true</code> to navigate to default view (if setted)
