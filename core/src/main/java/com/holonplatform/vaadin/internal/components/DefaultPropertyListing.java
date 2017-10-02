@@ -25,11 +25,13 @@ import java.util.stream.Stream;
 
 import com.holonplatform.core.Path;
 import com.holonplatform.core.i18n.LocalizationContext;
+import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.vaadin.components.Field;
 import com.holonplatform.vaadin.components.PropertyListing;
+import com.holonplatform.vaadin.internal.VaadinLogger;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.PropertyDefinition;
 import com.vaadin.data.PropertySet;
@@ -55,6 +57,8 @@ import com.vaadin.util.ReflectTools;
 public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Property> implements PropertyListing {
 
 	private static final long serialVersionUID = 681884060927291257L;
+
+	private static final Logger LOGGER = VaadinLogger.create();
 
 	private final Map<Property, String> propertyIds;
 
@@ -130,7 +134,14 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 	@SuppressWarnings("unchecked")
 	@Override
 	protected <E extends HasValue<?> & Component> Optional<E> getDefaultPropertyEditor(Property property) {
-		return property.renderIfAvailable(Field.class);
+		try {
+			return property.renderIfAvailable(Field.class);
+		} catch (Exception e) {
+			if (isEditable()) {
+				LOGGER.warn("No default property editor available for property [" + property + "]", e);
+			}
+			return Optional.empty();
+		}
 	}
 
 	/*
