@@ -450,6 +450,12 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void setupPropertyColumn(P property, Column<T, ?> column) {
+
+		if (column == null) {
+			throw new IllegalStateException(
+					"No column available for property [" + property + "]: check listing property set");
+		}
+
 		PropertyColumn<T, P> propertyColumn = getPropertyColumn(property);
 
 		// header
@@ -475,7 +481,7 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		if (propertyColumn.getMaxWidth() > -1) {
 			column.setMaximumWidth(propertyColumn.getMinWidth());
 		}
-		
+
 		column.setMinimumWidthFromContent(propertyColumn.isMinimumWidthFromContent());
 
 		// expand
@@ -625,10 +631,10 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 
 		List<String> ids = new LinkedList<>();
 
-		columns.forEach(c -> {
-			final String columnId = getColumnId(c);
-			setupPropertyColumn(c, getGrid().getColumn(columnId));
-			ids.add(getColumnId(c));
+		columns.forEach(property -> {
+			final String columnId = getColumnId(property);
+			setupPropertyColumn(property, getGrid().getColumn(columnId));
+			ids.add(getColumnId(property));
 		});
 
 		getGrid().setColumns(ids.toArray(new String[ids.size()]));
