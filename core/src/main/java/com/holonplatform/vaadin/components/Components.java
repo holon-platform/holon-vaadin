@@ -836,8 +836,9 @@ public interface Components {
 		 * @param additionalProperties Additional properties to declare
 		 * @return Grid {@link PropertyListing} builder
 		 */
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		static <P extends Property<?>> GridPropertyListingBuilder properties(Iterable<P> properties,
+		@SafeVarargs
+		@SuppressWarnings("rawtypes")
+		static <P extends Property> GridPropertyListingBuilder properties(PropertySet<?> properties,
 				P... additionalProperties) {
 			ObjectUtils.argumentNotNull(properties, "Properties must be not null");
 			if (additionalProperties != null && additionalProperties.length > 0) {
