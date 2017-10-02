@@ -168,6 +168,18 @@ public abstract class AbstractGridItemListingBuilder<T, P, C extends ItemListing
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder#
+	 * minimumWidthFromContent(java.lang.Object, boolean)
+	 */
+	@Override
+	public B minimumWidthFromContent(P property, boolean minimumWidthFromContent) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		getInstance().getPropertyColumn(property).setMinimumWidthFromContent(minimumWidthFromContent);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see
 	 * com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder#hidingToggleCaption(
 	 * java.lang.Object, com.holonplatform.core.i18n.Localizable)

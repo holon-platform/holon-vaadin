@@ -112,6 +112,10 @@ public interface PropertyColumn<T, P> extends Serializable {
 	 */
 	void setExpandRatio(int gridExpandRatio);
 
+	boolean isMinimumWidthFromContent();
+
+	void setMinimumWidthFromContent(boolean minimumWidthFromContent);
+
 	/**
 	 * Gets whether the column is editable
 	 * @return <code>true</code> if the column is editable, <code>false</code> otherwise (read-only)

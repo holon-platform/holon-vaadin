@@ -72,6 +72,11 @@ public class DefaultPropertyColumn<T, P> implements PropertyColumn<T, P> {
 	private int expandRatio = -1;
 
 	/**
+	 * Min width form content
+	 */
+	private boolean minimumWidthFromContent = true;
+
+	/**
 	 * Editable
 	 */
 	private boolean editable = true;
@@ -242,6 +247,22 @@ public class DefaultPropertyColumn<T, P> implements PropertyColumn<T, P> {
 	@Override
 	public void setExpandRatio(int expandRatio) {
 		this.expandRatio = expandRatio;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isMinimumWidthFromContent() {
+		return minimumWidthFromContent;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void setMinimumWidthFromContent(boolean minimumWidthFromContent) {
+		this.minimumWidthFromContent = minimumWidthFromContent;
 	}
 
 	/**

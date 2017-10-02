@@ -427,6 +427,26 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		B expandRatio(P property, int expandRatio);
 
 		/**
+		 * Sets whether the width of the contents in the column which corresponds to given property should be considered
+		 * minimum width for this column.
+		 * <p>
+		 * If this is set to <code>true</code> (default), then a column will not shrink to smaller than the width
+		 * required to show the contents available when calculating the widths (only the widths of the initially
+		 * rendered rows are considered).
+		 * </p>
+		 * <p>
+		 * If this is set to <code>false</code> and the column has been set to expand using
+		 * <code>expandRatio(...)</code>, then the contents of the column will be ignored when calculating the width,
+		 * and the column will thus shrink down to the minimum width if necessary.
+		 * </p>
+		 * @param property Item property (not null)
+		 * @param minimumWidthFromContent <code>true</code> to reserve space for all contents, <code>false</code> to
+		 *        allow the column to shrink smaller than the contents
+		 * @return this
+		 */
+		B minimumWidthFromContent(P property, boolean minimumWidthFromContent);
+
+		/**
 		 * Sets the caption of the hiding toggle for the column which corresponds to given property. Shown in the toggle
 		 * for this column in the grid's sidebar when the column is hidable.
 		 * @param property Item property to set the caption for (not null)

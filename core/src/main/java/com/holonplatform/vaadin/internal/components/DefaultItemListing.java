@@ -475,6 +475,8 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		if (propertyColumn.getMaxWidth() > -1) {
 			column.setMaximumWidth(propertyColumn.getMinWidth());
 		}
+		
+		column.setMinimumWidthFromContent(propertyColumn.isMinimumWidthFromContent());
 
 		// expand
 		if (propertyColumn.getExpandRatio() > -1) {
