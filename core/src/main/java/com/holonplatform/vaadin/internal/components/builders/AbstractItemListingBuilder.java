@@ -43,6 +43,7 @@ import com.holonplatform.vaadin.data.ItemDataSource.CommitHandler;
 import com.holonplatform.vaadin.data.ItemDataSource.PropertySortGenerator;
 import com.holonplatform.vaadin.data.ItemIdentifierProvider;
 import com.holonplatform.vaadin.internal.components.DefaultItemListing;
+import com.holonplatform.vaadin.internal.data.DatastoreItemDataProvider;
 import com.vaadin.ui.Component;
 
 /**
@@ -539,6 +540,13 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 
 		// data source
 		ItemDataSource<T, P> dataSource = dataSourceBuilder.build();
+		
+		dataSource.getConfiguration().getDataProvider().ifPresent(dp -> {
+			if (dp instanceof DatastoreItemDataProvider) {
+				((DatastoreItemDataProvider)dp).addQueryConfigurationProvider(dataSource.getConfiguration());
+			}
+		});
+		
 		listing.setDataSource(dataSource);
 
 		// visible columns
