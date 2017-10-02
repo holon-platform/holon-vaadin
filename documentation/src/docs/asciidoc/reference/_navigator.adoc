@@ -94,7 +94,7 @@ You can override the standard Vaadin 8 `getViewComponent()` method of the `View`
 include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleView.java[tag=viewcontent,indent=0]
 ----
 <1> Default `View` implementation extending a `Component` class (a `VerticalLayout`). The displayed `View` content will be the component itself
-<3> Provide the `View` content using the `getViewComponent()` method. In this example, a different UI component is provided according to the device type, checking if the user is running the application in a _mobile_ device
+<2> Provide the `View` content using the `getViewComponent()` method. In this example, a different UI component is provided according to the device type, checking if the user is running the application in a _mobile_ device
 
 === Navigator Configuration
 
