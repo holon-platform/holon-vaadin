@@ -829,6 +829,27 @@ public interface Components {
 			return PropertyListing.builder(properties);
 		}
 
+		/**
+		 * Builder to create an {@link PropertyListing} instance using a {@link Grid} as backing component.
+		 * @param <P> Actual property type
+		 * @param properties The property set to use for the listing (not null)
+		 * @param additionalProperties Additional properties to declare
+		 * @return Grid {@link PropertyListing} builder
+		 */
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		static <P extends Property<?>> GridPropertyListingBuilder properties(Iterable<P> properties,
+				P... additionalProperties) {
+			ObjectUtils.argumentNotNull(properties, "Properties must be not null");
+			if (additionalProperties != null && additionalProperties.length > 0) {
+				PropertySet.Builder<Property> builder = PropertySet.builder().add(properties);
+				for (P property : additionalProperties) {
+					builder.add(property);
+				}
+				return PropertyListing.builder(builder.build());
+			}
+			return PropertyListing.builder(properties);
+		}
+
 	}
 
 }
