@@ -79,6 +79,14 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSpringAuthz.java
 <5> Use `@RolesAllowed` to declare that the view is available only for the authenticated subjects with the `role1` role
 <6> Create a custom _access denied_ view using the `@AccessDeniedView` annotation
 
+=== Spring Security support
+
+The `View` access control using the Spring Security `@Secured` annotation can be enabled using the link:{apidir}/com/holonplatform/vaadin/spring/config/EnableSecuredView.html[EnableSecuredView^] annotation. 
+
+This access control strategy relies on the Spring Security `SecurityContext` to check current authentication and performs View access control checking current user granted authorities against the security attributes specified through the `@Secured` annotation.
+
+NOTE: The Spring Security artifacts must be explicitly included as a project dependency.
+
 == Spring Boot integration
 
 The `holon-vaadin-spring-boot` artifact provides integration with https://projects.spring.io/spring-boot[Spring Boot^] for Vaadin application and view navigator auto configuration.
@@ -97,12 +105,20 @@ The Spring Boot auto-configuration includes the default Spring Boot Vaadin add-o
 
 * The configured view navigator will be a Spring `ViewNavigator`
 * The `View` authorization support using the `javax.annotation.security.*` annotations is enabled by default
+* If Spring Security is available and configured, the `@Secured` annotation based `View` access control is enabled
 
 To disable this auto-configuration feature the `HolonVaadinAutoConfiguration` class can be excluded:
 
 [source, java]
 ----
 @EnableAutoConfiguration(exclude={HolonVaadinAutoConfiguration.class})
+----
+
+To disable the Spring Security `@Secured` access control the `HolonVaadinSpringSecurityAutoConfiguration` class can be excluded:
+
+[source, java]
+----
+@EnableAutoConfiguration(exclude={HolonVaadinSpringSecurityAutoConfiguration.class})
 ----
 
 === Spring Boot starters
