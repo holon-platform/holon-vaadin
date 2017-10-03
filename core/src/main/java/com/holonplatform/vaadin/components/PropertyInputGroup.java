@@ -30,6 +30,8 @@ import com.holonplatform.vaadin.components.Input.InputPropertyRenderer;
 import com.holonplatform.vaadin.components.PropertyBinding.PostProcessor;
 import com.holonplatform.vaadin.internal.components.DefaultPropertyInputGroup;
 import com.holonplatform.vaadin.internal.components.VaadinValidatorWrapper;
+import com.vaadin.data.HasValue;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 
 /**
@@ -483,7 +485,21 @@ public interface PropertyInputGroup extends PropertySetBound, ValueHolder<Proper
 		default <T> B bind(Property<T> property, Input<T> input) {
 			ObjectUtils.argumentNotNull(property, "Property must be not null");
 			ObjectUtils.argumentNotNull(input, "Input must be not null");
-			return bind(property, p -> input);
+			return bind(property, (InputPropertyRenderer<T>) p -> input);
+		}
+
+		/**
+		 * Bind the given <code>property</code> to given {@link HasValue} component. If the property was already bound
+		 * to a {@link Input}, the old input will be replaced by the new input.
+		 * @param <T> Property type
+		 * @param property Property (not null)
+		 * @param field HasValue component to bind (not null)
+		 * @return this
+		 */
+		default <T, F extends HasValue<T> & Component> B bind(Property<T> property, F field) {
+			ObjectUtils.argumentNotNull(property, "Property must be not null");
+			ObjectUtils.argumentNotNull(field, "Field must be not null");
+			return bind(property, Input.from(field));
 		}
 
 		/**
