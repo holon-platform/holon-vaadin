@@ -44,6 +44,7 @@ import com.vaadin.data.Converter;
 import com.vaadin.data.HasDataProvider;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.Query;
+import com.vaadin.event.selection.MultiSelectionEvent;
 import com.vaadin.server.SerializableFunction;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.AbstractMultiSelect;
@@ -88,14 +89,18 @@ public class MultiSelectField<T, ITEM>
 			final CheckBoxGroup<ITEM> field = new CheckBoxGroup<>();
 			field.setItemCaptionGenerator(i -> generateItemCaption(i));
 			field.setItemIconGenerator(i -> generateItemIcon(i));
-			field.addSelectionListener(e -> fireSelectionListeners());
+			field.addSelectionListener(e -> fireSelectionListeners(buildSelectionEvent(e)));
 			return field;
 		}
 
 		final ListSelect<ITEM> field = new ListSelect<>();
 		field.setItemCaptionGenerator(i -> generateItemCaption(i));
-		field.addSelectionListener(e -> fireSelectionListeners());
+		field.addSelectionListener(e -> fireSelectionListeners(buildSelectionEvent(e)));
 		return field;
+	}
+
+	protected SelectionEvent<T> buildSelectionEvent(MultiSelectionEvent<ITEM> event) {
+		return new DefaultSelectionEvent<>(fromInternalValue(event.getAllSelectedItems()), event.isUserOriginated());
 	}
 
 	/*

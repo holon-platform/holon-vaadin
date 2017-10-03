@@ -247,9 +247,10 @@ public abstract class AbstractSelectField<T, S, ITEM, I, F extends HasValue<I> &
 
 	/**
 	 * Triggers registered {@link SelectionListener}s.
+	 * @param event Selection event (not null)
 	 */
-	protected void fireSelectionListeners() {
-		selectionListeners.forEach(l -> l.onSelectionChange(this));
+	protected void fireSelectionListeners(SelectionEvent<S> event) {
+		selectionListeners.forEach(l -> l.onSelectionChange(event));
 	}
 
 	/**

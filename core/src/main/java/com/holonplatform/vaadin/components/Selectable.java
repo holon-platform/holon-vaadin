@@ -110,6 +110,34 @@ public interface Selectable<T> {
 	}
 
 	/**
+	 * Selection event.
+	 * @param <T> Selection item type
+	 */
+	public interface SelectionEvent<T> extends Serializable {
+
+		/**
+		 * Get first selected data item, if any.
+		 * @return the first selected item, empty if none
+		 */
+		Optional<T> getFirstSelectedItem();
+
+		/**
+		 * Gets all the currently selected items. For single selection it returns a set containing the only selected
+		 * item.
+		 * @return return all the selected items, if any, never <code>null</code>
+		 */
+		Set<T> getAllSelectedItems();
+
+		/**
+		 * Returns whether this event was triggered by user interaction, on the client side, or programmatically, on the
+		 * server side.
+		 * @return <code>true</code> if this event originates from the client, <code>false</code> otherwise.
+		 */
+		boolean isUserOriginated();
+
+	}
+
+	/**
 	 * A listener for listening for selection changes from a {@link Selectable}.
 	 * @param <T> Selection item type
 	 */
@@ -118,9 +146,9 @@ public interface Selectable<T> {
 
 		/**
 		 * Invoked when the selection has changed.
-		 * @param selectable The {@link Selectable} in which the selection changed
+		 * @param selectionEvent The selection event to inspect the selected items
 		 */
-		void onSelectionChange(Selectable<T> selectable);
+		void onSelectionChange(SelectionEvent<T> selectionEvent);
 
 	}
 

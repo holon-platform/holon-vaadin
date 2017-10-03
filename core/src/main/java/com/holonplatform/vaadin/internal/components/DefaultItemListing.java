@@ -410,7 +410,14 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	public Registration addSelectionListener(
 			final com.holonplatform.vaadin.components.Selectable.SelectionListener<T> selectionListener) {
 		ObjectUtils.argumentNotNull(selectionListener, "SelectionListener must be not null");
-		return getGrid().addSelectionListener(e -> selectionListener.onSelectionChange(this));
+		return getGrid().addSelectionListener(e -> selectionListener.onSelectionChange(buildSelectionEvent(e)));
+	}
+
+	protected SelectionEvent<T> buildSelectionEvent(com.vaadin.event.selection.SelectionEvent<T> event) {
+		if (SelectionMode.MULTI == getSelectionMode()) {
+			return new DefaultSelectionEvent<>(event.getAllSelectedItems(), event.isUserOriginated());
+		}
+		return new DefaultSelectionEvent<>(event.getFirstSelectedItem().orElse(null), event.isUserOriginated());
 	}
 
 	/**

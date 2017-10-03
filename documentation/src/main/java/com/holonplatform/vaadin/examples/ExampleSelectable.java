@@ -75,7 +75,7 @@ public class ExampleSelectable {
 
 		boolean selected = multiSelect.isSelected(new TestData(1)); // <7>
 
-		multiSelect.addSelectionListener(s -> Notification.show(s.getSelectedItems().stream()
+		multiSelect.addSelectionListener(s -> Notification.show(s.getAllSelectedItems().stream()
 				.map(i -> String.valueOf(i.getId())).collect(Collectors.joining(";", "Selected: ", "")))); // <8>
 		// end::selectable2[]
 	}
