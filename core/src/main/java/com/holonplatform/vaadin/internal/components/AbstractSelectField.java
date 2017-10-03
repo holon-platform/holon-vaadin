@@ -101,15 +101,37 @@ public abstract class AbstractSelectField<T, S, ITEM, I, F extends HasValue<I> &
 		init();
 	}
 
+	/**
+	 * Set the data source {@link DataProvider}.
+	 * @param dataProvider The data provider to set
+	 */
 	public abstract void setDataProvider(DataProvider<ITEM, ?> dataProvider);
 
+	/**
+	 * Set the data source {@link DataProvider}.
+	 * @param dataProvider The data provider to set
+	 * @param filterConverter Optional caption filter converter
+	 */
 	public abstract void setDataProvider(DataProvider<ITEM, ?> dataProvider,
 			SerializableFunction<String, ?> filterConverter);
 
+	/**
+	 * Get the data source {@link DataProvider}.
+	 * @return Optional data provider
+	 */
 	public abstract Optional<DataProvider<ITEM, ?>> getDataProvider();
 
+	/**
+	 * Set the data source item set.
+	 * @param items Items to set
+	 */
 	public abstract void setItems(Collection<ITEM> items);
 
+	/**
+	 * Set the data source item set.
+	 * @param items Items to set
+	 * @param filter Caption filter
+	 */
 	public abstract void setItems(Collection<ITEM> items, CaptionFilter filter);
 
 	/**
