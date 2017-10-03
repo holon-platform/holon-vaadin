@@ -114,6 +114,19 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, Component {
 	void selectAll();
 
 	/**
+	 * Sets whether it's allowed to deselect the selected row through the UI. Deselection is allowed by default.
+	 * @param deselectAllowed <code>true</code> if the selected row can be deselected without selecting another row
+	 *        instead; otherwise <code>false</code>.
+	 */
+	void setDeselectAllowed(boolean deselectAllowed);
+
+	/**
+	 * Gets whether it's allowed to deselect the selected row through the UI.
+	 * @return <code>true</code> if deselection is allowed; otherwise <code>false</code>
+	 */
+	boolean isDeselectAllowed();
+
+	/**
 	 * Get the item identified by given <code>itemId</code>.
 	 * <p>
 	 * This operation is available only in <em>buffered</em> mode.

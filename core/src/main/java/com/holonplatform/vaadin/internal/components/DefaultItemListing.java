@@ -40,6 +40,7 @@ import com.holonplatform.vaadin.internal.data.ItemDataSourceAdapter;
 import com.vaadin.data.Binder.BindingBuilder;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.SelectionModel.Multi;
+import com.vaadin.data.SelectionModel.Single;
 import com.vaadin.data.Validator;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.DataProvider;
@@ -375,6 +376,29 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		if (getSelectionMode() != SelectionMode.NONE) {
 			getGrid().deselectAll();
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.ItemListing#setDeselectAllowed(boolean)
+	 */
+	@Override
+	public void setDeselectAllowed(boolean deselectAllowed) {
+		if (getSelectionMode() == SelectionMode.SINGLE) {
+			((Single<?>) getGrid().getSelectionModel()).setDeselectAllowed(deselectAllowed);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.ItemListing#isDeselectAllowed()
+	 */
+	@Override
+	public boolean isDeselectAllowed() {
+		if (getSelectionMode() == SelectionMode.SINGLE) {
+			((Single<?>) getGrid().getSelectionModel()).isDeselectAllowed();
+		}
+		return true;
 	}
 
 	/*
