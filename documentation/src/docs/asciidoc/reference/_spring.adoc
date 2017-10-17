@@ -34,7 +34,7 @@ The `SpringViewNavigator` API provides a _builder_ to create a navigator instanc
 
 The easiest way to setup a Spring view navigator, is to use the provided link:{apidir}/com/holonplatform/vaadin/spring/config/EnableViewNavigator.html[EnableViewNavigator^] configuration annotation.
 
-The `@EnableViewNavigator` can be used on Spring configuration classes to automatically setup the default Vaadin Spring integration and registering a UI-scoped `SpringViewNavigator` bean. The standard `@SpringViewDisplay` annotation can be used to configure the views display component and the default Vaadin Spring `ViewProvider` will be used.
+The `@EnableViewNavigator` can be used on Spring configuration classes to automatically setup the default Vaadin Spring integration and register a UI-scoped `SpringViewNavigator` bean. The standard `@SpringViewDisplay` annotation can be used to configure the views display component and the default Vaadin Spring `ViewProvider` will be used.
 
 NOTE: The `@EnableViewNavigator` annotation includes the standard `com.vaadin.spring.annotation.@EnableVaadin` annotation behaviour, which is not required anymore on configuration classes.
 

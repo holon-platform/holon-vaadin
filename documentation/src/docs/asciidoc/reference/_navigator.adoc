@@ -58,7 +58,7 @@ In addition to the standard `enter(...)` method of the `View` interface, two ann
 * link:{apidir}/com/holonplatform/vaadin/navigator/annotations/OnShow.html[OnShow^], called by the view navigator right before the view is shown (i.e. rendered in target display component)
 * link:{apidir}/com/holonplatform/vaadin/navigator/annotations/OnLeave.html[OnLeave^], called by the view navigator  when the view is about to be deactivated (i.e. a navigation to another view was triggered)
 
-If more than one `OnShow` or `OnLeave` annotated method in present in the `View` class or in it's class hierarchy, all these methods will be called and the following behaviour will be adopted:
+If more than one `OnShow` or `OnLeave` annotated method is present in the `View` class or in its class hierarchy, all these methods will be called and the following behaviour will be adopted:
 
 * Methods will be called following the class hierarchy, starting from the top (the first superclass after `Object`)
 * For methods of the same class, no calling order is guaranteed
@@ -100,7 +100,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleView.java[tag=vi
 
 Just like the standard Vaadin navigator, the `ViewNavigator` requires two elements which must be configured in order to work properly:
 
-* A `ViewProvider` to provide th `View` instances by view _name_
+* A `ViewProvider` to provide the `View` instances by view _name_
 * A `View` display component to show the view contents in the UI, which can be a `ComponentContainer` (replacing the contents of the container with the active `View` content), a `SingleComponentContainer` (using the `setContent(...)` method to set the active `View` content) or a `ViewDisplay` object to implement a custom `View` display logic.
 
 In addition to the required configuration elements, the `ViewNavigator` supports:
@@ -145,7 +145,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleNavigator.java[t
 
 === Excluding a View form navigation history
 
-By default, the `ViewNavigator` tacks views navigation history, to made available navigation operations such `navigateBack()` to navigate to the previous view.
+By default, the `ViewNavigator` tracks views navigation history, to made available navigation operations such `navigateBack()` to navigate to the previous view.
 
 To exclude a `View` from the navigation history, skipping such View when a `navigateBack()` operation is performed or the user presses the browser _back_ button, the link:{apidir}/com/holonplatform/vaadin/navigator/annotations/VolatileView.html[VolatileView^] annotation can be used on the `View` class.
 
@@ -223,7 +223,7 @@ A sub view container is a conventional `View` which implements the link:{apidir}
 
 Any sub view must declare its parent container view name using the link:{apidir}/com/holonplatform/vaadin/navigator/annotations/WindowView.html[WindowView^] annotation.
 
-When the navigation to a sub view is triggered, the `ViewNavigator` first of all will navigate to the declared sub view container, displaying it as a normal `View`, than the `display(View view, String viewName, Map<String, String> parameters)` method of the sub view container is invoked providing the sub view instance, the sub view name and any navigation parameter. At this point, the container should display the sub view contents in a suitable way.
+When the navigation to a sub view is triggered, the `ViewNavigator` first of all will navigate to the declared sub view container, displaying it as a normal `View`, then the `display(View view, String viewName, Map<String, String> parameters)` method of the sub view container is invoked providing the sub view instance, the sub view name and any navigation parameter. At this point, the container should display the sub view contents in a suitable way.
 
 TIP: The `getViewContent(View view)` static method of the `ViewNavigator` interface can be used to obtain the view contents from a `View` instance.
 

@@ -16,7 +16,7 @@ A complete set of _fluent_ builders is available to create and configure the mos
 
 TIP: See <<UIComponents>> for a list of the additional components made available by the Holon platform Vaadin integration module.
 
-All the builders can be obtained using the link:{apidir}/com/holonplatform/vaadin/components/Components.html[Components^] interface, which is organized in  sub-interfaces by component kind.
+All the builders can be obtained by using the link:{apidir}/com/holonplatform/vaadin/components/Components.html[Components^] interface, which is organized in  sub-interfaces by components kind.
 
 .Components builders structure
 |===
@@ -26,7 +26,7 @@ All the builders can be obtained using the link:{apidir}/com/holonplatform/vaadi
 |A set of _configure(*)_ methods to setup existing standard component instances and a set of methods to obtain the _fluent_ builders for standard Vaadin components, such as `Label`, `Button`, and standard layout components.
 
 |*input*
-|Builders for different data type `Input` components, including selection components. Furthermore, provides builder to create input _forms_.
+|Builders for different data type `Input` components, including selection components. Furthermore, it provides builder to create input _forms_.
 
 |*view*
 |Builders for `ViewComponent` components and view _forms_.
@@ -46,7 +46,7 @@ The Vaadin module provides a set of components which extend or decorates the sta
 
 The link:{apidir}/com/holonplatform/vaadin/components/Input.html[Input^] interface represents a component that has a user-editable value, which can be read and setted using the methods provided by the The link:{apidir}/com/holonplatform/vaadin/components/ValueHolder.html[ValueHolder^] super interface.
 
-Input components supports the _read-only_ (to prevent the user from changing the value) and _required_ (to show a suitable indicator along with the field) modes.
+Input components support the _read-only_ (to prevent the user from changing the value) and _required_ (to show a suitable indicator along with the field) modes.
 
 Input components supports `ValueChangeListener` registration to listen to input value changes.
 
@@ -104,7 +104,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=i
 <5> Perform the input value validation
 <6> Triggers validation when input value changes
 
-A `ValidatableInput` can be obtained from an existing `Input` or `HasValue` component instance or using the appropriate builder.
+A `ValidatableInput` can be obtained from an existing `Input` or `HasValue` component instance or by using the appropriate builder.
 
 [source, java]
 ----
@@ -199,7 +199,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[
 
 ==== Item captions and icons
 
-The _selectable_ input builders allow to explicitly set the selection item *captions* and *icons*. As for the items caption, the Holon platform *localization* architecture is supported, and the builders provides methods to specify the caption using a `Localizable` or a _message code_.
+The _selectable_ input builders allow to explicitly set the selection item *captions* and *icons*. As for the items caption, the Holon platform *localization* architecture is supported, and the builders provide methods to specify the caption using a `Localizable` or a _message code_.
 
 TIP: In order for the localization to work, a `LocalizationContext` must be available as a context resource. See the link:holon-core.html#i18n[Internationalization] documentation for further information.
 
@@ -240,7 +240,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[
 
 ==== Using the `Property` model with selectable Inputs
 
-The Holon platform `Property` model is fully supported by the selectable input builder, which allow to create selectable inputs using `PropertyBox` type items and a specific `Property` as selection property (typically, the property which acts as item id).
+The Holon platform `Property` model is fully supported by the selectable input builder, which allows to create selectable inputs using `PropertyBox` type items and a specific `Property` as selection property (typically, the property which acts as item id).
 
 The selection data type will be the same as the selection property type.
 
@@ -331,7 +331,7 @@ The `defaultValue(Property<T> property, DefaultValueProvider<T> defaultValueProv
 
 A `PropertyInputGroup` support both property value and group value validation, using both standard Holon platform `Validator` and Vaadin validators.
 
-A set of `required(...)` group builder methods are provided to add a _required_ validator to a property (i.e. a validator that check the value is not null or empty) and to show the required indicator symbol alog with the property input component. 
+A set of `required(...)` group builder methods are provided to add a _required_ validator to a property (i.e. a validator that check the value is not null or empty) and to show the required indicator symbol along with the property input component. 
 
 When a validator in bound to the overall input group, the value to validate will be represented by the `PropertyBox` which contains all the current property values.
 
@@ -339,10 +339,10 @@ When a validator in bound to the overall input group, the value to validate will
 ----
 include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInputGroup.java[tag=group4,indent=0]
 ----
-<1> Add a validator bound to the `DESCRIPTION` property to check the value size is not greater than 100 characters
+<1> Add a validator bound to the `DESCRIPTION` property to check that the value size is not greater than 100 characters
 <2> Add a _required_ validator to the `ID` property
 <3> Add a _required_ validator to the `ID` property providing a custom validation error message
-<4> Add an overall validator which read the `ID` property value from the group `PropertyBox` and checks it is greater than 0
+<4> Add an overall validator which reads the `ID` property value from the group `PropertyBox` and checks it is greater than 0
 
 The input group validation is performed invoking all the available property validators, and then the overall group validators, if any.
 
@@ -350,14 +350,14 @@ The input group validation is performed invoking all the available property vali
 ----
 include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInputGroup.java[tag=group5,indent=0]
 ----
-<1> Explicit group validation: if some validation failure occurs, a `ValidationException` is thrown
+<1> Explicit group validation: if some kind of validation failure occurs, a `ValidationException` is thrown
 <2> Using the default `getValue()` method, the validation is triggered automatically, and a  `ValidationException` is thrown if validation fails
 <3> The `getValue(boolean validate)` method can be used to skip value validation
 <4> The `getValueIfValid()` returns an Optional, which contains the `PropertyBox` value only if the validation succeded
 
 A link:{apidir}/com/holonplatform/vaadin/components/ValidationStatusHandler.html[ValidationStatusHandler^] can be used to control how the validation errors are notified to the user, listening to validation status change events.
 
-The property input group support `ValidationStatusHandler` configuration both property and overall validation.
+The property input group supports `ValidationStatusHandler` configuration both for property and overall validation.
 
 Furthermore, the input group builder provides two methods to control if the validation failures are to be collected and all notified to the user or if the validation has to stop at first failure, both from a properties or a group point of view.
 
@@ -374,7 +374,7 @@ TIP: A property input group `ValidationStatusHandler` setter method which accept
 
 === Input Forms
 
-The link:{apidir}/com/holonplatform/vaadin/components/PropertyInputForm.html[PropertyInputForm^] represents a `Input` group bound to a `Property` model which is also a UI `Component`, and can be used to display and manage the `Input` components in the UI.
+The link:{apidir}/com/holonplatform/vaadin/components/PropertyInputForm.html[PropertyInputForm^] represents an `Input` group bound to a `Property` model which is also a UI `Component`, and can be used to display and manage the `Input` components in the UI.
 
 It is a <<PropertyInputGroup>>, from which inherits all the `Input` generation, configuration and management features, using a `PropertyBox` to set and get the property values bound to each Input component.
 
@@ -384,7 +384,7 @@ The `Composer` interface is used to _compose_ the `Input` components on the UI, 
 
 NOTE: The `ComposableComponent` interface provides the `componentContainerComposer()` static method to obtain a default _composer_ which uses a Vaadin `ComponentContainer` as base layout.
 
-The inputs composition is triggered using the `compose()` method. The `PropertyInputForm` builder provides a `composeOnAttach(...)` method to set whether to automatically trigger the components composition when the form is attached to a parent layout, and this is the standard behaviour.
+The inputs composition is triggered by using the `compose()` method. The `PropertyInputForm` builder provides a `composeOnAttach(...)` method to set whether to automatically trigger the components composition when the form is attached to a parent layout, and this is the standard behaviour.
 
 Furthermore, a `initializer(...)` builder method is made available to perform custom configuration of the base layout component.
 
@@ -474,7 +474,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag
 
 === PropertyListing
 
-A link:{apidir}/com/holonplatform/vaadin/components/PropertyListing.html[PropertyListing^] can be obtained providing the `Property` set to use for the listing items.
+A link:{apidir}/com/holonplatform/vaadin/components/PropertyListing.html[PropertyListing^] can be obtained by providing the `Property` set to use for the listing items.
 
 The listing columns will be generated according to the item property set `Property` types and each column will be identified by the `Property` itself.
 
@@ -500,7 +500,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag
 ----
 <1> Create a `PropertyListing` and provide an `ItemDataProvider` as data source
 
-Furthermore, an link:{apidir}/com/holonplatform/vaadin/data/ItemIdentifierProvider.html[ItemIdentifierProvider^] should be configured to provide the item *identifiers*, expecially for the item selection consistency. The default behaviour is to use item itself as its own identifier, which it is not always the right semantic to use, expecially for `PropertyBox` type objects.
+Furthermore, an link:{apidir}/com/holonplatform/vaadin/data/ItemIdentifierProvider.html[ItemIdentifierProvider^] should be configured to provide the item *identifiers*, expecially for the item selection consistency. The default behaviour is to use the item itself as its own identifier, which it is not always the right semantic to use, expecially for `PropertyBox` type objects.
 
 [source, java]
 ----
@@ -584,7 +584,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag
 
 === Item selection
 
-The item listing component supports items selection, both in single and multiple mode. The listing can be made selectable using the `setSelectionMode` method or the `selectionMode` builder method.
+The item listing component supports items selection, both in single and multiple mode. The listing can be made selectable by using the `setSelectionMode` method or the `selectionMode` builder method.
 
 Just like any other `Selectable` component, the item listing component provides methods to inspect the current selected item/s and change the current selection.
 
@@ -618,7 +618,7 @@ NOTE: The *select all* checkbox shown in the top left corner of the listing is v
 The item listing builder provides a number of methods to control the data source items query, allowing to:
 
 * Set a property/column as *sortable* or not and *override the default sort behaviour*, for example using another property as query sort target or providing a custom `QuerySort`;
-* Set a *fixed sort*, which will always to appended to current query sorts
+* Set a *fixed sort*, which will be always appended to current query sorts
 * Set a *default sort*, to be used when no other query sort is configured
 * Set a *fixed filter*, which will be always applied to the query
 * Register one or more `QueryConfigurationProvider` to provide custom query configuration logic
@@ -637,7 +637,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag
 
 === Item set management
 
-The item set component provides methods to manage the item set which is provided as the listing data source, to add, update and remove one or more item in the set.
+The item set component provides methods to manage the item set which is provided as the listing data source, to add, update and remove one or more items in the set.
 
 To reflect the item set management operations in the underlyng data source (for example, a RDBMS), the `CommitHandler` interface is used. The `commit(...)` method of that interface is invoked at each item set modification, providing the _added_, _updated_ and _removed_ items. The `CommitHandler` implementation should persist the item set modifications in the concrete data source.
 
@@ -676,7 +676,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag
 
 The item listing component supports line-based editing, where double-clicking a row opens the row editor, using the default Vaadin `Grid` editor. The item listing editor must be enabled using the `editable(true)` method of the builder in order to activate the row editor at double-click.
 
-The *editor fields* to use for each listing property/column will be auto-generated according to the property/column type. This behaviour can be overridden providing custom editor fields for one or more of the the listing properties.
+The *editor fields* to use for each listing property/column will be auto-generated according to the property/column type. This behaviour can be overridden providing custom editor fields for one or more of the listing properties.
 
 The item listing component editor supports *validation*, allowing to register value validators both for the single property/column fields and for the overall value validation. 
 
@@ -769,8 +769,8 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleRenderers.java[t
 When a `LocalizationContext` is available as a Context resource, it is used to _localize_ any element to display which supports localization. Concerning to a `Property` related UI component, it is used to:
 
 * Localize the property *caption*, for example when it is used as a listing column header or as a input field caption
-* Obtain the *date and time format* to use to display a property value or to edit the property value through a a input field
-* Obtain the *number format* to use to display a property value or to edit the property value through a a input field
+* Obtain the *date and time format* to use to display a property value or to edit the property value through an  input field
+* Obtain the *number format* to be used to display a property value or to edit the property value through an input field
 * Obtain the default *boolean* localized text for the `true` and `false` values
 
 TIP: See the link:holon-core.html#i18n[Internationalization] documentation for further information about localization.
@@ -813,7 +813,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleScope.java[tag=s
 
 The Holon platform Vaadin module makes available the link:{apidir}/com/holonplatform/vaadin/device/DeviceInfo.html[DeviceInfo^] interface, to obtain informations about the *device* in which the application is running.
 
-The `DeviceInfo` object provides informations about the _user agent_ and screen dimensions, and can be obtained using a `VaadinRequest` or relying on the currently available `VaadinSession`.
+The `DeviceInfo` object provides informations about the _user agent_ and screen dimensions, and can be obtained by using a `VaadinRequest` or relying on the currently available `VaadinSession`.
 
 [source, java]
 ----
