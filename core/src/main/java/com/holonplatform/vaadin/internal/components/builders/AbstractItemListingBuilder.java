@@ -145,6 +145,7 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 	@Override
 	public B sortUsing(P property, final Path<?> sortPath) {
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		dataSourceBuilder.sortable(property, true);
 		dataSourceBuilder.withPropertySortGenerator(property, (p, asc) -> QuerySort.of(sortPath, asc));
 		return builder();
 	}
@@ -158,6 +159,7 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 	public B sortGenerator(P property, PropertySortGenerator<P> generator) {
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		ObjectUtils.argumentNotNull(generator, "Sort generator must be not null");
+		dataSourceBuilder.sortable(property, true);
 		dataSourceBuilder.withPropertySortGenerator(property, generator);
 		return builder();
 	}
