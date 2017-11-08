@@ -15,12 +15,14 @@
  */
 package com.holonplatform.vaadin.navigator.test.components;
 
+import com.holonplatform.core.i18n.Caption;
 import com.holonplatform.vaadin.navigator.annotations.VolatileView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 
+@Caption("View4")
 @VolatileView
 public class ViewFour implements View {
 

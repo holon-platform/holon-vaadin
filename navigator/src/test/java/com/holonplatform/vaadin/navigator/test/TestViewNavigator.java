@@ -314,6 +314,8 @@ public class TestViewNavigator extends AbstractVaadinTest {
 
 		assertTrue(wnd.getContent() instanceof Label);
 		assertEquals("FOUR", ((Label) wnd.getContent()).getValue());
+		
+		assertEquals("View4", wnd.getCaption());
 
 		assertEquals(1, ui.getWindows().size());
 
@@ -347,6 +349,19 @@ public class TestViewNavigator extends AbstractVaadinTest {
 
 		assertEquals(0, ui.getWindows().size());
 
+	}
+	
+	@Test
+	public void testWindowCaption() {
+		NavigatorTestUI ui = createUi(NavigatorTestUI.class, "http://localhost");
+
+		DefaultViewProvider provider = new DefaultViewProvider();
+		provider.registerView(VIEW_FOUR, ViewFour.class);
+
+		ViewNavigator navigator = ViewNavigator.builder().viewDisplay(viewer).addProvider(provider).buildAndBind(ui);
+		Window wnd = navigator.navigateInWindow(VIEW_FOUR, cfg -> cfg.caption("Overridden"));
+		
+		assertEquals("Overridden", wnd.getCaption());
 	}
 
 	@Test
