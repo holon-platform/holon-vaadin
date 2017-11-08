@@ -44,6 +44,19 @@ public interface PropertyValueComponentSource extends PropertySetBound {
 	<T> Optional<ValueComponent<T>> getValueComponent(Property<T> property);
 
 	/**
+	 * Get the {@link ValueComponent} bound to given <code>property</code>, throwing and exception is the component is
+	 * not available.
+	 * @param <T> Component type
+	 * @param property Property for which to get the associated {@link ValueComponent} (not null)
+	 * @return The {@link ValueComponent} bound to given <code>property</code>
+	 * @throws IllegalArgumentException If a value component is not available for given property
+	 */
+	default <T> ValueComponent<T> requireValueComponent(Property<T> property) {
+		return getValueComponent(property).orElseThrow(
+				() -> new IllegalArgumentException("No component available for property [" + property + "]"));
+	}
+
+	/**
 	 * Return a {@link Stream} of the available {@link Property} and {@link ValueComponent}s bindings.
 	 * @return Property-ValueComponent {@link PropertyBinding} stream
 	 */
