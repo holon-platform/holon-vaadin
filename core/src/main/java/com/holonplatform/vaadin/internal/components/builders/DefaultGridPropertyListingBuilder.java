@@ -50,7 +50,7 @@ public class DefaultGridPropertyListingBuilder extends
 
 	@SuppressWarnings("unchecked")
 	public <P extends Property<?>> DefaultGridPropertyListingBuilder(Iterable<P> properties) {
-		super(new DefaultPropertyListing(properties));
+		super(new DefaultPropertyListing(properties), Property.class);
 		this.properties = (Iterable<Property<?>>) properties;
 		// setup datasource
 		properties.forEach(p -> {

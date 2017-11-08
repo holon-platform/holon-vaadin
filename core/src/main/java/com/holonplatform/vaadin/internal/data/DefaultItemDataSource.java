@@ -60,6 +60,11 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 	 * Auto refresh
 	 */
 	private boolean autoRefresh = true;
+	
+	/** 
+	 * Property type
+	 */
+	private final Class<?> propertyType;
 
 	/**
 	 * Property ids
@@ -146,13 +151,14 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 
 	/**
 	 * Constructor.
+	 * @param propertyType Property representation type (not null)
 	 * @param dataProvider {@link ItemDataProvider} to be used as items data source
 	 * @param itemIdentifierProvider Item identifier provider
 	 * @param batchSize Batch size
 	 */
-	public DefaultItemDataSource(ItemDataProvider<ITEM> dataProvider,
+	public DefaultItemDataSource(Class<?> propertyType, ItemDataProvider<ITEM> dataProvider,
 			ItemIdentifierProvider<ITEM, Object> itemIdentifierProvider, int batchSize) {
-		this();
+		this(propertyType);
 		this.dataProvider = dataProvider;
 		this.itemIdentifierProvider = itemIdentifierProvider;
 		init(batchSize);
@@ -161,9 +167,12 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 	/**
 	 * Constructor which do not perform internal initialization. The container initialization must be performed later
 	 * using the init method.
+	 * @param propertyType Property representation type (not null)
 	 */
-	protected DefaultItemDataSource() {
+	protected DefaultItemDataSource(Class<?> propertyType) {
 		super();
+		ObjectUtils.argumentNotNull(propertyType, "Property type must be not null");
+		this.propertyType = propertyType;
 		// include data provider filters and sorts
 		addQueryConfigurationProvider(new QueryConfigurationProvider() {
 
@@ -228,6 +237,14 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 	protected ItemStore<ITEM> requireItemStore() {
 		return getItemStore()
 				.orElseThrow(() -> new IllegalStateException("Missing ItemStore: check container configuration"));
+	}
+
+	/* (non-Javadoc)
+	 * @see com.holonplatform.vaadin.data.ItemDataSource.Configuration#getPropertyType()
+	 */
+	@Override
+	public Class<?> getPropertyType() {
+		return propertyType;
 	}
 
 	/**
@@ -541,13 +558,12 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 	}
 
 	/**
-	 * Get the {@link PropertySortGenerator} bound to given property, if any
-	 * @param property Property
-	 * @return PropertySortGenerator, or <code>null</code> if not available
+	 * {@inheritDoc}
 	 */
-	protected PropertySortGenerator<PROPERTY> getPropertySortGenerator(PROPERTY property) {
+	@Override
+	public Optional<PropertySortGenerator<PROPERTY>> getPropertySortGenerator(PROPERTY property) {
 		if (propertySortGenerators != null) {
-			return propertySortGenerators.get(property);
+			return Optional.ofNullable(propertySortGenerators.get(property));
 		}
 		return null;
 	}
@@ -662,9 +678,9 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 				// sort property
 				PROPERTY sortId = itemSort.getProperty();
 				// check delegate
-				PropertySortGenerator<PROPERTY> generator = getPropertySortGenerator(sortId);
-				if (generator != null) {
-					QuerySort sort = generator.getQuerySort(sortId, itemSort.isAscending());
+				Optional<PropertySortGenerator<PROPERTY>> generator = getPropertySortGenerator(sortId);
+				if (generator.isPresent()) {
+					QuerySort sort = generator.get().getQuerySort(sortId, itemSort.isAscending());
 					if (sort != null) {
 						sorts.add(sort);
 					}
@@ -840,7 +856,7 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 		});
 	}
 
-	private static Optional<Path<?>> getPropertyPath(Object propertyId, Iterable<?> properties) {
+	public static Optional<Path<?>> getPropertyPath(Object propertyId, Iterable<?> properties) {
 		if (propertyId != null) {
 			if (propertyId instanceof Path) {
 				return Optional.of((Path<?>) propertyId);
@@ -907,7 +923,7 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 		/**
 		 * Container instance to build and setup
 		 */
-		protected final DefaultItemDataSource<ITEM, PROPERTY> instance = new DefaultItemDataSource<>();
+		protected final DefaultItemDataSource<ITEM, PROPERTY> instance;
 
 		/**
 		 * Container batch size
@@ -916,9 +932,11 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 
 		/**
 		 * Constructor
+		 * @param propertyType Property representation type (not null)
 		 */
-		public DefaultItemDataSourceBuilder() {
+		public DefaultItemDataSourceBuilder(Class<?> propertyType) {
 			super();
+			this.instance = new DefaultItemDataSource<>(propertyType);
 		}
 
 		/*

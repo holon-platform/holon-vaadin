@@ -338,7 +338,7 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 			if (!items.isEmpty()) {
 				instance.setItems(items, captionFilter);
 			} else if (itemDataProvider != null) {
-				instance.setDataProvider(new ItemDataProviderAdapter<>(itemDataProvider, itemIdentifier),
+				instance.setDataProvider(new ItemDataProviderAdapter<>(itemDataProvider, itemIdentifier, null),
 						filterProvider);
 			} else {
 				instance.setDataProvider(dataProvider, filterProvider);

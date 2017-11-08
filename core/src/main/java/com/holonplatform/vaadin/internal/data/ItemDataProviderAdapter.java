@@ -22,12 +22,16 @@ import java.util.stream.Stream;
 
 import com.holonplatform.core.Path;
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.core.property.Property;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.core.query.QuerySort.SortDirection;
 import com.holonplatform.vaadin.data.ItemDataProvider;
+import com.holonplatform.vaadin.data.ItemDataSource.Configuration;
+import com.holonplatform.vaadin.data.ItemDataSource.PropertySortGenerator;
 import com.holonplatform.vaadin.data.ItemIdentifierProvider;
+import com.holonplatform.vaadin.internal.utils.PropertyUtils;
 import com.vaadin.data.provider.AbstractBackEndDataProvider;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.Query;
@@ -46,16 +50,19 @@ public class ItemDataProviderAdapter<ITEM> extends AbstractBackEndDataProvider<I
 
 	private final ItemIdentifierProvider<ITEM, ?> itemIdentifier;
 
+	private final Configuration<ITEM, ?> configuration;
+
 	public ItemDataProviderAdapter(ItemDataProvider<ITEM> dataProvider) {
-		this(dataProvider, null);
+		this(dataProvider, null, null);
 	}
 
-	public ItemDataProviderAdapter(ItemDataProvider<ITEM> dataProvider,
-			ItemIdentifierProvider<ITEM, ?> itemIdentifier) {
+	public ItemDataProviderAdapter(ItemDataProvider<ITEM> dataProvider, ItemIdentifierProvider<ITEM, ?> itemIdentifier,
+			Configuration<ITEM, ?> configuration) {
 		super();
 		ObjectUtils.argumentNotNull(dataProvider, "ItemDataProvider must be not null");
 		this.dataProvider = dataProvider;
 		this.itemIdentifier = itemIdentifier;
+		this.configuration = configuration;
 	}
 
 	protected ItemDataProvider<ITEM> getDataProvider() {
@@ -64,6 +71,10 @@ public class ItemDataProviderAdapter<ITEM> extends AbstractBackEndDataProvider<I
 
 	protected Optional<ItemIdentifierProvider<ITEM, ?>> getItemIdentifier() {
 		return Optional.ofNullable(itemIdentifier);
+	}
+
+	protected Optional<Configuration<ITEM, ?>> getConfiguration() {
+		return Optional.ofNullable(configuration);
 	}
 
 	/*
@@ -121,12 +132,56 @@ public class ItemDataProviderAdapter<ITEM> extends AbstractBackEndDataProvider<I
 		};
 	}
 
-	private static QuerySort fromOrder(QuerySortOrder order) {
-		Path<?> path = Path.of(order.getSorted(), Object.class);
-		SortDirection direction = (order.getDirection() != null
+	private QuerySort fromOrder(QuerySortOrder order) {
+		final SortDirection direction = (order.getDirection() != null
 				&& order.getDirection() == com.vaadin.shared.data.sort.SortDirection.DESCENDING)
 						? SortDirection.DESCENDING : SortDirection.ASCENDING;
-		return QuerySort.of(path, direction);
+
+		return getConfiguration().flatMap(cfg -> getSortUsingConfiguration(order.getSorted(), direction, cfg))
+				.orElse(getSortFromOrder(order, direction));
+	}
+
+	private static QuerySort getSortFromOrder(QuerySortOrder order, SortDirection direction) {
+		return QuerySort.of(Path.of(order.getSorted(), Object.class), direction);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private Optional<QuerySort> getSortUsingConfiguration(String sortId, SortDirection direction,
+			Configuration<ITEM, ?> configuration) {
+		if (String.class.isAssignableFrom(configuration.getPropertyType())) {
+			Optional<PropertySortGenerator<String>> generator = ((Configuration<ITEM, String>) configuration)
+					.getPropertySortGenerator(sortId);
+			if (generator.isPresent()) {
+				return Optional.ofNullable(generator.get().getQuerySort(sortId, SortDirection.ASCENDING == direction));
+			}
+			return Optional.of(QuerySort.of(Path.of(sortId, Object.class), SortDirection.ASCENDING == direction));
+		} else if (Property.class.isAssignableFrom(configuration.getPropertyType())) {
+			Property<?> property = getPropertyById(sortId, (Configuration<ITEM, Property>) configuration);
+			if (property != null) {
+				Optional<PropertySortGenerator<Property>> generator = ((Configuration<ITEM, Property>) configuration)
+						.getPropertySortGenerator(property);
+				if (generator.isPresent()) {
+					return Optional
+							.ofNullable(generator.get().getQuerySort(property, SortDirection.ASCENDING == direction));
+				}
+				if (Path.class.isAssignableFrom(property.getClass())) {
+					return Optional.of(QuerySort.of((Path<?>) property, SortDirection.ASCENDING == direction));
+				}
+			}
+		}
+		return Optional.empty();
+	}
+
+	@SuppressWarnings("rawtypes")
+	private static Property<?> getPropertyById(String propertyId, Configuration<?, Property> configuration) {
+		if (propertyId != null && configuration.getProperties() != null) {
+			for (Property<?> property : configuration.getProperties()) {
+				if (propertyId.equals(PropertyUtils.generatePropertyId(property))) {
+					return property;
+				}
+			}
+		}
+		return null;
 	}
 
 	private static QuerySort getSort(List<QuerySort> sorts) {

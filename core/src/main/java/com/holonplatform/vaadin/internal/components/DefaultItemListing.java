@@ -1143,7 +1143,8 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 						.orElseThrow(() -> new IllegalStateException(
 								"The datasource [" + this.dataSource + "] has not a configured ItemDataProvider"));
 				getGrid().setDataProvider(new ItemDataProviderAdapter<>(dataProvider,
-						this.dataSource.getConfiguration().getItemIdentifierProvider().orElse(null)));
+						this.dataSource.getConfiguration().getItemIdentifierProvider().orElse(null),
+						this.dataSource.getConfiguration()));
 			}
 		}
 	}

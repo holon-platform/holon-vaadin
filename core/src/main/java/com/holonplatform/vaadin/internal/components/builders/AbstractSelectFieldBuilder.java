@@ -152,7 +152,7 @@ public abstract class AbstractSelectFieldBuilder<T, C extends Input<T>, S, ITEM,
 		if (!items.isEmpty()) {
 			instance.setItems(items);
 		} else if (itemDataProvider != null) {
-			instance.setDataProvider(new ItemDataProviderAdapter<>(itemDataProvider, itemIdentifier));
+			instance.setDataProvider(new ItemDataProviderAdapter<>(itemDataProvider, itemIdentifier, null));
 		} else if (dataProvider != null) {
 			instance.setDataProvider(dataProvider);
 		}

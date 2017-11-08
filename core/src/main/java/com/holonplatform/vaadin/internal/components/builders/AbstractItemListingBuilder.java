@@ -68,14 +68,16 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 	/**
 	 * Data source builder.
 	 */
-	protected final ItemDataSource.Builder<T, P> dataSourceBuilder = ItemDataSource.builder();
+	protected final ItemDataSource.Builder<T, P> dataSourceBuilder;
 
 	/**
 	 * Constructor
 	 * @param instance Instance to build
+	 * @param propertyType Property representation type (not null)
 	 */
-	public AbstractItemListingBuilder(I instance) {
+	public AbstractItemListingBuilder(I instance, Class<?> propertyType) {
 		super(instance);
+		this.dataSourceBuilder = ItemDataSource.builder(propertyType);
 	}
 
 	/*
@@ -542,13 +544,13 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 
 		// data source
 		ItemDataSource<T, P> dataSource = dataSourceBuilder.build();
-		
+
 		dataSource.getConfiguration().getDataProvider().ifPresent(dp -> {
 			if (dp instanceof DatastoreItemDataProvider) {
-				((DatastoreItemDataProvider)dp).addQueryConfigurationProvider(dataSource.getConfiguration());
+				((DatastoreItemDataProvider) dp).addQueryConfigurationProvider(dataSource.getConfiguration());
 			}
 		});
-		
+
 		listing.setDataSource(dataSource);
 
 		// visible columns

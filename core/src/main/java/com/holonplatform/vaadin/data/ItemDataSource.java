@@ -203,6 +203,12 @@ public interface ItemDataSource<ITEM, PROPERTY> extends Serializable {
 	public interface Configuration<ITEM, PROPERTY> extends QueryConfigurationProvider, Serializable {
 
 		/**
+		 * Get the property representation type.
+		 * @return Property type
+		 */
+		Class<?> getPropertyType();
+
+		/**
 		 * Get the {@link ItemIdentifierProvider}.
 		 * @return the item identifier provider
 		 */
@@ -246,6 +252,13 @@ public interface ItemDataSource<ITEM, PROPERTY> extends Serializable {
 		 * @return <code>true</code> if property is sortable, <code>false</code> otherwise
 		 */
 		boolean isPropertySortable(PROPERTY property);
+
+		/**
+		 * Get the {@link PropertySortGenerator} bound to given property, if any.
+		 * @param property Property (not null)
+		 * @return Optional property sort generator
+		 */
+		Optional<PropertySortGenerator<PROPERTY>> getPropertySortGenerator(PROPERTY property);
 
 		/**
 		 * Get the default value for the given property.
@@ -367,10 +380,11 @@ public interface ItemDataSource<ITEM, PROPERTY> extends Serializable {
 	 * Get a builder to create an {@link ItemDataSource}.
 	 * @param <ITEM> Item type
 	 * @param <PROPERTY> Item property type
+	 * @param propertyType Property representation type (not null)
 	 * @return {@link ItemDataSource} builder
 	 */
-	static <ITEM, PROPERTY> Builder<ITEM, PROPERTY> builder() {
-		return new DefaultItemDataSource.DefaultItemDataSourceBuilder<>();
+	static <ITEM, PROPERTY> Builder<ITEM, PROPERTY> builder(Class<?> propertyType) {
+		return new DefaultItemDataSource.DefaultItemDataSourceBuilder<>(propertyType);
 	}
 
 	/**

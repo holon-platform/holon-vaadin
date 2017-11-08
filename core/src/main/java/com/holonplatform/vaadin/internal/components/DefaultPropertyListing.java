@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import com.holonplatform.core.Path;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.ObjectUtils;
@@ -32,6 +31,7 @@ import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.vaadin.components.Field;
 import com.holonplatform.vaadin.components.PropertyListing;
 import com.holonplatform.vaadin.internal.VaadinLogger;
+import com.holonplatform.vaadin.internal.utils.PropertyUtils;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.PropertyDefinition;
 import com.vaadin.data.PropertySet;
@@ -66,7 +66,7 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 		super(Grid.withPropertySet(new GridPropertySet(properties)));
 		propertyIds = new HashMap<>();
 		properties.forEach(p -> {
-			propertyIds.put(p, generatePropertyId(p));
+			propertyIds.put(p, PropertyUtils.generatePropertyId(p));
 		});
 	}
 
@@ -90,11 +90,6 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 					.map(e -> e.getKey()).orElse(null);
 		}
 		return null;
-	}
-
-	private static String generatePropertyId(Property<?> property) {
-		return (Path.class.isAssignableFrom(property.getClass())) ? ((Path<?>) property).relativeName()
-				: String.valueOf(property.hashCode());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -204,7 +199,7 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 			super();
 			this.propertySet = propertySet;
 			this.property = property;
-			this.name = generatePropertyId(property);
+			this.name = PropertyUtils.generatePropertyId(property);
 		}
 
 		/*

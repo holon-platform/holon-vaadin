@@ -36,7 +36,7 @@ public class DefaultGridItemListingBuilder<T> extends
 		implements GridItemListingBuilder<T> {
 
 	public DefaultGridItemListingBuilder(Class<T> beanType) {
-		super(new DefaultBeanListing<>(beanType));
+		super(new DefaultBeanListing<>(beanType), String.class);
 	}
 
 	/*

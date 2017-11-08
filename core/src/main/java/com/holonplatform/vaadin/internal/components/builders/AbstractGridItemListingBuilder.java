@@ -63,8 +63,8 @@ public abstract class AbstractGridItemListingBuilder<T, P, C extends ItemListing
 	private Localizable editorSaveCaption;
 	private Localizable editorCancelCaption;
 
-	public AbstractGridItemListingBuilder(I instance) {
-		super(instance);
+	public AbstractGridItemListingBuilder(I instance, Class<?> propertyType) {
+		super(instance, propertyType);
 	}
 
 	/*
