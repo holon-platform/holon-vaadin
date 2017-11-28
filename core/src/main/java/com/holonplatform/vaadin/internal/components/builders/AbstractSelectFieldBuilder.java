@@ -68,11 +68,26 @@ public abstract class AbstractSelectFieldBuilder<T, C extends Input<T>, S, ITEM,
 	protected ItemIdentifierProvider<ITEM, Object> itemIdentifier = null;
 
 	/**
+	 * Initial value
+	 */
+	protected T initialValue;
+
+	/**
 	 * Constructor
 	 * @param instance Field instance to build
 	 */
 	public AbstractSelectFieldBuilder(I instance) {
 		super(instance);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.internal.components.builders.AbstractFieldBuilder#withValue(java.lang.Object)
+	 */
+	@Override
+	public B withValue(T value) {
+		this.initialValue = value;
+		return builder();
 	}
 
 	/*
@@ -158,6 +173,16 @@ public abstract class AbstractSelectFieldBuilder<T, C extends Input<T>, S, ITEM,
 		}
 	}
 
+	/**
+	 * Setup field before actual building
+	 * @param instance Building instance
+	 */
+	protected void preSetup(I instance) {
+		if (initialValue != null) {
+			instance.setValue(initialValue);
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.internal.components.builders.AbstractComponentBuilder#build(com.vaadin.ui.
@@ -166,6 +191,7 @@ public abstract class AbstractSelectFieldBuilder<T, C extends Input<T>, S, ITEM,
 	@Override
 	protected C build(I instance) {
 		configureDataSource(instance);
+		preSetup(instance);
 		return buildSelect(instance);
 	}
 
@@ -177,6 +203,7 @@ public abstract class AbstractSelectFieldBuilder<T, C extends Input<T>, S, ITEM,
 	@Override
 	protected Field<T> buildAsField(I instance) {
 		configureDataSource(instance);
+		preSetup(instance);
 		return buildSelectAsField(instance);
 	}
 
