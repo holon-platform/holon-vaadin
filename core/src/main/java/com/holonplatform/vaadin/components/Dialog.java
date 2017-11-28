@@ -332,14 +332,16 @@ public interface Dialog extends Component {
 		/**
 		 * Build and open the dialog window using given {@link UI}.
 		 * @param ui UI to which to attach the dialog window
+		 * @return the {@link Dialog} instance
 		 */
-		void open(UI ui);
+		Dialog open(UI ui);
 
 		/**
 		 * Build and open the dialog window using given current {@link UI}.
+		 * @return the {@link Dialog} instance
 		 */
-		default void open() {
-			open(UI.getCurrent());
+		default Dialog open() {
+			return open(UI.getCurrent());
 		}
 
 	}

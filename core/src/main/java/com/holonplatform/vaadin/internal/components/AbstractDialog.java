@@ -523,8 +523,10 @@ public abstract class AbstractDialog extends Window implements Dialog, CloseList
 		 * @see com.holonplatform.vaadin.components.Dialog.Builder#open(com.vaadin.ui.UI)
 		 */
 		@Override
-		public void open(UI ui) {
-			build().open(ui);
+		public Dialog open(UI ui) {
+			final Dialog dialog = build();
+			dialog.open(ui);
+			return dialog;
 		}
 
 	}
