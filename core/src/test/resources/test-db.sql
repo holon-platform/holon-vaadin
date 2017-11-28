@@ -3,8 +3,8 @@
 create table if not exists testdata (
 	 code varchar(100) primary key 
 	,description varchar(100) 
-	,sequence int 
-	,obsolete int not null
+	,sequence int not null 
+	,obsolete int not null 
 );
 
 /* Data */

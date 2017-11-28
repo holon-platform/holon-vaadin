@@ -18,11 +18,16 @@ package com.holonplatform.vaadin.internal.components;
 import java.util.Collection;
 import java.util.Optional;
 
+import com.holonplatform.core.datastore.DataTarget;
+import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.core.property.PathProperty;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.core.property.PropertySet;
+import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.vaadin.components.Field;
 import com.holonplatform.vaadin.components.SingleSelect;
@@ -38,6 +43,7 @@ import com.holonplatform.vaadin.components.builders.SinglePropertySelectInputBui
 import com.holonplatform.vaadin.components.builders.SinglePropertySelectInputBuilder.GenericSinglePropertySelectInputBuilder;
 import com.holonplatform.vaadin.components.builders.SingleSelectInputBuilder;
 import com.holonplatform.vaadin.components.builders.SingleSelectInputBuilder.GenericSingleSelectInputBuilder;
+import com.holonplatform.vaadin.data.ItemConverter;
 import com.holonplatform.vaadin.data.ItemDataProvider;
 import com.holonplatform.vaadin.internal.components.builders.AbstractSelectFieldBuilder;
 import com.holonplatform.vaadin.internal.data.ItemDataProviderAdapter;
@@ -110,7 +116,8 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 	}
 
 	protected SelectionEvent<T> buildSelectionEvent(SingleSelectionEvent<ITEM> event) {
-		return new DefaultSelectionEvent<>(event.getFirstSelectedItem().map(item -> fromInternalValue(item)).orElse(null),
+		return new DefaultSelectionEvent<>(
+				event.getFirstSelectedItem().map(item -> fromInternalValue(item)).orElse(null),
 				event.isUserOriginated());
 	}
 
@@ -665,6 +672,8 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 	public static abstract class PropertyBuilder<T, B extends SinglePropertySelectInputBuilder<T, B>> extends
 			AbstractSingleSelectFieldBuilder<T, PropertyBox, B> implements SinglePropertySelectInputBuilder<T, B> {
 
+		private final Property<T> selectProperty;
+
 		/**
 		 * Constructor
 		 * @param selectProperty Selection (and identifier) property
@@ -673,8 +682,19 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public PropertyBuilder(Property<T> selectProperty, RenderingMode renderingMode) {
 			super(selectProperty.getType(), renderingMode);
+			this.selectProperty = selectProperty;
 			itemIdentifier = new PropertyItemIdentifier(selectProperty);
-			getInstance().setItemConverter(new DefaultPropertyBoxConverter<>(selectProperty));
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.PropertySelectInputBuilder#itemConverter(com.holonplatform.
+		 * vaadin.data.ItemConverter)
+		 */
+		@Override
+		public B itemConverter(ItemConverter<T, PropertyBox> itemConverter) {
+			getInstance().setItemConverter(new ReversiblePropertyBoxConverter<>(selectProperty, itemConverter));
+			return builder();
 		}
 
 		/*
@@ -687,6 +707,65 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 		public B dataSource(ItemDataProvider<PropertyBox> dataProvider) {
 			this.itemDataProvider = dataProvider;
 			return builder();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.builders.PropertySelectInputBuilder#dataSource(com.holonplatform.core.
+		 * datastore.Datastore, com.holonplatform.core.datastore.DataTarget, java.lang.Iterable,
+		 * com.holonplatform.core.query.QueryConfigurationProvider[])
+		 */
+		@Override
+		public <P extends Property<?>> B dataSource(Datastore datastore, DataTarget<?> dataTarget,
+				Iterable<P> properties, QueryConfigurationProvider... queryConfigurationProviders) {
+			SinglePropertySelectInputBuilder.super.dataSource(datastore, dataTarget, properties,
+					queryConfigurationProviders);
+			setupItemConverter(datastore, dataTarget, properties);
+			return builder();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.builders.PropertySelectInputBuilder#dataSource(com.holonplatform.core.
+		 * datastore.Datastore, com.holonplatform.core.datastore.DataTarget, com.holonplatform.core.property.Property[])
+		 */
+		@SuppressWarnings("unchecked")
+		@Override
+		public <P extends Property<?>> B dataSource(Datastore datastore, DataTarget<?> dataTarget, P... properties) {
+			SinglePropertySelectInputBuilder.super.dataSource(datastore, dataTarget, properties);
+			setupItemConverter(datastore, dataTarget, PropertySet.of(properties));
+			return builder();
+		}
+
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		protected <P extends Property<?>> void setupItemConverter(Datastore datastore, DataTarget<?> dataTarget,
+				Iterable<P> properties) {
+			if (selectProperty != null && PathProperty.class.isAssignableFrom(selectProperty.getClass())
+					&& !getInstance().getItemConverter().isPresent()) {
+				itemConverter(value -> {
+					if (value != null) {
+						return datastore.query().target(dataTarget).filter(((PathProperty) selectProperty).eq(value))
+								.findOne(properties).orElse(null);
+					}
+					return null;
+				});
+			}
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.internal.components.builders.AbstractSelectFieldBuilder#preSetup(com.holonplatform.
+		 * vaadin.internal.components.AbstractSelectField)
+		 */
+		@Override
+		protected void preSetup(SingleSelectField<T, PropertyBox> instance) {
+			if (!instance.getItemConverter().isPresent()) {
+				instance.setItemConverter(new DefaultPropertyBoxConverter<>(selectProperty));
+			}
+			super.preSetup(instance);
 		}
 
 		/*

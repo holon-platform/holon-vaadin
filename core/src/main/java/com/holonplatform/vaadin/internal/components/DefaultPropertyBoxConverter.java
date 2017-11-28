@@ -41,13 +41,27 @@ public class DefaultPropertyBoxConverter<T> implements Converter<T, PropertyBox>
 		this.property = property;
 	}
 
+	/**
+	 * Get the property to return from the model {@link PropertyBox}
+	 * @return the property
+	 */
+	protected Property<T> getProperty() {
+		return property;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.vaadin.data.Converter#convertToModel(java.lang.Object, com.vaadin.data.ValueContext)
 	 */
 	@Override
 	public Result<PropertyBox> convertToModel(T value, ValueContext context) {
-		return Result.error("Conversion to model is not supported");
+		if (value == null) {
+			return null;
+		}
+		if (PropertyBox.class.isAssignableFrom(value.getClass())) {
+			return Result.ok((PropertyBox) value);
+		}
+		return Result.error("Conversion to model is not supported for value type [" + value.getClass() + "]");
 	}
 
 	/*

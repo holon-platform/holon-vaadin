@@ -23,6 +23,8 @@ import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.vaadin.components.Input;
+import com.holonplatform.vaadin.components.Selectable;
+import com.holonplatform.vaadin.data.ItemConverter;
 import com.holonplatform.vaadin.data.ItemDataProvider;
 
 /**
@@ -75,5 +77,16 @@ public interface PropertySelectInputBuilder<T, C extends Input<T>, S, B extends 
 		ObjectUtils.argumentNotNull(properties, "Properties must be not null");
 		return dataSource(datastore, dataTarget, PropertySet.of(properties));
 	}
+
+	/**
+	 * Set the {@link ItemConverter} to be used to convert the select property value to the model {@link PropertyBox}.
+	 * <p>
+	 * The item converter is required when the select value type is not a {@link PropertyBox} to allow value selection
+	 * using {@link Input#setValue(Object)} or {@link Selectable#select(Object)}.
+	 * </p>
+	 * @param itemConverter The {@link ItemConverter} to set (not null)
+	 * @return this
+	 */
+	B itemConverter(ItemConverter<S, PropertyBox> itemConverter);
 
 }

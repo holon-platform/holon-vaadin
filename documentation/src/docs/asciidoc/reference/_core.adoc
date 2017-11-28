@@ -267,6 +267,22 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[
 ----
 <1> Set a `QueryConfigurationProvider` which provides a `QueryFilter` to select only the items with the `ID` property that is greater than 0
 
+===== Selection model converter
+
+When the Holon platform `Property` model is used for selectable Inputs and the selection value type is not a `PropertyBox`, i.e. the selection items are not of the same type of the Input value, a conversion function is required to obtain the `PropertyBox` item from a selection value when the value is setted in the Input component, either using `setValue(...)` or `select(...)`.
+
+For example, if a `String` type `Property` is declared as selection property, the `Input` value will be the the value of selection property (of `String` type), while the selection items are `PropertyBox`.
+
+When a `Datastore` is provided as the data source of the select, a default item converter is configured. The default item converter tries to obtain the `PropertyBox` item by performing a query on the `Datastore` and using a filter predicate to get the item for which the selection property value is equal to the value to select, assuming that the selection property acts as primary key.
+
+To change the default conversion strategy, a custom item converter can be provided to the select input builder using the `itemConverter(...)` method:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[tag=selectable11,indent=0]
+----
+<1> Set an `ItemConverter` providing the query to perform to obtain the item `PropertyBox` from the selection `ID` property value 
+
 [[PropertyInputGroup]]
 === Grouping Inputs
 

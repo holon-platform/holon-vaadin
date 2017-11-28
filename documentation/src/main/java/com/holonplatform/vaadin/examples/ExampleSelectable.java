@@ -181,6 +181,23 @@ public class ExampleSelectable {
 		// end::selectable10[]
 	}
 
+	public void selectable11() {
+		// tag::selectable11[]
+		Datastore datastore = obtainDatastore();
+
+		final PathProperty<Long> ID = PathProperty.create("id", Long.class);
+		final PathProperty<String> DESCRIPTION = PathProperty.create("description", String.class);
+		final DataTarget<?> TARGET = DataTarget.named("testData");
+		final PropertySet<?> PROPERTIES = PropertySet.of(ID, DESCRIPTION);
+
+		SingleSelect<Long> singleSelect = Components.input.singleSelect(ID)
+				.dataSource(datastore, DataTarget.named("testData"), PROPERTIES)
+				.itemConverter(
+						value -> datastore.query().target(TARGET).filter(ID.eq(value)).findOne(PROPERTIES).orElse(null)) // <1>
+				.build();
+		// end::selectable11[]
+	}
+
 	private static Datastore obtainDatastore() {
 		return null;
 	}
