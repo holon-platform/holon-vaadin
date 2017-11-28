@@ -201,7 +201,13 @@ public class StringField extends TextField implements Input<String>, Field<Strin
 	 */
 	@Override
 	public boolean isEmpty() {
-		return Input.super.isEmpty();
+		if (Input.super.isEmpty()) {
+			return true;
+		}
+		if ((isEmptyValuesAsNull() || isBlankValuesAsNull()) && getValue() == null) {
+			return true;
+		}
+		return false;
 	}
 
 	/*

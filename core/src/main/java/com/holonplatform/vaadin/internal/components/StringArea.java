@@ -201,7 +201,13 @@ public class StringArea extends TextArea implements Input<String>, Field<String>
 	 */
 	@Override
 	public boolean isEmpty() {
-		return Input.super.isEmpty();
+		if (Input.super.isEmpty()) {
+			return true;
+		}
+		if ((isEmptyValuesAsNull() || isBlankValuesAsNull()) && getValue() == null) {
+			return true;
+		}
+		return false;
 	}
 
 	/*
