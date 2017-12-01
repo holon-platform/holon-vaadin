@@ -127,6 +127,19 @@ To disable the Spring Security `@Secured` access control the `HolonVaadinSpringS
 @EnableAutoConfiguration(exclude={HolonVaadinSpringSecurityAutoConfiguration.class})
 ----
 
+=== Holon VaadinServlet
+
+By default, a Holon extension of the Vaadin servlet is auto-configured. 
+
+This servlet allows automatic `com.vaadin.server.SessionInitListener` and `com.vaadin.server.SessionDestroyListener` registration if they are defined as Spring beans and made available in Spring context.
+
+To disable this auto-configuration feature, the `HolonVaadinServletAutoConfiguration` class can be excluded:
+
+[source, java]
+----
+@EnableAutoConfiguration(exclude={HolonVaadinServletAutoConfiguration.class})
+----
+
 === Spring Boot starters
 
 The following _starter_ artifacts are available to provide a quick project configuration setup using Maven dependency system:
