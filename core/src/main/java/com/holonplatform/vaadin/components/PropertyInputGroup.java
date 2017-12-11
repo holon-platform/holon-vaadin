@@ -23,6 +23,7 @@ import com.holonplatform.core.Validator.ValidationException;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
+import com.holonplatform.core.property.Property.PropertyNotFoundException;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyRendererRegistry;
@@ -72,6 +73,19 @@ public interface PropertyInputGroup extends PropertySetBound, ValueHolder<Proper
 	 * @return Optional {@link Input} bound to given <code>property</code>
 	 */
 	<T> Optional<Input<T>> getInput(Property<T> property);
+
+	/**
+	 * Get the {@link Input} bound to given <code>property</code>, if any. If not available, a
+	 * {@link PropertyNotFoundException} is thrown.
+	 * @param <T> Property type
+	 * @param property Property for which to get the associated {@link Input} (not null)
+	 * @return the {@link Input} bound to given <code>property</code>
+	 * @throws PropertyNotFoundException If no Input is available for given property
+	 */
+	default <T> Input<T> requireInput(Property<T> property) {
+		return getInput(property).orElseThrow(
+				() -> new PropertyNotFoundException(property, "No Input available for property [" + property + "]"));
+	}
 
 	/**
 	 * Return a {@link Stream} of the properties and their bound {@link Input}s of this input group.
