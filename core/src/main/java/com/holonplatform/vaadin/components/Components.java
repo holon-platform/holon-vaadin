@@ -72,6 +72,7 @@ import com.holonplatform.vaadin.components.builders.SecretInputBuilder;
 import com.holonplatform.vaadin.components.builders.SinglePropertySelectInputBuilder.GenericSinglePropertySelectInputBuilder;
 import com.holonplatform.vaadin.components.builders.SingleSelectInputBuilder.GenericSingleSelectInputBuilder;
 import com.holonplatform.vaadin.components.builders.StringInputBuilder;
+import com.holonplatform.vaadin.components.builders.TabsBuilder;
 import com.holonplatform.vaadin.components.builders.TemporalInputBuilder.TemporalWithTimeFieldBuilder;
 import com.holonplatform.vaadin.components.builders.TemporalInputBuilder.TemporalWithoutTimeFieldBuilder;
 import com.holonplatform.vaadin.components.builders.VerticalLayoutBuilder;
@@ -87,6 +88,7 @@ import com.holonplatform.vaadin.internal.components.NumberField;
 import com.holonplatform.vaadin.internal.components.SecretField;
 import com.holonplatform.vaadin.internal.components.StringArea;
 import com.holonplatform.vaadin.internal.components.StringField;
+import com.holonplatform.vaadin.internal.components.builders.AccordionBuilder;
 import com.holonplatform.vaadin.internal.components.builders.DefaultButtonBuilder;
 import com.holonplatform.vaadin.internal.components.builders.DefaultButtonConfigurator;
 import com.holonplatform.vaadin.internal.components.builders.DefaultClickableLayoutConfigurator;
@@ -101,9 +103,11 @@ import com.holonplatform.vaadin.internal.components.builders.DefaultLayoutConfig
 import com.holonplatform.vaadin.internal.components.builders.DefaultOrderedLayoutConfigurator;
 import com.holonplatform.vaadin.internal.components.builders.DefaultPanelBuilder;
 import com.holonplatform.vaadin.internal.components.builders.DefaultVerticalLayoutBuilder;
+import com.holonplatform.vaadin.internal.components.builders.TabSheetBuilder;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -113,6 +117,7 @@ import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -306,6 +311,22 @@ public interface Components {
 	 */
 	static PanelBuilder panel() {
 		return new DefaultPanelBuilder();
+	}
+
+	/**
+	 * Gets a builder to create a {@link TabSheet}.
+	 * @return TabSheet builder
+	 */
+	static TabsBuilder<TabSheet> tabSheet() {
+		return new TabSheetBuilder();
+	}
+
+	/**
+	 * Gets a builder to create an {@link Accordion}.
+	 * @return Accordion builder
+	 */
+	static TabsBuilder<Accordion> accordion() {
+		return new AccordionBuilder();
 	}
 
 	/**
