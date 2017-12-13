@@ -221,6 +221,24 @@ public class DefaultPropertyInputForm<C extends Component> extends
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.PropertyInputBinder#refresh(boolean)
+	 */
+	@Override
+	public void refresh(boolean readOnly) {
+		getInputGroup().refresh(readOnly);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.PropertyInputBinder#refresh(com.holonplatform.core.property.Property)
+	 */
+	@Override
+	public <T> void refresh(Property<T> property) {
+		getInputGroup().refresh(property);
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.ValueHolder#addValueChangeListener(com.holonplatform.vaadin.components.
 	 * ValueHolder.ValueChangeListener)
 	 */
@@ -490,6 +508,16 @@ public class DefaultPropertyInputForm<C extends Component> extends
 		@Override
 		public PropertyInputFormBuilder<C> ignoreMissingInputs(boolean ignoreMissingInputs) {
 			inputGroupBuilder.ignoreMissingInputs(ignoreMissingInputs);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.PropertyInputGroup.Builder#excludeReadOnlyProperties()
+		 */
+		@Override
+		public PropertyInputFormBuilder<C> excludeReadOnlyProperties() {
+			inputGroupBuilder.excludeReadOnlyProperties();
 			return this;
 		}
 

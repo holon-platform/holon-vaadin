@@ -68,6 +68,14 @@ public interface PropertyInputBinder extends PropertySetBound {
 	 */
 	<T> Stream<PropertyBinding<T, Input<T>>> stream();
 
+	default void refresh() {
+		refresh(false);
+	}
+
+	void refresh(boolean readOnly);
+
+	<T> void refresh(Property<T> property);
+
 	// Value change listener
 
 	/**

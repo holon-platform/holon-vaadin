@@ -127,6 +127,11 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 	private boolean ignoreMissingInputs = false;
 
 	/**
+	 * Whether to exclude read-only properties from bindings
+	 */
+	private boolean excludeReadOnlyProperties = false;
+
+	/**
 	 * External {@link ValueComponent} supplier
 	 */
 	private Supplier<ValueComponent<PropertyBox>> valueComponentSupplier;
@@ -190,7 +195,16 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 	 */
 	@Override
 	public Iterable<Input<?>> getInputs() {
-		return propertySet.stream().filter(p -> _propertyConfiguration(p).getInput().isPresent())
+		return getInputsList();
+	}
+
+	/**
+	 * Get available {@link Input} list, excluding hidden properties.
+	 * @return available {@link Input} list
+	 */
+	private List<Input<?>> getInputsList() {
+		return propertySet.stream().filter(p -> !_propertyConfiguration(p).isHidden())
+				.filter(p -> _propertyConfiguration(p).getInput().isPresent())
 				.map(p -> _propertyConfiguration(p).getInput().get()).collect(Collectors.toList());
 	}
 
@@ -203,7 +217,10 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 	public <T> Optional<Input<T>> getInput(Property<T> property) {
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		if (propertySet.contains(property)) {
-			return getPropertyConfiguration(property).getInput();
+			final PropertyConfiguration<T> cfg = getPropertyConfiguration(property);
+			if (!cfg.isHidden()) {
+				return cfg.getInput();
+			}
 		}
 		return Optional.empty();
 	}
@@ -215,7 +232,8 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> Stream<PropertyBinding<T, Input<T>>> stream() {
-		return propertySet.stream().filter(p -> _propertyConfiguration(p).getInput().isPresent())
+		return propertySet.stream().filter(p -> !_propertyConfiguration(p).isHidden())
+				.filter(p -> _propertyConfiguration(p).getInput().isPresent())
 				.map(p -> PropertyBinding.create(p, _propertyConfiguration(p).getInput().get()));
 	}
 
@@ -226,8 +244,7 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Iterable<ValueComponent> getValueComponents() {
-		return propertySet.stream().filter(p -> _propertyConfiguration(p).getInput().isPresent())
-				.map(p -> _propertyConfiguration(p).getInput().get()).collect(Collectors.toList());
+		return getInputsList().stream().map(i -> i).collect(Collectors.toList());
 	}
 
 	/*
@@ -237,11 +254,7 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 	 */
 	@Override
 	public <T> Optional<ValueComponent<T>> getValueComponent(Property<T> property) {
-		ObjectUtils.argumentNotNull(property, "Property must be not null");
-		if (propertySet.contains(property)) {
-			return getPropertyConfiguration(property).getInput().map(i -> i);
-		}
-		return Optional.empty();
+		return getInput(property).map(i -> i);
 	}
 
 	/*
@@ -251,7 +264,8 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 	@SuppressWarnings("unchecked")
 	@Override
 	public Stream<PropertyBinding<?, ValueComponent<?>>> streamOfValueComponents() {
-		return propertySet.stream().filter(p -> _propertyConfiguration(p).getInput().isPresent())
+		return propertySet.stream().filter(p -> !_propertyConfiguration(p).isHidden())
+				.filter(p -> _propertyConfiguration(p).getInput().isPresent())
 				.map(p -> PropertyBinding.create(p, _propertyConfiguration(p).getInput().get()));
 	}
 
@@ -282,7 +296,7 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 	 */
 	@Override
 	public PropertyBox getValue(boolean validate) {
-		PropertyBox value = PropertyBox.builder(propertySet).build();
+		PropertyBox value = PropertyBox.builder(propertySet).invalidAllowed(!validate).build();
 		flush(value, validate);
 		return value;
 	}
@@ -495,11 +509,12 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 	 */
 	@Override
 	public void setReadOnly(boolean readOnly) {
-		propertySet.stream().filter(p -> !_propertyConfiguration(p).isReadOnly()).forEach(p -> {
-			_propertyConfiguration(p).getInput().ifPresent(i -> {
-				i.setReadOnly(readOnly);
-			});
-		});
+		propertySet.stream().filter(p -> !_propertyConfiguration(p).isHidden())
+				.filter(p -> !_propertyConfiguration(p).isReadOnly()).forEach(p -> {
+					_propertyConfiguration(p).getInput().ifPresent(i -> {
+						i.setReadOnly(readOnly);
+					});
+				});
 	}
 
 	/**
@@ -649,6 +664,22 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 	}
 
 	/**
+	 * Get whether to exclude read-only properties from bindings.
+	 * @return <code>true</code> if read-only properties are excluded from bindings
+	 */
+	public boolean isExcludeReadOnlyProperties() {
+		return excludeReadOnlyProperties;
+	}
+
+	/**
+	 * Set whether to exclude read-only properties from bindings.
+	 * @param excludeReadOnlyProperties <code>true</code> to exclude read-only properties from bindings
+	 */
+	public void setExcludeReadOnlyProperties(boolean excludeReadOnlyProperties) {
+		this.excludeReadOnlyProperties = excludeReadOnlyProperties;
+	}
+
+	/**
 	 * Add an {@link Input} {@link PostProcessor}.
 	 * @param postProcessor the post-processor to add
 	 */
@@ -674,7 +705,54 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 			// exclude hidden properties
 			PropertyConfiguration<?> configuration = _propertyConfiguration(p);
 			if (!configuration.isHidden()) {
-				renderAndBind(configuration);
+				// check whether to exclude read-only properties
+				if (!isExcludeReadOnlyProperties() || !p.isReadOnly()) {
+					renderAndBind(configuration);
+				}
+			}
+		});
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.PropertyInputBinder#refresh(boolean)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public void refresh(boolean readOnly) {
+		final PropertyBox value = getValue(false);
+		propertySet.forEach(p -> {
+			if (!readOnly || p.isReadOnly()) {
+				refresh(p, value);
+			}
+		});
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.PropertyInputBinder#refresh(com.holonplatform.core.property.Property)
+	 */
+	@Override
+	public <T> void refresh(final Property<T> property) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		refresh(property, getValue(false));
+	}
+
+	/**
+	 * Refresh the {@link Input} bound to given {@link Property}, if available, with given value.
+	 * @param property Property
+	 * @param value Value
+	 */
+	private <T> void refresh(final Property<T> property, PropertyBox value) {
+		getInput(property).ifPresent(input -> {
+			final boolean ro = input.isReadOnly();
+			if (ro)
+				input.setReadOnly(false);
+			try {
+				input.setValue((value != null) ? value.getValue(property) : null);
+			} finally {
+				if (ro)
+					input.setReadOnly(true);
 			}
 		});
 	}
@@ -813,7 +891,7 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 
 		// get all property configurations
 		List<PropertyConfiguration<?>> configurations = propertySet.stream().map(p -> _propertyConfiguration(p))
-				.filter(cfg -> !cfg.isReadOnly() && cfg.getInput().isPresent()).collect(Collectors.toList());
+				.filter(cfg -> !cfg.isReadOnly() && !cfg.isHidden() && cfg.getInput().isPresent()).collect(Collectors.toList());
 
 		if (configurations != null) {
 
@@ -905,7 +983,7 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 	 * @throws ValidationException If a validation error occurred
 	 */
 	private <T> void validateProperty(PropertyConfiguration<T> configuration) throws ValidationException {
-		if (configuration.getInput().isPresent()) {
+		if (!configuration.isHidden() && configuration.getInput().isPresent()) {
 			validateProperty(configuration, configuration.getInput().get().getValue());
 		}
 	}
@@ -934,7 +1012,7 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 	 */
 	private <T> void validateProperty(final PropertyConfiguration<T> configuration, final T value)
 			throws ValidationException {
-		if (configuration.getInput().isPresent()) {
+		if (!configuration.isHidden() && configuration.getInput().isPresent()) {
 			// input
 			final Input<T> input = configuration.getInput().get();
 
@@ -1313,6 +1391,16 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 		@Override
 		public B ignoreMissingInputs(boolean ignoreMissingInputs) {
 			instance.setIgnoreMissingInputs(ignoreMissingInputs);
+			return builder();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.PropertyInputGroup.Builder#excludeReadOnlyProperties()
+		 */
+		@Override
+		public B excludeReadOnlyProperties() {
+			instance.setExcludeReadOnlyProperties(true);
 			return builder();
 		}
 

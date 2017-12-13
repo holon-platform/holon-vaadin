@@ -25,6 +25,7 @@ import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyRendererRegistry;
+import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.components.Input.InputPropertyRenderer;
 import com.holonplatform.vaadin.components.PropertyBinding.PostProcessor;
 import com.holonplatform.vaadin.internal.components.DefaultPropertyInputGroup;
@@ -297,6 +298,13 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		 * @return this
 		 */
 		<T> B defaultValue(Property<T> property, DefaultValueProvider<T> defaultValueProvider);
+
+		/**
+		 * Exclude read-only properties (for example {@link VirtualProperty}s) from {@link Input} generation and
+		 * binding.
+		 * @return this
+		 */
+		B excludeReadOnlyProperties();
 
 		/**
 		 * Adds a {@link Validator} to the {@link Input} bound to given <code>property</code>.
