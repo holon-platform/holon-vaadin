@@ -565,7 +565,7 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 		if (propertySortGenerators != null) {
 			return Optional.ofNullable(propertySortGenerators.get(property));
 		}
-		return null;
+		return Optional.empty();
 	}
 
 	/**

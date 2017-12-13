@@ -421,8 +421,8 @@ public class DefaultUserAgentInspector implements UserAgentInspector {
 		if (detectWindowsPhone7()) {
 			return false;
 		}
-		if (userAgentHeader.indexOf(deviceWinMob) != -1 || userAgentHeader.indexOf(deviceWinMob) != -1
-				|| userAgentHeader.indexOf(deviceIeMob) != -1 || userAgentHeader.indexOf(enginePie) != -1
+		if (userAgentHeader.indexOf(deviceWinMob) != -1 || userAgentHeader.indexOf(deviceIeMob) != -1
+				|| userAgentHeader.indexOf(enginePie) != -1
 				|| (userAgentHeader.indexOf(manuHtc) != -1 && userAgentHeader.indexOf(deviceWindows) != -1)
 				|| (detectWapWml() && userAgentHeader.indexOf(deviceWindows) != -1)) {
 			return true;
