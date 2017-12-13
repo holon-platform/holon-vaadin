@@ -807,9 +807,11 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 	 * @return <code>true</code> if volatile
 	 */
 	protected boolean isVolatile(ViewConfiguration viewConfiguration, String navigationState) {
+
 		/*
 		 * if (navigationState != null && viewWindows.containsKey(navigationState)) { return false; }
 		 */
+
 		if (viewConfiguration != null) {
 			return viewConfiguration.isVolatile();
 		}
@@ -1054,6 +1056,7 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 	 * Close all opened Windows displaying Views
 	 */
 	protected void closeAllViewWindows() {
+		final List<String> toRemove = new LinkedList<>();
 		for (Entry<String, WeakReference<Window>> entry : viewWindows.entrySet()) {
 
 			// remove Window
@@ -1067,14 +1070,18 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 					navigateBackOnWindowClose = true;
 				}
 			}
-			viewWindows.remove(entry.getKey());
+
+			toRemove.add(entry.getKey());
+		}
+
+		toRemove.forEach(state -> {
+			viewWindows.remove(state);
 
 			// remove from history
 			if (!getNavigationHistory().isEmpty()) {
-				getNavigationHistory().remove(entry.getKey());
+				getNavigationHistory().remove(state);
 			}
-
-		}
+		});
 	}
 
 	/**
