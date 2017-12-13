@@ -678,8 +678,19 @@ public interface Components {
 		 * @return {@link PropertyInputForm} builder
 		 */
 		static PropertyInputFormBuilder<FormLayout> form() {
+			return form(false);
+		}
+
+		/**
+		 * Gets a builder to create a {@link PropertyInputForm} using a {@link FormLayout} as layout component and a
+		 * default {@link PropertyInputForm#componentContainerComposer()} to compose the fields on layout.
+		 * @param fullWidthInputs <code>true</code> to set all {@link Input} components to full width (100%) when using
+		 *        the default composer
+		 * @return {@link PropertyInputForm} builder
+		 */
+		static PropertyInputFormBuilder<FormLayout> form(boolean fullWidthInputs) {
 			return PropertyInputForm.builder(formLayout().fullWidth().spacing().build())
-					.composer(ComposableComponent.componentContainerComposer());
+					.composer(ComposableComponent.componentContainerComposer(fullWidthInputs));
 		}
 
 		/**
@@ -688,8 +699,19 @@ public interface Components {
 		 * @return {@link PropertyInputForm} builder
 		 */
 		static PropertyInputFormBuilder<VerticalLayout> formVertical() {
+			return formVertical(false);
+		}
+
+		/**
+		 * Gets a builder to create a {@link PropertyInputForm} using a {@link VerticalLayout} as layout component and a
+		 * default {@link PropertyInputForm#componentContainerComposer()} to compose the fields on layout.
+		 * @param fullWidthInputs <code>true</code> to set all {@link Input} components to full width (100%) when using
+		 *        the default composer
+		 * @return {@link PropertyInputForm} builder
+		 */
+		static PropertyInputFormBuilder<VerticalLayout> formVertical(boolean fullWidthInputs) {
 			return PropertyInputForm.builder(vl().fullWidth().build())
-					.composer(ComposableComponent.componentContainerComposer());
+					.composer(ComposableComponent.componentContainerComposer(fullWidthInputs));
 		}
 
 		/**
@@ -698,8 +720,19 @@ public interface Components {
 		 * @return {@link PropertyInputForm} builder
 		 */
 		static PropertyInputFormBuilder<HorizontalLayout> formHorizontal() {
+			return formHorizontal(false);
+		}
+
+		/**
+		 * Gets a builder to create a {@link PropertyInputForm} using a {@link HorizontalLayout} as layout component and
+		 * a default {@link PropertyInputForm#componentContainerComposer()} to compose the fields on layout.
+		 * @param fullWidthInputs <code>true</code> to set all {@link Input} components to full width (100%) when using
+		 *        the default composer
+		 * @return {@link PropertyInputForm} builder
+		 */
+		static PropertyInputFormBuilder<HorizontalLayout> formHorizontal(boolean fullWidthInputs) {
 			return PropertyInputForm.builder(hl().build())
-					.composer(ComposableComponent.componentContainerComposer(false));
+					.composer(ComposableComponent.componentContainerComposer(fullWidthInputs));
 		}
 
 		/**
@@ -708,8 +741,19 @@ public interface Components {
 		 * @return {@link PropertyInputForm} builder
 		 */
 		static PropertyInputFormBuilder<GridLayout> formGrid() {
+			return formGrid(false);
+		}
+
+		/**
+		 * Gets a builder to create a {@link PropertyInputForm} using a {@link VerticalLayout} as layout component and a
+		 * default {@link PropertyInputForm#componentContainerComposer()} to compose the fields on layout.
+		 * @param fullWidthInputs <code>true</code> to set all {@link Input} components to full width (100%) when using
+		 *        the default composer
+		 * @return {@link PropertyInputForm} builder
+		 */
+		static PropertyInputFormBuilder<GridLayout> formGrid(boolean fullWidthInputs) {
 			return PropertyInputForm.builder(gridLayout().fullWidth().build())
-					.composer(ComposableComponent.componentContainerComposer());
+					.composer(ComposableComponent.componentContainerComposer(fullWidthInputs));
 		}
 
 	}
@@ -775,8 +819,7 @@ public interface Components {
 		 * @return {@link PropertyViewForm} builder
 		 */
 		static PropertyViewFormBuilder<HorizontalLayout> formHorizontal() {
-			return PropertyViewForm.builder(hl().build())
-					.composer(ComposableComponent.componentContainerComposer(false));
+			return PropertyViewForm.builder(hl().build()).composer(ComposableComponent.componentContainerComposer());
 		}
 
 		/**
