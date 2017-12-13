@@ -19,6 +19,7 @@ import com.holonplatform.core.Validator;
 import com.holonplatform.core.property.PathProperty;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
+import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.components.Components;
 import com.holonplatform.vaadin.components.PropertyInputForm;
 import com.holonplatform.vaadin.components.PropertyInputGroup;
@@ -146,6 +147,23 @@ public class ExampleInputGroup {
 				.valueChangeTimeout(DESCRIPTION, 500) // <6>
 				.build();
 		// end::group7[]
+	}
+
+	public void group8() {
+		// tag::group8[]
+		final PathProperty<Long> ID = PathProperty.create("id", Long.class);
+		final PathProperty<String> DESCRIPTION = PathProperty.create("description", String.class);
+		final VirtualProperty<String> VIRTUAL = VirtualProperty.create(String.class,
+				propertyBox -> propertyBox.getValue(ID) + " -" + propertyBox.getValue(DESCRIPTION));
+
+		final PropertySet<?> PROPERTIES = PropertySet.of(ID, DESCRIPTION, VIRTUAL);
+
+		PropertyInputGroup group = Components.input.propertyGroup().properties(PROPERTIES) //
+				.withValueChangeListener(DESCRIPTION, (event, binder) -> { // <1>
+					binder.refresh(VIRTUAL);
+				}) //
+				.build();
+		// end::group8[]
 	}
 
 	public void form1() {

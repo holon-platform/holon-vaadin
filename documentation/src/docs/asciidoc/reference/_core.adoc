@@ -411,6 +411,23 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInputGroup.java[
 <5> Set the `ValueChangeMode` only for the Input bound to the `DESCRIPTION` property
 <6> Set the value change timeout to 500 ms only for the Input bound to the `DESCRIPTION` property
 
+=== Dealing with Virtual properties
+
+By default, the `PropertyInputGroup` renders as an Input all the properties of the property set that has been provided at build time, including any `VirtualProperty`.
+
+Since a `VirtualProperty` is a *read-only* property, the `Input` bound to a `VirtualProperty` is configured in read-only mode.
+
+If the `VirtualProperty` value is calculated using the values of other properties of the `PropertyInputGroup` property set, can be useful to _refresh_ the displayed `Input` value bound to the virtual property when one or more property of set changes.
+For this purpose, the `refresh(...)` methods of the `PropertyInputGroup` can be used. This methods are available from the `PropertyInputBinder` super-interface. You can refresh a specific property or all the properties of the set, even only the read-only ones.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInputGroup.java[tag=group8,indent=0]
+----
+<1> Add a `PropertyInputValueChangeListener` to the Input bound to the `DESCRIPTION` property, and refresh the `VIRTUAL` property Input value when the `DESCRIPTION` property Input value changes
+
+If the `PropertyInputGroup` contains some read-only properties but you don't want to display the corresponding Input components, the `excludeReadOnlyProperties()` builder method can be used.
+
 === Input Forms
 
 The link:{apidir}/com/holonplatform/vaadin/components/PropertyInputForm.html[PropertyInputForm^] represents an `Input` group bound to a `Property` model which is also a UI `Component`, and can be used to display and manage the `Input` components in the UI.
