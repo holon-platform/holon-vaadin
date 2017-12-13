@@ -807,10 +807,9 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 	 * @return <code>true</code> if volatile
 	 */
 	protected boolean isVolatile(ViewConfiguration viewConfiguration, String navigationState) {
-		if (navigationState != null && viewWindows.containsKey(navigationState)) {
-			// Views displayed in Window are never volatile
-			return false;
-		}
+		/*
+		 * if (navigationState != null && viewWindows.containsKey(navigationState)) { return false; }
+		 */
 		if (viewConfiguration != null) {
 			return viewConfiguration.isVolatile();
 		}
