@@ -23,12 +23,19 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import com.holonplatform.core.property.PathProperty;
+import com.holonplatform.core.property.Property;
+import com.holonplatform.core.property.PropertyValueConverter;
 import com.holonplatform.vaadin.components.Components;
 import com.holonplatform.vaadin.components.Input;
 import com.holonplatform.vaadin.components.SingleSelect;
 import com.holonplatform.vaadin.internal.components.StringField;
 import com.holonplatform.vaadin.test.data.TestBean;
 import com.holonplatform.vaadin.test.data.TestEnum1;
+import com.vaadin.data.Converter;
+import com.vaadin.data.Result;
+import com.vaadin.data.ValueContext;
+import com.vaadin.ui.TextField;
 
 public class TestInput {
 
@@ -113,16 +120,74 @@ public class TestInput {
 		assertFalse(ss.isEmpty());
 		assertNotNull(ss.getValue());
 		assertEquals(new TestBean("1", "a"), ss.getValue());
-		
+
 		ss = Components.input.singleSelect(TestBean.class).addItem(new TestBean("1", "a"))
 				.addItem(new TestBean("2", "b")).emptySelectionCaption("EMPTY").build();
 		assertTrue(ss.isEmpty());
 		assertNull(ss.getValue());
-		
+
 		ss = Components.input.singleSelect(TestBean.class).addItem(new TestBean("1", "a"))
 				.addItem(new TestBean("2", "b")).emptySelectionAllowed(false).build();
 		assertTrue(ss.isEmpty());
 		assertNull(ss.getValue());
+
+	}
+
+	@SuppressWarnings("serial")
+	@Test
+	public void testInputConveter() {
+
+		Input<Integer> ii = Components.input.number(Integer.class).build();
+
+		Input<Boolean> bi = Input.from(ii, new Converter<Boolean, Integer>() {
+
+			@Override
+			public Result<Integer> convertToModel(Boolean value, ValueContext context) {
+				return Result.ok((value == null) ? null : (value ? 1 : 0));
+			}
+
+			@Override
+			public Boolean convertToPresentation(Integer value, ValueContext context) {
+				return (value == null) ? Boolean.FALSE : (value.intValue() > 0);
+			}
+		});
+
+		bi.addValueChangeListener(e -> {
+		});
+
+		assertFalse(bi.getValue());
+		bi.setValue(true);
+		assertTrue(bi.getValue());
+		bi.setValue(false);
+		assertFalse(bi.getValue());
+
+		final Property<Boolean> PRP = PathProperty.create("prp", Boolean.class);
+
+		bi = Input.from(ii, PRP, PropertyValueConverter.numericBoolean(Integer.class));
+
+		assertFalse(bi.getValue());
+		bi.setValue(true);
+		assertTrue(bi.getValue());
+		bi.setValue(false);
+		assertFalse(bi.getValue());
+
+		Input<Long> li = Input.from(new TextField(), new Converter<Long, String>() {
+
+			@Override
+			public Result<String> convertToModel(Long value, ValueContext context) {
+				return Result.ok((value == null) ? null : value.toString());
+			}
+
+			@Override
+			public Long convertToPresentation(String value, ValueContext context) {
+				return (value == null || value.trim().isEmpty()) ? null : Long.parseLong(value);
+			}
+
+		});
+
+		assertNull(li.getValue());
+		li.setValue(1L);
+		assertEquals(Long.valueOf(1), li.getValue());
 
 	}
 

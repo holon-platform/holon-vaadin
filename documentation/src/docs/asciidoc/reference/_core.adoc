@@ -83,6 +83,22 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=i
 ----
 <1> Create select field using `Locale` data type and obtain it as `Field`, i.e. as a standard `HasValue` component.
 
+=== Input with value converter
+
+The `Input` interface makes available a set of methods to create an `Input` from another `Input` with a different value type, providing a suitable _converter_ to perform value conversions.
+
+Besides the standard Vaadin `com.vaadin.data.Conveter`, the Holon `PropertyValueConverter` can be used, providing the property to which the converter is bound.
+
+The `Input` interface also supports the creation of an `Input` component with value conversion using a Vaadin `HasValue` Component instead of another `Input`.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=input7,indent=0]
+----
+<1> Create a `Boolean` type Input from an `Integer` type Input, providing the value `Converter`
+<2> Create a `Boolean` type Input from an `Integer` type Input, using a default `PropertyValueConverter`
+<3> Create a `Long` type Input from a `TextField`, providing the Long-to-String and String-to-Long value `Converter`
+
 === ValidatableInput
 
 The link:{apidir}/com/holonplatform/vaadin/components/ValidatableInput.html[ValidatableInput^] interface represents an `Input` component which supports value validation using the standard Holon platform `Validator` interface.

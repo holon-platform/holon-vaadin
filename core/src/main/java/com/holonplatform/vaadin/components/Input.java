@@ -15,10 +15,14 @@
  */
 package com.holonplatform.vaadin.components;
 
+import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyRenderer;
+import com.holonplatform.core.property.PropertyValueConverter;
 import com.holonplatform.vaadin.components.ValueHolder.MaySupportValueChangeMode;
+import com.holonplatform.vaadin.internal.components.InputConverterAdapter;
 import com.holonplatform.vaadin.internal.components.InputFieldWrapper;
+import com.vaadin.data.Converter;
 import com.vaadin.data.HasValue;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.Component;
@@ -110,6 +114,69 @@ public interface Input<V> extends ValueHolder<V>, ValueComponent<V>, MaySupportV
 	static <F extends HasValue<T> & Component, T> Input<T> from(F field) {
 		return new InputFieldWrapper<>(field);
 	}
+
+	// Converters
+
+	/**
+	 * Create a new {@link Input} from another {@link Input} with a different value type, using given {@link Converter}
+	 * to perform value conversions.
+	 * @param <T> New value type
+	 * @param <V> Original value type
+	 * @param input Actual input (not null)
+	 * @param converter Value converter (not null)
+	 * @return A new {@link Input} of the converted value type
+	 */
+	static <T, V> Input<T> from(Input<V> input, Converter<T, V> converter) {
+		return new InputConverterAdapter<>(input, converter);
+	}
+
+	/**
+	 * Create a new {@link Input} from given {@link HasValue} component with a different value type, using given
+	 * {@link Converter} to perform value conversions.
+	 * @param <F> {@link HasValue} component type
+	 * @param <T> New value type
+	 * @param <V> Original value type
+	 * @param field The field (not null)
+	 * @param converter Value converter (not null)
+	 * @return A new {@link Input} of the converted value type
+	 */
+	static <F extends HasValue<V> & Component, T, V> Input<T> from(F field, Converter<T, V> converter) {
+		return from(from(field), converter);
+	}
+
+	/**
+	 * Create a new {@link Input} from another {@link Input} with a different value type, using given
+	 * {@link PropertyValueConverter} to perform value conversions.
+	 * @param <T> New value type
+	 * @param <V> Original value type
+	 * @param input Actual input (not null)
+	 * @param property Property to provide to the converter
+	 * @param converter Value converter (not null)
+	 * @return A new {@link Input} of the converted value type
+	 */
+	static <T, V> Input<T> from(Input<V> input, Property<T> property, PropertyValueConverter<T, V> converter) {
+		ObjectUtils.argumentNotNull(converter, "PropertyValueConverter must be not null");
+		return new InputConverterAdapter<>(input, Converter.from(value -> converter.toModel(value, property),
+				value -> converter.fromModel(value, property), e -> e.getMessage()));
+	}
+
+	/**
+	 * Create a new {@link Input} from another {@link Input} with a different value type, using given
+	 * {@link PropertyValueConverter} to perform value conversions.
+	 * @param <F> {@link HasValue} component type
+	 * @param <T> New value type
+	 * @param <V> Original value type
+	 * @param field The field (not null)
+	 * @param property Property to provide to the converter
+	 * @param converter Value converter (not null)
+	 * @return A new {@link Input} of the converted value type
+	 */
+	static <F extends HasValue<V> & Component, T, V> Input<T> from(F field, Property<T> property,
+			PropertyValueConverter<T, V> converter) {
+		return from(from(field), property, converter);
+	}
+
+	// Renderers
 
 	/**
 	 * A convenience interface with a fixed {@link Input} rendering type to use a {@link Input} {@link PropertyRenderer}

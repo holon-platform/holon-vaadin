@@ -19,10 +19,15 @@ import java.time.LocalDate;
 import java.util.Locale;
 
 import com.holonplatform.core.Validator;
+import com.holonplatform.core.property.PathProperty;
+import com.holonplatform.core.property.Property;
+import com.holonplatform.core.property.PropertyValueConverter;
 import com.holonplatform.vaadin.components.Components;
 import com.holonplatform.vaadin.components.Field;
 import com.holonplatform.vaadin.components.Input;
 import com.holonplatform.vaadin.components.ValidatableInput;
+import com.vaadin.data.Converter;
+import com.vaadin.data.Result;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -94,6 +99,25 @@ public class ExampleInput {
 				.required("Value is required") // <4>
 				.withValidator(Validator.max(100)).build(); // <5>
 		// end::input6[]
+	}
+
+	public void input7() {
+		// tag::input7[]
+		Input<Integer> integerInput = Components.input.number(Integer.class).build();
+
+		Input<Boolean> booleanInput = Input.from(integerInput, // <1>
+				Converter.from(value -> Result.ok((value == null) ? null : (value ? 1 : 0)),
+						value -> (value == null) ? Boolean.FALSE : (value.intValue() > 0)));
+
+		Boolean boolValue = booleanInput.getValue();
+
+		final Property<Boolean> BOOL_PROPERTY = PathProperty.create("bool", Boolean.class);
+		booleanInput = Input.from(integerInput, BOOL_PROPERTY, PropertyValueConverter.numericBoolean(Integer.class)); // <2>
+
+		Input<Long> longInput = Input.from(new TextField(), // <3>
+				Converter.from(value -> Result.ok((value == null) ? null : value.toString()),
+						value -> (value == null || value.trim().isEmpty()) ? null : Long.parseLong(value)));
+		// end::input7[]
 	}
 
 	private class TestData {
