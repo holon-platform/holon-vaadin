@@ -25,11 +25,13 @@ import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyRendererRegistry;
+import com.holonplatform.core.property.PropertyValueConverter;
 import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.components.Input.InputPropertyRenderer;
 import com.holonplatform.vaadin.components.PropertyBinding.PostProcessor;
 import com.holonplatform.vaadin.internal.components.DefaultPropertyInputGroup;
 import com.holonplatform.vaadin.internal.components.VaadinValidatorWrapper;
+import com.vaadin.data.Converter;
 import com.vaadin.data.HasValue;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.Component;
@@ -479,6 +481,7 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		 * Bind the given <code>property</code> to given {@link HasValue} component. If the property was already bound
 		 * to a {@link Input}, the old input will be replaced by the new input.
 		 * @param <T> Property type
+		 * @param <F> HasValue type
 		 * @param property Property (not null)
 		 * @param field HasValue component to bind (not null)
 		 * @return this
@@ -487,6 +490,62 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 			ObjectUtils.argumentNotNull(property, "Property must be not null");
 			ObjectUtils.argumentNotNull(field, "Field must be not null");
 			return bind(property, Input.from(field));
+		}
+
+		/**
+		 * Bind the given <code>property</code> to given <code>input</code> instance with different value type, using a
+		 * {@link Converter} to perform value conversions. If the property was already bound to a {@link Input}, the old
+		 * input will be replaced by the new input.
+		 * <p>
+		 * This method also adds property validators to given {@link Input} when applicable.
+		 * </p>
+		 * @param <T> Property type
+		 * @param <V> Input value type type
+		 * @param property Property (not null)
+		 * @param input Input to bind (not null)
+		 * @param converter Value converter (not null)
+		 * @return this
+		 */
+		default <T, V> B bind(Property<T> property, Input<V> input, Converter<T, V> converter) {
+			return bind(property, Input.from(input, converter));
+		}
+
+		/**
+		 * Bind the given <code>property</code> to given <code>input</code> instance with different value type, using a
+		 * {@link PropertyValueConverter} to perform value conversions. If the property was already bound to a
+		 * {@link Input}, the old input will be replaced by the new input.
+		 * <p>
+		 * This method also adds property validators to given {@link Input} when applicable.
+		 * </p>
+		 * @param <T> Property type
+		 * @param <V> Input value type type
+		 * @param property Property (not null)
+		 * @param input Input to bind (not null)
+		 * @param converter Value converter (not null)
+		 * @return this
+		 */
+		default <T, V> B bind(Property<T> property, Input<V> input, PropertyValueConverter<T, V> converter) {
+			return bind(property, Input.from(input, property, converter));
+		}
+
+		/**
+		 * Bind the given <code>property</code> to given {@link HasValue} component with different value type, using a
+		 * {@link Converter} to perform value conversions. If the property was already bound to an {@link Input}, the
+		 * old input will be replaced by the new input.
+		 * <p>
+		 * This method also adds property validators to given {@link Input} when applicable.
+		 * </p>
+		 * @param <T> Property type
+		 * @param <V> Input value type type
+		 * @param <F> HasValue type
+		 * @param property Property (not null)
+		 * @param field The field to bind (not null)
+		 * @param converter Value converter (not null)
+		 * @return this
+		 */
+		default <T, V, F extends HasValue<V> & Component> B bind(Property<T> property, F field,
+				Converter<T, V> converter) {
+			return bind(property, Input.from(field, converter));
 		}
 
 		/**
