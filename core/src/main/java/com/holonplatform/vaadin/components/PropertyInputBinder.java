@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.Property.PropertyNotFoundException;
+import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.components.ValueHolder.ValueChangeEvent;
 
 /**
@@ -68,12 +69,29 @@ public interface PropertyInputBinder extends PropertySetBound {
 	 */
 	<T> Stream<PropertyBinding<T, Input<T>>> stream();
 
+	/**
+	 * Refresh the value of all available {@link Input}s, using current values.
+	 */
 	default void refresh() {
 		refresh(false);
 	}
 
+	/**
+	 * Refresh the value of all available {@link Input}s, using current values.
+	 * @param readOnly <code>true</code> to refresh only the {@link Input}s bound to read-only properties,
+	 *        <code>false</code> to refresh all
+	 */
 	void refresh(boolean readOnly);
 
+	/**
+	 * Refresh the value of the {@link Input} bound to given <code>property</code>, if available, using currently
+	 * available values.
+	 * <p>
+	 * For read-only properties such as {@link VirtualProperty}s, this has the effect to recalculate the virtual value
+	 * according to the values currently set in all the binder inputs.
+	 * </p>
+	 * @param property The property for which to refresh the bound {@link Input}
+	 */
 	<T> void refresh(Property<T> property);
 
 	// Value change listener
