@@ -316,6 +316,53 @@ public class NumberField<T extends Number> extends AbstractCustomField<T, String
 		return getInternalField().addBlurListener(listener);
 	}
 
+	// Value change mode support
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.Input#isValueChangeModeSupported()
+	 */
+	@Override
+	public boolean isValueChangeModeSupported() {
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.Input#setValueChangeMode(com.vaadin.shared.ui.ValueChangeMode)
+	 */
+	@Override
+	public void setValueChangeMode(ValueChangeMode valueChangeMode) {
+		getInternalField().setValueChangeMode(valueChangeMode);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.Input#getValueChangeMode()
+	 */
+	@Override
+	public ValueChangeMode getValueChangeMode() {
+		return getInternalField().getValueChangeMode();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.Input#setValueChangeTimeout(int)
+	 */
+	@Override
+	public void setValueChangeTimeout(int valueChangeTimeout) {
+		getInternalField().setValueChangeTimeout(valueChangeTimeout);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.Input#getValueChangeTimeout()
+	 */
+	@Override
+	public int getValueChangeTimeout() {
+		return getInternalField().getValueChangeTimeout();
+	}
+
 	// Builder
 
 	public static class Builder<T extends Number> extends

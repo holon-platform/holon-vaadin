@@ -17,8 +17,10 @@ package com.holonplatform.vaadin.components;
 
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyRenderer;
+import com.holonplatform.vaadin.components.ValueHolder.MaySupportValueChangeMode;
 import com.holonplatform.vaadin.internal.components.InputFieldWrapper;
 import com.vaadin.data.HasValue;
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.Component;
 
 /**
@@ -29,12 +31,16 @@ import com.vaadin.ui.Component;
  * <p>
  * The actual UI {@link Component} which represents the input component can be obtained through {@link #getComponent()}.
  * </p>
+ * <p>
+ * Extends {@link MaySupportValueChangeMode} to allow value change mode and timeout configuration for input components
+ * which support it.
+ * </p>
  * 
  * @param <V> Value type
  * 
  * @since 5.0.0
  */
-public interface Input<V> extends ValueHolder<V>, ValueComponent<V> {
+public interface Input<V> extends ValueHolder<V>, ValueComponent<V>, MaySupportValueChangeMode {
 
 	/**
 	 * Sets the read-only mode of this input component. The user can't change the value when in read-only mode.
@@ -64,6 +70,35 @@ public interface Input<V> extends ValueHolder<V>, ValueComponent<V> {
 	 * Sets the focus for this input component, if supported by concrete component implementation.
 	 */
 	void focus();
+
+	// By default, behave as value change mode is not supported
+
+	@Override
+	default boolean isValueChangeModeSupported() {
+		return false;
+	}
+
+	@Override
+	default void setValueChangeMode(ValueChangeMode valueChangeMode) {
+		// not supported by default
+	}
+
+	@Override
+	default ValueChangeMode getValueChangeMode() {
+		return ValueChangeMode.BLUR;
+	}
+
+	@Override
+	default void setValueChangeTimeout(int valueChangeTimeout) {
+		// not supported by default
+	}
+
+	@Override
+	default int getValueChangeTimeout() {
+		return -1;
+	}
+
+	// Adapters
 
 	/**
 	 * Create a {@link Input} component type from given {@link HasValue} component.

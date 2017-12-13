@@ -289,7 +289,7 @@ public abstract class AbstractCustomField<T, I, F extends HasValue<I> & Componen
 			final com.holonplatform.vaadin.components.Input.ValueChangeListener<T> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 		return getInternalField().addValueChangeListener(e -> listener.valueChange(new DefaultValueChangeEvent<>(this,
-				fromInternalValue(e.getOldValue()), fromInternalValue(e.getValue()))));
+				fromInternalValue(e.getOldValue()), fromInternalValue(e.getValue()), e.isUserOriginated())));
 	}
 
 	/*

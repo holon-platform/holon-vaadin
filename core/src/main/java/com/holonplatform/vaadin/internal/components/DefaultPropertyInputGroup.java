@@ -43,6 +43,7 @@ import com.holonplatform.vaadin.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.components.ValidationStatusHandler.Status;
 import com.holonplatform.vaadin.components.ValueComponent;
 import com.vaadin.shared.Registration;
+import com.vaadin.shared.ui.ValueChangeMode;
 
 /**
  * Default {@link PropertyInputGroup} implementation.
@@ -99,6 +100,11 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 	 * Whether to validate inputs at value change
 	 */
 	private boolean validateOnValueChange = true;
+
+	/**
+	 * Overall Input value change mode
+	 */
+	private ValueChangeMode overallValueChangeMode = null;
 
 	/**
 	 * Validation behaviour
@@ -437,7 +443,8 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 	 * @param value the changed value
 	 */
 	protected void fireValueChange(PropertyBox oldValue, PropertyBox value) {
-		final ValueChangeEvent<PropertyBox> valueChangeEvent = new DefaultValueChangeEvent<>(this, oldValue, value);
+		final ValueChangeEvent<PropertyBox> valueChangeEvent = new DefaultValueChangeEvent<>(this, oldValue, value,
+				false);
 		valueChangeListeners.forEach(l -> l.valueChange(valueChangeEvent));
 	}
 
@@ -455,6 +462,22 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 	 */
 	public void setValidateOnValueChange(boolean validateOnValueChange) {
 		this.validateOnValueChange = validateOnValueChange;
+	}
+
+	/**
+	 * Get the overall Input value change mode.
+	 * @return the overall value change mode
+	 */
+	public ValueChangeMode getOverallValueChangeMode() {
+		return overallValueChangeMode;
+	}
+
+	/**
+	 * Set the overall Input value change mode.
+	 * @param overallValueChangeMode the value change mode to set
+	 */
+	public void setOverallValueChangeMode(ValueChangeMode overallValueChangeMode) {
+		this.overallValueChangeMode = overallValueChangeMode;
 	}
 
 	/*
@@ -722,6 +745,19 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 			configuration.setPropertyValidationStatusHandler(
 					getPropertiesValidationStatusHandler().orElse(ValidationStatusHandler.getDefault()));
 		}
+		// Value change mode
+		if (input.isValueChangeModeSupported()) {
+			if (configuration.getValueChangeMode() != null) {
+				input.setValueChangeMode(configuration.getValueChangeMode());
+			} else if (getOverallValueChangeMode() != null) {
+				input.setValueChangeMode(getOverallValueChangeMode());
+			}
+			if (configuration.getValueChangeTimeout() >= 0) {
+				input.setValueChangeTimeout(configuration.getValueChangeTimeout());
+			}
+		}
+		// Value change listeners
+		configuration.getValueChangeListeners().forEach(l -> input.addValueChangeListener(l));
 		// Validate on value change
 		if (isValidateOnValueChange()) {
 			input.addValueChangeListener(e -> validateOnChange(configuration, e.getValue()));
@@ -1307,6 +1343,73 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 			return builder();
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.PropertyInputGroup.Builder#valueChangeMode(com.vaadin.shared.ui.
+		 * ValueChangeMode)
+		 */
+		@Override
+		public B valueChangeMode(ValueChangeMode valueChangeMode) {
+			instance.setOverallValueChangeMode(valueChangeMode);
+			return builder();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.PropertyInputGroup.Builder#withValueChangeListener(com.holonplatform.core
+		 * .property.Property, com.holonplatform.vaadin.components.ValueHolder.ValueChangeListener)
+		 */
+		@Override
+		public <T> B withValueChangeListener(Property<T> property,
+				com.holonplatform.vaadin.components.ValueHolder.ValueChangeListener<T> listener) {
+			ObjectUtils.argumentNotNull(property, "Property must be not null");
+			ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
+			instance.getPropertyConfiguration(property).addValueChangeListener(listener);
+			return builder();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.PropertyInputGroup.Builder#withValueChangeListener(com.holonplatform.core
+		 * .property.Property, com.holonplatform.vaadin.components.PropertyInputBinder.PropertyInputValueChangeListener)
+		 */
+		@Override
+		public <T> B withValueChangeListener(Property<T> property, PropertyInputValueChangeListener<T> listener) {
+			ObjectUtils.argumentNotNull(property, "Property must be not null");
+			ObjectUtils.argumentNotNull(listener, "PropertyInputValueChangeListener must be not null");
+			instance.getPropertyConfiguration(property)
+					.addValueChangeListener(new PropertyInputValueChangeListenerAdapter<>(instance, listener));
+			return builder();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.PropertyInputGroup.Builder#valueChangeMode(com.holonplatform.core.
+		 * property.Property, com.vaadin.shared.ui.ValueChangeMode)
+		 */
+		@Override
+		public <T> B valueChangeMode(Property<T> property, ValueChangeMode valueChangeMode) {
+			ObjectUtils.argumentNotNull(property, "Property must be not null");
+			ObjectUtils.argumentNotNull(valueChangeMode, "ValueChangeMode must be not null");
+			instance.getPropertyConfiguration(property).setValueChangeMode(valueChangeMode);
+			return builder();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.PropertyInputGroup.Builder#valueChangeTimeout(com.holonplatform.core.
+		 * property.Property, int)
+		 */
+		@Override
+		public <T> B valueChangeTimeout(Property<T> property, int valueChangeTimeout) {
+			ObjectUtils.argumentNotNull(property, "Property must be not null");
+			instance.getPropertyConfiguration(property).setValueChangeTimeout(valueChangeTimeout);
+			return builder();
+		}
+
 	}
 
 	// Internal
@@ -1323,6 +1426,9 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 		private Validator<T> requiredValidator;
 		private Localizable requiredMessage;
 		private ValidationStatusHandler propertyValidationStatusHandler;
+		private List<ValueChangeListener<T>> propertyValueChangeListeners = new LinkedList<>();
+		private ValueChangeMode valueChangeMode;
+		private int valueChangeTimeout = -1;
 
 		private Input<T> input;
 
@@ -1504,6 +1610,54 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 		 */
 		public void setPropertyValidationStatusHandler(ValidationStatusHandler propertyValidationStatusHandler) {
 			this.propertyValidationStatusHandler = propertyValidationStatusHandler;
+		}
+
+		/**
+		 * Get the property {@link ValueChangeListener}s.
+		 * @return the property ValueChangeListeners
+		 */
+		public List<ValueChangeListener<T>> getValueChangeListeners() {
+			return propertyValueChangeListeners;
+		}
+
+		/**
+		 * Add a property {@link ValueChangeListener}.
+		 * @param propertyValueChangeListeners the valueChangeListener to add
+		 */
+		public void addValueChangeListener(ValueChangeListener<T> valueChangeListener) {
+			this.propertyValueChangeListeners.add(valueChangeListener);
+		}
+
+		/**
+		 * Get the property {@link ValueChangeMode}.
+		 * @return the property valueChangeMode
+		 */
+		public ValueChangeMode getValueChangeMode() {
+			return valueChangeMode;
+		}
+
+		/**
+		 * Set the property {@link ValueChangeMode}.
+		 * @param valueChangeMode the valueChangeMode to set
+		 */
+		public void setValueChangeMode(ValueChangeMode valueChangeMode) {
+			this.valueChangeMode = valueChangeMode;
+		}
+
+		/**
+		 * Get the property value change timeout.
+		 * @return the property value change timeout
+		 */
+		public int getValueChangeTimeout() {
+			return valueChangeTimeout;
+		}
+
+		/**
+		 * Set the property value change timeout.
+		 * @param valueChangeTimeout the timeout to set
+		 */
+		public void setValueChangeTimeout(int valueChangeTimeout) {
+			this.valueChangeTimeout = valueChangeTimeout;
 		}
 
 		/**

@@ -32,18 +32,30 @@ public class DefaultValueChangeEvent<V> implements ValueChangeEvent<V> {
 	private final ValueHolder<V> source;
 	private final V oldValue;
 	private final V value;
+	private final boolean userOriginated;
 
 	/**
 	 * Constructor
 	 * @param source Source
 	 * @param oldValue Old value
 	 * @param value New value
+	 * @param userOriginated Whether is a client-side (user originated) change event or server side
 	 */
-	public DefaultValueChangeEvent(ValueHolder<V> source, V oldValue, V value) {
+	public DefaultValueChangeEvent(ValueHolder<V> source, V oldValue, V value, boolean userOriginated) {
 		super();
 		this.source = source;
 		this.oldValue = oldValue;
 		this.value = value;
+		this.userOriginated = userOriginated;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.ValueHolder.ValueChangeEvent#isUserOriginated()
+	 */
+	@Override
+	public boolean isUserOriginated() {
+		return userOriginated;
 	}
 
 	/*

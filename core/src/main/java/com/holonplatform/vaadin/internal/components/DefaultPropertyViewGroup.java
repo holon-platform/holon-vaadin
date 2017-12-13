@@ -267,7 +267,8 @@ public class DefaultPropertyViewGroup implements PropertyViewGroup, PropertyValu
 	 * @param value the changed value
 	 */
 	protected void fireValueChange(PropertyBox oldValue, PropertyBox value) {
-		final ValueChangeEvent<PropertyBox> valueChangeEvent = new DefaultValueChangeEvent<>(this, oldValue, value);
+		final ValueChangeEvent<PropertyBox> valueChangeEvent = new DefaultValueChangeEvent<>(this, oldValue, value,
+				false);
 		valueChangeListeners.forEach(l -> l.valueChange(valueChangeEvent));
 	}
 

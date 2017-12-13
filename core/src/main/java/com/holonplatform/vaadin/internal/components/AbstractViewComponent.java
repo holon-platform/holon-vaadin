@@ -213,7 +213,7 @@ public abstract class AbstractViewComponent<T> extends CustomComponent implement
 	 */
 	protected void fireValueChange(T oldValue, T value) {
 		final com.holonplatform.vaadin.components.Input.ValueChangeEvent<T> valueChangeEvent = new DefaultValueChangeEvent<>(
-				this, oldValue, value);
+				this, oldValue, value, false);
 		valueChangeListeners.forEach(l -> l.valueChange(valueChangeEvent));
 	}
 

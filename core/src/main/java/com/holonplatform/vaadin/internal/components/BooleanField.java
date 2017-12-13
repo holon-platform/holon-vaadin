@@ -160,8 +160,6 @@ public class BooleanField extends CheckBox implements Input<Boolean>, Field<Bool
 		return Input.super.isEmpty();
 	}
 
-	// Builder
-
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.ValueHolder#getOptionalValue()
@@ -179,6 +177,8 @@ public class BooleanField extends CheckBox implements Input<Boolean>, Field<Bool
 	public void clear() {
 		Input.super.clear();
 	}
+
+	// Builder
 
 	/**
 	 * Builder to create {@link BooleanField} instances

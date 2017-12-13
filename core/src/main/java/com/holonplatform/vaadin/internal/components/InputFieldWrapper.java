@@ -19,8 +19,10 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.components.Input;
 import com.vaadin.data.HasValue;
 import com.vaadin.shared.Registration;
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Component.Focusable;
+import com.vaadin.ui.HasValueChangeMode;
 
 /**
  * A wrapper to wrap a {@link HasValue} component into a {@link Input} component.
@@ -174,6 +176,67 @@ public class InputFieldWrapper<V> implements Input<V> {
 	public Registration addValueChangeListener(
 			final com.holonplatform.vaadin.components.Input.ValueChangeListener<V> listener) {
 		return ValueChangeListenerUtils.adapt(field, this, listener);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.ValueHolder.MaySupportValueChangeMode#isValueChangeModeSupported()
+	 */
+	@Override
+	public boolean isValueChangeModeSupported() {
+		return field instanceof HasValueChangeMode;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.components.ValueHolder.MaySupportValueChangeMode#setValueChangeMode(com.vaadin.shared.ui
+	 * .ValueChangeMode)
+	 */
+	@Override
+	public void setValueChangeMode(ValueChangeMode valueChangeMode) {
+		ObjectUtils.argumentNotNull(valueChangeMode, "ValueChangeMode must be not null");
+		if (isValueChangeModeSupported()) {
+			((HasValueChangeMode) field).setValueChangeMode(valueChangeMode);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.ValueHolder.MaySupportValueChangeMode#getValueChangeMode()
+	 */
+	@Override
+	public ValueChangeMode getValueChangeMode() {
+		if (isValueChangeModeSupported()) {
+			return ((HasValueChangeMode) field).getValueChangeMode();
+		}
+		return ValueChangeMode.BLUR;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.ValueHolder.MaySupportValueChangeMode#setValueChangeTimeout(int)
+	 */
+	@Override
+	public void setValueChangeTimeout(int valueChangeTimeout) {
+		if (valueChangeTimeout < 0) {
+			throw new IllegalArgumentException("Value change timeout must be greater or equal to 0");
+		}
+		if (isValueChangeModeSupported()) {
+			((HasValueChangeMode) field).setValueChangeTimeout(valueChangeTimeout);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.ValueHolder.MaySupportValueChangeMode#getValueChangeTimeout()
+	 */
+	@Override
+	public int getValueChangeTimeout() {
+		if (isValueChangeModeSupported()) {
+			return ((HasValueChangeMode) field).getValueChangeTimeout();
+		}
+		return -1;
 	}
 
 }

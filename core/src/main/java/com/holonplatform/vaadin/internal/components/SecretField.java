@@ -22,6 +22,7 @@ import com.holonplatform.vaadin.components.Input;
 import com.holonplatform.vaadin.components.builders.SecretInputBuilder;
 import com.holonplatform.vaadin.internal.components.builders.AbstractFieldBuilder;
 import com.vaadin.shared.Registration;
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.PasswordField;
 
@@ -185,6 +186,53 @@ public class SecretField extends PasswordField implements Input<String>, Field<S
 	@Override
 	public void clear() {
 		Input.super.clear();
+	}
+
+	// Value change mode support
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.Input#isValueChangeModeSupported()
+	 */
+	@Override
+	public boolean isValueChangeModeSupported() {
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.Input#setValueChangeMode(com.vaadin.shared.ui.ValueChangeMode)
+	 */
+	@Override
+	public void setValueChangeMode(ValueChangeMode valueChangeMode) {
+		super.setValueChangeMode(valueChangeMode);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.Input#getValueChangeMode()
+	 */
+	@Override
+	public ValueChangeMode getValueChangeMode() {
+		return super.getValueChangeMode();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.Input#setValueChangeTimeout(int)
+	 */
+	@Override
+	public void setValueChangeTimeout(int valueChangeTimeout) {
+		super.setValueChangeTimeout(valueChangeTimeout);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.Input#getValueChangeTimeout()
+	 */
+	@Override
+	public int getValueChangeTimeout() {
+		return super.getValueChangeTimeout();
 	}
 
 	// Builder

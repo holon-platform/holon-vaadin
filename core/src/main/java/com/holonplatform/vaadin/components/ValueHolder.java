@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.vaadin.shared.Registration;
+import com.vaadin.shared.ui.ValueChangeMode;
 
 /**
  * Represents an object which holds a value and provide methods to handle such value.
@@ -81,6 +82,8 @@ public interface ValueHolder<V> extends Serializable {
 		return isEmpty() ? Optional.empty() : Optional.ofNullable(getValue());
 	}
 
+	// Value change handling
+
 	/**
 	 * Adds a value change listener, called when the value changes.
 	 * @param listener the value change listener to add (not null)
@@ -111,6 +114,14 @@ public interface ValueHolder<V> extends Serializable {
 	public interface ValueChangeEvent<V> extends Serializable {
 
 		/**
+		 * Returns whether this event was triggered by user interaction, on the client side, or programmatically, on the
+		 * server side.
+		 * @return <code>true</code> if this event originates from the client, <code>false</code> otherwise.
+		 * @since 5.0.5
+		 */
+		boolean isUserOriginated();
+
+		/**
 		 * Get the source of this value change event.
 		 * @return the {@link ValueHolder} source
 		 */
@@ -127,6 +138,62 @@ public interface ValueHolder<V> extends Serializable {
 		 * @return the new value
 		 */
 		V getValue();
+
+	}
+
+	/**
+	 * Declares that the {@link ValueChangeMode} handling may be supported and provides methods to configure it.
+	 */
+	public interface MaySupportValueChangeMode {
+
+		/**
+		 * Gets whether the {@link ValueChangeMode} is supported for this component.
+		 * @return <code>true</code> if the {@link ValueChangeMode} is supported, <code>false</code> otherwise
+		 */
+		boolean isValueChangeModeSupported();
+
+		/**
+		 * Sets the mode how value change events are triggered.
+		 * <p>
+		 * If {@link ValueChangeMode} is not supported, this method has no effect.
+		 * </p>
+		 * @param valueChangeMode the value change mode to set (not null)
+		 * @see #isValueChangeModeSupported()
+		 */
+		void setValueChangeMode(ValueChangeMode valueChangeMode);
+
+		/**
+		 * Get the mode how value change events are triggered.
+		 * <p>
+		 * If {@link ValueChangeMode} is not supported, {@link ValueChangeMode#BLUR} is returned.
+		 * </p>
+		 * @return the value change mode
+		 * @see #isValueChangeModeSupported()
+		 */
+		ValueChangeMode getValueChangeMode();
+
+		/**
+		 * Sets how often value change events are triggered when the {@link ValueChangeMode} is set to either
+		 * {@link ValueChangeMode#LAZY} or {@link ValueChangeMode#TIMEOUT}.
+		 * <p>
+		 * If {@link ValueChangeMode} is not supported, this method has no effect.
+		 * </p>
+		 * @param valueChangeTimeout the timeout in milliseconds, (greater or equal to 0)
+		 * @see #isValueChangeModeSupported()
+		 */
+		void setValueChangeTimeout(int valueChangeTimeout);
+
+		/**
+		 * Returns the currently set timeout, in milliseconds, for how often {@link ValueChangeEvent}s are triggered if
+		 * the current {@link ValueChangeMode} is set to either {@link ValueChangeMode#LAZY} or
+		 * {@link ValueChangeMode#TIMEOUT}.
+		 * <p>
+		 * If {@link ValueChangeMode} is not supported, this method always returns <code>-1</code>.
+		 * </p>
+		 * @return the timeout in milliseconds of how often value change events are triggered.
+		 * @see #isValueChangeModeSupported()
+		 */
+		int getValueChangeTimeout();
 
 	}
 

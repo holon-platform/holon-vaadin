@@ -35,11 +35,19 @@ public final class ValueChangeListenerUtils implements Serializable {
 	private ValueChangeListenerUtils() {
 	}
 
+	/**
+	 * Adapt a {@link ValueChangeListener} to be handled as a standard Vaadin
+	 * {@link com.vaadin.data.HasValue.ValueChangeListener}.
+	 * @param field Source field
+	 * @param valueHolder Value holder
+	 * @param listener Value change listener
+	 * @return Listener registration
+	 */
 	public static <V> Registration adapt(HasValue<V> field, ValueHolder<V> valueHolder,
 			ValueChangeListener<V> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
-		return field.addValueChangeListener(
-				e -> listener.valueChange(new DefaultValueChangeEvent<>(valueHolder, e.getOldValue(), e.getValue())));
+		return field.addValueChangeListener(e -> listener.valueChange(
+				new DefaultValueChangeEvent<>(valueHolder, e.getOldValue(), e.getValue(), e.isUserOriginated())));
 	}
 
 }

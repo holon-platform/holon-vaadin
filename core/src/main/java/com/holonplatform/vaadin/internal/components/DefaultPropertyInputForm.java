@@ -35,6 +35,7 @@ import com.holonplatform.vaadin.components.PropertyValueComponentSource;
 import com.holonplatform.vaadin.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.internal.components.builders.AbstractComponentBuilder;
 import com.vaadin.shared.Registration;
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.Component;
 
 /**
@@ -513,6 +514,66 @@ public class DefaultPropertyInputForm<C extends Component> extends
 		@Override
 		public PropertyInputFormBuilder<C> withValueChangeListener(ValueChangeListener<PropertyBox> listener) {
 			inputGroupBuilder.withValueChangeListener(listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.PropertyInputGroup.Builder#valueChangeMode(com.vaadin.shared.ui.
+		 * ValueChangeMode)
+		 */
+		@Override
+		public PropertyInputFormBuilder<C> valueChangeMode(ValueChangeMode valueChangeMode) {
+			inputGroupBuilder.valueChangeMode(valueChangeMode);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.PropertyInputGroup.Builder#withValueChangeListener(com.holonplatform.core
+		 * .property.Property, com.holonplatform.vaadin.components.ValueHolder.ValueChangeListener)
+		 */
+		@Override
+		public <T> PropertyInputFormBuilder<C> withValueChangeListener(Property<T> property,
+				ValueChangeListener<T> listener) {
+			inputGroupBuilder.withValueChangeListener(property, listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.PropertyInputGroup.Builder#withValueChangeListener(com.holonplatform.core
+		 * .property.Property, com.holonplatform.vaadin.components.PropertyInputBinder.PropertyInputValueChangeListener)
+		 */
+		@Override
+		public <T> PropertyInputFormBuilder<C> withValueChangeListener(Property<T> property,
+				PropertyInputValueChangeListener<T> listener) {
+			inputGroupBuilder.withValueChangeListener(property, listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.PropertyInputGroup.Builder#valueChangeMode(com.holonplatform.core.
+		 * property.Property, com.vaadin.shared.ui.ValueChangeMode)
+		 */
+		@Override
+		public <T> PropertyInputFormBuilder<C> valueChangeMode(Property<T> property, ValueChangeMode valueChangeMode) {
+			inputGroupBuilder.valueChangeMode(property, valueChangeMode);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.PropertyInputGroup.Builder#valueChangeTimeout(com.holonplatform.core.
+		 * property.Property, int)
+		 */
+		@Override
+		public <T> PropertyInputFormBuilder<C> valueChangeTimeout(Property<T> property, int valueChangeTimeout) {
+			inputGroupBuilder.valueChangeTimeout(property, valueChangeTimeout);
 			return this;
 		}
 

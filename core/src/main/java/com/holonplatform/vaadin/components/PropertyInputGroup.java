@@ -16,14 +16,12 @@
 package com.holonplatform.vaadin.components;
 
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.Validator.ValidationException;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
-import com.holonplatform.core.property.Property.PropertyNotFoundException;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyRendererRegistry;
@@ -32,6 +30,7 @@ import com.holonplatform.vaadin.components.PropertyBinding.PostProcessor;
 import com.holonplatform.vaadin.internal.components.DefaultPropertyInputGroup;
 import com.holonplatform.vaadin.internal.components.VaadinValidatorWrapper;
 import com.vaadin.data.HasValue;
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 
@@ -58,41 +57,7 @@ import com.vaadin.ui.Label;
  * 
  * @since 5.0.0
  */
-public interface PropertyInputGroup extends PropertySetBound, ValueHolder<PropertyBox>, Validatable {
-
-	/**
-	 * Gets all the {@link Input}s that have been bound to a property.
-	 * @return An {@link Iterable} on all bound {@link Input}s
-	 */
-	Iterable<Input<?>> getInputs();
-
-	/**
-	 * Get the {@link Input} bound to given <code>property</code>, if any.
-	 * @param <T> Property type
-	 * @param property Property for which to get the associated {@link Input} (not null)
-	 * @return Optional {@link Input} bound to given <code>property</code>
-	 */
-	<T> Optional<Input<T>> getInput(Property<T> property);
-
-	/**
-	 * Get the {@link Input} bound to given <code>property</code>, if any. If not available, a
-	 * {@link PropertyNotFoundException} is thrown.
-	 * @param <T> Property type
-	 * @param property Property for which to get the associated {@link Input} (not null)
-	 * @return the {@link Input} bound to given <code>property</code>
-	 * @throws PropertyNotFoundException If no Input is available for given property
-	 */
-	default <T> Input<T> requireInput(Property<T> property) {
-		return getInput(property).orElseThrow(
-				() -> new PropertyNotFoundException(property, "No Input available for property [" + property + "]"));
-	}
-
-	/**
-	 * Return a {@link Stream} of the properties and their bound {@link Input}s of this input group.
-	 * @param <T> Property type
-	 * @return Property-Input {@link PropertyBinding} stream
-	 */
-	<T> Stream<PropertyBinding<T, Input<T>>> stream();
+public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<PropertyBox>, Validatable {
 
 	/**
 	 * Get the current property values collected into a {@link PropertyBox}, using the group configured properties as
@@ -538,6 +503,58 @@ public interface PropertyInputGroup extends PropertySetBound, ValueHolder<Proper
 		 * @return this
 		 */
 		B withValueChangeListener(ValueChangeListener<PropertyBox> listener);
+
+		/**
+		 * Set the {@link ValueChangeMode} for all the {@link Input} components, if supported by each of them.
+		 * @param valueChangeMode The overall {@link ValueChangeMode} to set (not null)
+		 * @return this
+		 */
+		B valueChangeMode(ValueChangeMode valueChangeMode);
+
+		/**
+		 * Add a {@link ValueChangeListener} to the {@link Input} bound to given <code>property</code>.
+		 * @param property Property (not null)
+		 * @param listener The ValueChangeListener to add (not null)
+		 * @return this
+		 */
+		<T> B withValueChangeListener(Property<T> property, ValueChangeListener<T> listener);
+
+		/**
+		 * Add a {@link PropertyInputValueChangeListener} to the {@link Input} bound to given <code>property</code>.
+		 * <p>
+		 * Differently from the standard {@link ValueChangeListener}, the {@link PropertyInputValueChangeListener}
+		 * provides also a reference to the {@link PropertyInputBinder} to which the value change source belongs, i.e.
+		 * the PropertyInputGroup/Form.
+		 * </p>
+		 * @param property Property (not null)
+		 * @param listener The {@link PropertyInputValueChangeListener} to add (not null)
+		 * @return this
+		 */
+		<T> B withValueChangeListener(Property<T> property, PropertyInputValueChangeListener<T> listener);
+
+		/**
+		 * Set the {@link ValueChangeMode} for the {@link Input} bound to given <code>property</code>, to control how
+		 * the {@link Input} triggers value change events.
+		 * <p>
+		 * The {@link ValueChangeMode} may not be supported by the {@link Input}, in this case this setting will be
+		 * ignored.
+		 * </p>
+		 * @param property Property (not null)
+		 * @param valueChangeMode The {@link ValueChangeMode} to set (not null)
+		 * @return this
+		 */
+		<T> B valueChangeMode(Property<T> property, ValueChangeMode valueChangeMode);
+
+		/**
+		 * Sets how often value change events are triggered by the {@link Input} bound to given <code>property</code>,
+		 * when the {@link ValueChangeMode} is set to either {@link ValueChangeMode#LAZY} or
+		 * {@link ValueChangeMode#TIMEOUT}.
+		 * @param property Property (not null)
+		 * @param valueChangeTimeout Timeout in milliseconds (greater or equal to 0)
+		 * @return this
+		 * @see #valueChangeMode(Property, ValueChangeMode)
+		 */
+		<T> B valueChangeTimeout(Property<T> property, int valueChangeTimeout);
 
 		/**
 		 * Build the {@link PropertyInputGroup}.
