@@ -335,6 +335,8 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInputGroup.java[
 
 A property can be setted as *hidden*. When a property is hidden, it is part of the group property set and its value will be preserved in the `PropertyBox` instances, but no `Input` component will be generated and bound to the property itself, so its value will never be visible on the user interface.
 
+Inputs bound to hidden properties are never returned from the `PropertyInputGroup` methods which allow to inspect the available binding, such as `getInputs()`, `getInput(Property<T> property)` or `stream()`.
+
 The `hidden(Property property)` method of the group builder can be used to set a property as hidden.
 
 ==== Default property values
@@ -387,6 +389,27 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInputGroup.java[
 <4> Set the properties `ValidationStatusHandler`
 
 TIP: A property input group `ValidationStatusHandler` setter method which accept a `Label` is provided as a shorter to use a standard Vaadin `Label` to notify validation errors.
+
+=== Handling value changes
+
+The `PropertyInputGroup` builder provides methods to add `ValueChangeListener` to the `Input` bound to group property set.
+
+In addition to the standard `ValueChangeListener`, the link:{apidir}/com/holonplatform/vaadin/components/PropertyInputBinder.PropertyInputValueChangeListener.html[PropertyInputValueChangeListener^] interface is also supported to listener to Property/Input value changes.
+
+The `PropertyInputValueChangeListener` provides the current `PropertyInputBinder` reference, besides of the standard `ValueChangeEvent`. The `PropertyInputBinder` makes available several methods to inspect the input group to which the value change source belongs, for example in order to obtain the values of other `Input` components.
+
+Through the `PropertyInputGroup` builder, the value change mode configuration can also be setted up, allowing to change the overall `ValueChangeMode` (for all inputs), or the `ValueChangeMode` for a specific property.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInputGroup.java[tag=group7,indent=0]
+----
+<1> Add an overall value change listener
+<2> Add a value change listener to the Input bound to the `DESCRIPTION` property
+<3> Add a `PropertyInputValueChangeListener` to the Input bound to the `DESCRIPTION` property, which provides the current `PropertyInputBinder` to inspect all available group inputs
+<4> Set the default `ValueChangeMode` for all inputs
+<5> Set the `ValueChangeMode` only for the Input bound to the `DESCRIPTION` property
+<6> Set the value change timeout to 500 ms only for the Input bound to the `DESCRIPTION` property
 
 === Input Forms
 

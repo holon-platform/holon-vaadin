@@ -22,6 +22,7 @@ import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.vaadin.components.Components;
 import com.holonplatform.vaadin.components.PropertyInputForm;
 import com.holonplatform.vaadin.components.PropertyInputGroup;
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.FormLayout;
 
 @SuppressWarnings("unused")
@@ -122,6 +123,29 @@ public class ExampleInputGroup {
 					// ...
 				}).build();
 		// end::group6[]
+	}
+
+	public void group7() {
+		// tag::group7[]
+		final PathProperty<Long> ID = PathProperty.create("id", Long.class);
+		final PathProperty<String> DESCRIPTION = PathProperty.create("description", String.class);
+
+		final PropertySet<?> PROPERTIES = PropertySet.of(ID, DESCRIPTION);
+
+		PropertyInputGroup group = Components.input.propertyGroup().properties(PROPERTIES) //
+				.withValueChangeListener(e -> { // <1>
+					PropertyBox value = e.getValue();
+				}).withValueChangeListener(DESCRIPTION, e -> { // <2>
+					String description = e.getValue();
+				}).withValueChangeListener(DESCRIPTION, (event, binder) -> { // <3>
+					String description = event.getValue();
+					Long id = binder.requireInput(ID).getValue();
+				}) //
+				.valueChangeMode(ValueChangeMode.BLUR) // <4>
+				.valueChangeMode(DESCRIPTION, ValueChangeMode.LAZY) // <5>
+				.valueChangeTimeout(DESCRIPTION, 500) // <6>
+				.build();
+		// end::group7[]
 	}
 
 	public void form1() {
