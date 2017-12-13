@@ -310,15 +310,17 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 		}
 
 		propertySet.forEach(p -> {
-			final PropertyConfiguration<?> cfg = getPropertyConfiguration(p);
-			if (cfg.isHidden()) {
-				getCurrentPropertyValue(p).ifPresent(v -> {
-					propertyBox.setValue(p, v);
-				});
-			} else {
-				cfg.getInput().ifPresent(i -> {
-					propertyBox.setValue(p, i.getValue());
-				});
+			if (!p.isReadOnly()) { // exclude read-only properties
+				final PropertyConfiguration<?> cfg = getPropertyConfiguration(p);
+				if (cfg.isHidden()) {
+					getCurrentPropertyValue(p).ifPresent(v -> {
+						propertyBox.setValue(p, v);
+					});
+				} else {
+					cfg.getInput().ifPresent(i -> {
+						propertyBox.setValue(p, i.getValue());
+					});
+				}
 			}
 		});
 
