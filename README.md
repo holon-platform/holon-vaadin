@@ -45,7 +45,7 @@ _Maven BOM:_
     <dependency>
         <groupId>com.holon-platform.vaadin</groupId>
         <artifactId>holon-vaadin-bom</artifactId>
-        <version>5.0.4</version>
+        <version>5.0.5</version>
         <type>pom</type>
         <scope>import</scope>
     </dependency>
