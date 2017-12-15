@@ -37,6 +37,7 @@ import com.holonplatform.vaadin.components.PropertyViewGroup;
 import com.holonplatform.vaadin.components.ValueComponent;
 import com.holonplatform.vaadin.components.ViewComponent;
 import com.vaadin.shared.Registration;
+import com.vaadin.ui.Component;
 
 /**
  * Default {@link PropertyViewGroup} implementation.
@@ -137,6 +138,16 @@ public class DefaultPropertyViewGroup implements PropertyViewGroup, PropertyValu
 	@Override
 	public Stream<Property> propertyStream() {
 		return properties.stream();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.ComponentSource#getComponents()
+	 */
+	@Override
+	public Stream<Component> getComponents() {
+		return properties.stream().filter(p -> propertyViews.containsKey(p))
+				.map(p -> propertyViews.get(p).getComponent());
 	}
 
 	/*

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2017 Holon TDCN.
+ * Copyright 2016-2017 Axioma srl.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,23 +15,20 @@
  */
 package com.holonplatform.vaadin.components;
 
-import java.io.Serializable;
-
 import com.vaadin.ui.Component;
 
 /**
- * Represents an object which can contain a value and provides its UI {@link Component} representation.
- * 
- * @param <V> Value type
- * 
- * @since 5.0.0
+ * Represents and object which can be represented by a UI {@link Component}, which can be obtained using the
+ * {@link #getComponent()} method.
+ *
+ * @since 5.0.5
  */
-public interface ValueComponent<V> extends HasComponent, Serializable {
+public interface HasComponent {
 
 	/**
-	 * Gets the current value of this value component.
-	 * @return the current value
+	 * Get the UI {@link Component} which represents this object.
+	 * @return the UI component
 	 */
-	V getValue();
+	Component getComponent();
 
 }

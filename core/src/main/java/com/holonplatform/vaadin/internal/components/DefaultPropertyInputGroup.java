@@ -44,6 +44,7 @@ import com.holonplatform.vaadin.components.ValidationStatusHandler.Status;
 import com.holonplatform.vaadin.components.ValueComponent;
 import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.ValueChangeMode;
+import com.vaadin.ui.Component;
 
 /**
  * Default {@link PropertyInputGroup} implementation.
@@ -235,6 +236,16 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 		return propertySet.stream().filter(p -> !_propertyConfiguration(p).isHidden())
 				.filter(p -> _propertyConfiguration(p).getInput().isPresent())
 				.map(p -> PropertyBinding.create(p, _propertyConfiguration(p).getInput().get()));
+	}
+
+	/* (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.ComponentSource#getComponents()
+	 */
+	@Override
+	public Stream<Component> getComponents() {
+		return propertySet.stream().filter(p -> !_propertyConfiguration(p).isHidden())
+				.filter(p -> _propertyConfiguration(p).getInput().isPresent())
+				.map(p -> _propertyConfiguration(p).getInput().get().getComponent());
 	}
 
 	/*

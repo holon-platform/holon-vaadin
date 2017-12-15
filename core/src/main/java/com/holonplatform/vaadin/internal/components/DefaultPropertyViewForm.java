@@ -24,6 +24,7 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
+import com.holonplatform.vaadin.components.ComposableComponent;
 import com.holonplatform.vaadin.components.PropertyBinding;
 import com.holonplatform.vaadin.components.PropertyBinding.PostProcessor;
 import com.holonplatform.vaadin.components.PropertyValueComponentSource;
@@ -33,6 +34,7 @@ import com.holonplatform.vaadin.components.ViewComponent;
 import com.holonplatform.vaadin.internal.components.builders.AbstractComponentBuilder;
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
 
 /**
  * Default {@link PropertyViewForm} implementation.
@@ -61,7 +63,7 @@ public class DefaultPropertyViewForm<C extends Component>
 	 * Constructor
 	 */
 	public DefaultPropertyViewForm() {
-		super();
+		this(null);
 	}
 
 	/**
@@ -71,6 +73,8 @@ public class DefaultPropertyViewForm<C extends Component>
 	public DefaultPropertyViewForm(C content) {
 		super(content);
 		addStyleName("h-viewform");
+
+		setComponentsWidthMode(ComponentsWidthMode.AUTO);
 	}
 
 	/*
@@ -239,9 +243,17 @@ public class DefaultPropertyViewForm<C extends Component>
 		 * Constructor
 		 * @param content Form composition content
 		 */
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public DefaultBuilder(C content) {
 			super(new DefaultPropertyViewForm<>(content));
 			this.viewGroupBuilder = new DefaultPropertyViewGroup.InternalBuilder();
+
+			// setup default composer
+			if (getInstance().getComposer() == null) {
+				if (content instanceof ComponentContainer) {
+					getInstance().setComposer((Composer) ComposableComponent.componentContainerComposer());
+				}
+			}
 		}
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -311,6 +323,12 @@ public class DefaultPropertyViewForm<C extends Component>
 		@Override
 		public PropertyViewFormBuilder<C> composeOnAttach(boolean composeOnAttach) {
 			getInstance().setComposeOnAttach(composeOnAttach);
+			return this;
+		}
+
+		@Override
+		public PropertyViewFormBuilder<C> componentsWidthMode(ComponentsWidthMode componentsWidthMode) {
+			getInstance().setComponentsWidthMode(componentsWidthMode);
 			return this;
 		}
 

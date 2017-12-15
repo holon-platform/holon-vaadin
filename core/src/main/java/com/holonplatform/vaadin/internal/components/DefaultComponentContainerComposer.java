@@ -15,40 +15,21 @@
  */
 package com.holonplatform.vaadin.internal.components;
 
+import com.holonplatform.vaadin.components.ComponentSource;
 import com.holonplatform.vaadin.components.ComposableComponent.Composer;
-import com.holonplatform.vaadin.components.PropertyValueComponentSource;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 
 /**
  * Default {@link Composer} using a {@link ComponentContainer} as composition layout and adding the componens to the
- * layout in the order they are returned from the a {@link PropertyValueComponentSource}.
- * <p>
- * Provides a construction parameter to automatically set all composed components to full width.
- * </p>
+ * layout in the order they are returned from the a {@link ComponentSource}.
+ * 
+ * @param <C> Actual ComponentContainer type
+ * @param <S> Component source
  * 
  * @since 5.0.0
  */
-public class DefaultComponentContainerComposer implements Composer<ComponentContainer, PropertyValueComponentSource> {
-
-	private final boolean fullWidthComponents;
-
-	/**
-	 * Constructor
-	 * @param fullWidthComponents <code>true</code> to set the width for all composed components as <code>100%</code>.
-	 */
-	public DefaultComponentContainerComposer(boolean fullWidthComponents) {
-		super();
-		this.fullWidthComponents = fullWidthComponents;
-	}
-
-	/**
-	 * Gets whether to set the width for all composed components as <code>100%</code>.
-	 * @return <code>true</code> if the components width must be setted to <code>100%</code>
-	 */
-	protected boolean isFullWidthComponents() {
-		return fullWidthComponents;
-	}
+public class DefaultComponentContainerComposer<C extends ComponentContainer, S extends ComponentSource>
+		implements Composer<C, S> {
 
 	/*
 	 * (non-Javadoc)
@@ -56,21 +37,11 @@ public class DefaultComponentContainerComposer implements Composer<ComponentCont
 	 * java.lang.Object)
 	 */
 	@Override
-	public void compose(ComponentContainer content, PropertyValueComponentSource source) {
+	public void compose(C content, S source) {
 		// remove all components
 		content.removeAllComponents();
 		// add components
-		source.getValueComponents().forEach(valueComponent -> {
-			final Component component = valueComponent.getComponent();
-			if (component == null) {
-				throw new RuntimeException(
-						"The value component [" + valueComponent + "] returned a null component from getComponent()");
-			}
-			if (isFullWidthComponents()) {
-				component.setWidth("100%");
-			}
-			content.addComponent(component);
-		});
+		source.getComponents().forEach(component -> content.addComponent(component));
 	}
 
 }

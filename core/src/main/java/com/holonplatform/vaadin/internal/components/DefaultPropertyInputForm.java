@@ -26,6 +26,7 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
+import com.holonplatform.vaadin.components.ComposableComponent;
 import com.holonplatform.vaadin.components.Input;
 import com.holonplatform.vaadin.components.PropertyBinding;
 import com.holonplatform.vaadin.components.PropertyBinding.PostProcessor;
@@ -37,6 +38,7 @@ import com.holonplatform.vaadin.internal.components.builders.AbstractComponentBu
 import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
 
 /**
  * Default {@link PropertyInputForm} implementation.
@@ -64,7 +66,7 @@ public class DefaultPropertyInputForm<C extends Component> extends
 	 * Constructor
 	 */
 	public DefaultPropertyInputForm() {
-		super();
+		this(null);
 	}
 
 	/**
@@ -74,6 +76,8 @@ public class DefaultPropertyInputForm<C extends Component> extends
 	public DefaultPropertyInputForm(C content) {
 		super(content);
 		addStyleName("h-inputform");
+
+		setComponentsWidthMode(ComponentsWidthMode.NONE);
 	}
 
 	/*
@@ -291,9 +295,17 @@ public class DefaultPropertyInputForm<C extends Component> extends
 		 * Constructor
 		 * @param content Form composition content
 		 */
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public DefaultBuilder(C content) {
 			super(new DefaultPropertyInputForm<>(content));
 			this.inputGroupBuilder = new DefaultPropertyInputGroup.InternalBuilder();
+
+			// setup default composer
+			if (getInstance().getComposer() == null) {
+				if (content instanceof ComponentContainer) {
+					getInstance().setComposer((Composer) ComposableComponent.componentContainerComposer());
+				}
+			}
 		}
 
 		/*
@@ -637,6 +649,18 @@ public class DefaultPropertyInputForm<C extends Component> extends
 		@Override
 		public PropertyInputFormBuilder<C> composeOnAttach(boolean composeOnAttach) {
 			getInstance().setComposeOnAttach(composeOnAttach);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.ComposableComponent.Builder#componentsWidthMode(com.holonplatform.vaadin.
+		 * components.ComposableComponent.ComponentsWidthMode)
+		 */
+		@Override
+		public PropertyInputFormBuilder<C> componentsWidthMode(ComponentsWidthMode componentsWidthMode) {
+			getInstance().setComponentsWidthMode(componentsWidthMode);
 			return this;
 		}
 

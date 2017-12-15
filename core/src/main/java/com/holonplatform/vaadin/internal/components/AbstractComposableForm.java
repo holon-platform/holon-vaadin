@@ -25,11 +25,13 @@ import java.util.function.Consumer;
 import com.holonplatform.core.Path;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
+import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
+import com.holonplatform.vaadin.components.ComponentSource;
+import com.holonplatform.vaadin.components.Components;
 import com.holonplatform.vaadin.components.ComposableComponent;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.ui.CustomComponent;
 
 /**
  * Base {@link ComposableComponent} form.
@@ -39,7 +41,8 @@ import com.vaadin.ui.themes.ValoTheme;
  * 
  * @since 5.0.0
  */
-public abstract class AbstractComposableForm<C extends Component, S> extends Panel implements ComposableComponent {
+public abstract class AbstractComposableForm<C extends Component, S extends ComponentSource> extends CustomComponent
+		implements ComposableComponent {
 
 	private static final long serialVersionUID = 6196476129131362753L;
 
@@ -57,6 +60,11 @@ public abstract class AbstractComposableForm<C extends Component, S> extends Pan
 	 * Compose on attach behaviour
 	 */
 	private boolean composeOnAttach = true;
+
+	/**
+	 * Components width mode
+	 */
+	private ComponentsWidthMode componentsWidthMode = ComponentsWidthMode.AUTO;
 
 	/**
 	 * Composition state
@@ -87,14 +95,26 @@ public abstract class AbstractComposableForm<C extends Component, S> extends Pan
 	public AbstractComposableForm(C content) {
 		super();
 		if (content != null) {
-			setContent(content);
+			setCompositionRoot(content);
 		}
-		addStyleName(ValoTheme.PANEL_BORDERLESS);
+		// undefined width by default
+		setWidthUndefined();
 		// default style name
 		addStyleName("h-form");
+		// scrollable by default
+		addStyleName(Components.SCROLLABLE_STYLENAME);
 	}
 
 	protected abstract S getComponentSource();
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.ComposableComponent#getContent()
+	 */
+	@Override
+	public Component getContent() {
+		return getCompositionRoot();
+	}
 
 	/**
 	 * Get the form content initializer
@@ -144,6 +164,24 @@ public abstract class AbstractComposableForm<C extends Component, S> extends Pan
 		this.composeOnAttach = composeOnAttach;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.ComposableComponent#getComponentsWidthMode()
+	 */
+	@Override
+	public ComponentsWidthMode getComponentsWidthMode() {
+		return componentsWidthMode;
+	}
+
+	/**
+	 * Set the composed Components width setup mode
+	 * @param componentsWidthMode the ComponentsWidthMode to set (not null)
+	 */
+	public void setComponentsWidthMode(ComponentsWidthMode componentsWidthMode) {
+		ObjectUtils.argumentNotNull(componentsWidthMode, "ComponentsWidthMode must be not null");
+		this.componentsWidthMode = componentsWidthMode;
+	}
+
 	/**
 	 * Set the caption for the component bound to given property
 	 * @param property Property
@@ -179,20 +217,44 @@ public abstract class AbstractComposableForm<C extends Component, S> extends Pan
 			throw new IllegalStateException("Missing form composer");
 		}
 
-		C content;
+		final C content;
 		try {
 			content = (C) getContent();
 		} catch (Exception e) {
 			throw new IllegalStateException("Form content is not of expected type", e);
 		}
 
+		// setup content
+		setupContent(content);
+
 		// init form content
 		getInitializer().ifPresent(i -> i.accept(content));
+
+		// setup components width
+		if (getComponentsWidthMode() != ComponentsWidthMode.NONE) {
+			boolean fullWidth = (getComponentsWidthMode() == ComponentsWidthMode.FULL)
+					|| ((getComponentsWidthMode() == ComponentsWidthMode.AUTO) && getWidth() > -1);
+			if (fullWidth) {
+				getComponentSource().getComponents().forEach(component -> component.setWidth(100, Unit.PERCENTAGE));
+			}
+		}
 
 		// compose
 		getComposer().compose(content, getComponentSource());
 
 		this.composed = true;
+	}
+
+	/**
+	 * Setup content component, adjusting width and height according to parent component
+	 * @param content Content component
+	 */
+	private void setupContent(C content) {
+		if (content != null) {
+			if (getWidth() > -1) {
+				content.setWidth(100, Unit.PERCENTAGE);
+			}
+		}
 	}
 
 	/*

@@ -16,7 +16,6 @@
 package com.holonplatform.vaadin.internal.components.builders;
 
 import com.holonplatform.vaadin.components.builders.FormLayoutBuilder;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.FormLayout;
 
 /**
@@ -30,7 +29,7 @@ public class DefaultFormLayoutBuilder extends AbstractLayoutBuilder<FormLayout, 
 	public DefaultFormLayoutBuilder() {
 		super(new FormLayout());
 		getInstance().setSizeUndefined();
-		getInstance().setMargin(new MarginInfo(false, false, true, false));
+		getInstance().setMargin(false);
 	}
 
 	/*

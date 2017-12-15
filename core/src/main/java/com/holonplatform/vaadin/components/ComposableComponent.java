@@ -30,6 +30,35 @@ import com.vaadin.ui.ComponentContainer;
 public interface ComposableComponent extends Component {
 
 	/**
+	 * Enumeration of composed Components width setup mode.
+	 */
+	public enum ComponentsWidthMode {
+
+		/**
+		 * The width of each component will not be altered
+		 */
+		NONE,
+
+		/**
+		 * The width of each component will adjusted according to parent layout width: if the parent layout is 100%
+		 * wide, the components width will be setted to 100%
+		 */
+		AUTO,
+
+		/**
+		 * The width of each component will always be setted to 100%
+		 */
+		FULL;
+
+	}
+
+	/**
+	 * Get the composed Components width setup mode.
+	 * @return the composed Components width setup mode
+	 */
+	ComponentsWidthMode getComponentsWidthMode();
+
+	/**
 	 * Get the form content component
 	 * @return Form content component
 	 */
@@ -48,7 +77,7 @@ public interface ComposableComponent extends Component {
 	 * @param <S> Components source
 	 */
 	@FunctionalInterface
-	public interface Composer<C extends Component, S> {
+	public interface Composer<C extends Component, S extends ComponentSource> {
 
 		/**
 		 * Compose the components provided by given <code>source</code> into given <code>content</code> component.
@@ -66,7 +95,7 @@ public interface ComposableComponent extends Component {
 	 * @param <C> Content component type
 	 * @param <B> Concrete builder type
 	 */
-	public interface Builder<S, C extends Component, B extends Builder<S, C, B>> {
+	public interface Builder<S extends ComponentSource, C extends Component, B extends Builder<S, C, B>> {
 
 		/**
 		 * Set a content initializer to setup the content component. This initiliazer is called every time the content
@@ -96,26 +125,24 @@ public interface ComposableComponent extends Component {
 		 */
 		B composeOnAttach(boolean composeOnAttach);
 
+		/**
+		 * Set the composed Components width setup mode.
+		 * @param componentsWidthMode composed Components width setup mode (not null)
+		 * @return this
+		 */
+		B componentsWidthMode(ComponentsWidthMode componentsWidthMode);
+
 	}
 
 	/**
 	 * Create a {@link Composer} which uses a {@link ComponentContainer} as composition layout and adds the property
 	 * components to layout in the order they are returned from the {@link PropertyValueComponentSource}.
+	 * @param <C> Actual ComponentContainer type
+	 * @param <S> Actual components source
 	 * @return A new {@link ComponentContainer} composer
 	 */
-	static Composer<ComponentContainer, PropertyValueComponentSource> componentContainerComposer() {
-		return componentContainerComposer(false);
-	}
-
-	/**
-	 * Create a {@link Composer} which uses a {@link ComponentContainer} as composition layout and adds the property
-	 * components to layout in the order they are returned from the {@link PropertyValueComponentSource}.
-	 * @param fullWidthComponents <code>true</code> to set the width of all composed components to <code>100%</code>
-	 * @return A new {@link ComponentContainer} composer
-	 */
-	static Composer<ComponentContainer, PropertyValueComponentSource> componentContainerComposer(
-			boolean fullWidthComponents) {
-		return new DefaultComponentContainerComposer(fullWidthComponents);
+	static <C extends ComponentContainer, S extends ComponentSource> Composer<C, S> componentContainerComposer() {
+		return new DefaultComponentContainerComposer<>();
 	}
 
 }
