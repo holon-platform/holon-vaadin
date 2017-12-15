@@ -514,6 +514,24 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleViewComponent.ja
 <4> Set the form value using a `PropertyBox`
 <5> Get the form value
 
+=== Composable components setup
+
+Each `ComposableComponent` (such as `PropertyInputForm` and `PropertyViewForm`) is _scrollable_ by default, using the Vaadin `v-scrollable` style name.
+
+Furthermore, the builders support the `ComponentsWidthMode` strategy, which can be configured to control if and how the component has to adjust the width of the children component composed using a `Composer`.
+
+The available modes are:
+
+* `NONE`: The width of each Component will not be altered
+* `AUTO`: The width of each component will adjusted according to parent layout width: if the parent layout has not undefined width, the components width will be setted to 100%
+* `FULL`: The width of each component will always be setted to 100%
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleComposable.java[tag=wmode,indent=0]
+----
+<1> Set the `ComponentsWidthMode` to `FULL`: all the form Components will be 100% wide
+
 == Item listing
 
 The link:{apidir}/com/holonplatform/vaadin/components/ItemListing.html[ItemListing^] component can be used to display a set of items as tabular data. By default, it is backed by a Vaadin `Grid` as concrete UI component.
