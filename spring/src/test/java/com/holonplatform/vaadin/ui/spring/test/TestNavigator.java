@@ -275,8 +275,8 @@ public class TestNavigator extends AbstractVaadinSpringTest {
 		assertNotNull(current);
 
 		assertTrue(current instanceof ViewFour);
-		
-		ViewFour v4 = (ViewFour)current;
+
+		ViewFour v4 = (ViewFour) current;
 		assertEquals("/one", v4.getOldViewName());
 		assertTrue(v4.getOldView() instanceof ViewOne);
 
@@ -292,7 +292,7 @@ public class TestNavigator extends AbstractVaadinSpringTest {
 	public void testNavigateInWindow() {
 
 		navigator.navigateTo(VIEW_ONE);
-		
+
 		Window wnd = navigator.navigateInWindow(VIEW_FOUR, null, null);
 
 		assertEquals(VIEW_FOUR, navigator.getCurrentViewName());
@@ -332,6 +332,40 @@ public class TestNavigator extends AbstractVaadinSpringTest {
 
 		assertEquals(0, ui.getWindows().size());
 
+	}
+
+	@Test
+	public void testNavigateInWindowToDefault() {
+
+		Window wnd = navigator.navigateInWindow(VIEW_FOUR);
+
+		assertEquals(1, ui.getWindows().size());
+
+		wnd.close();
+
+		assertEquals(0, ui.getWindows().size());
+
+		assertEquals(VIEW_HOME, navigator.getCurrentViewName());
+
+		wnd = navigator.navigateInWindow(VIEW_FOUR);
+
+		assertEquals(VIEW_FOUR, navigator.getCurrentViewName());
+
+		assertEquals(1, ui.getWindows().size());
+
+		assertTrue(navigator.navigateBack());
+
+		assertEquals(0, ui.getWindows().size());
+
+		assertEquals(VIEW_HOME, navigator.getCurrentViewName());
+
+		wnd = navigator.navigateInWindow(VIEW_FOUR);
+
+		assertEquals(1, ui.getWindows().size());
+
+		navigator.navigateToDefault();
+
+		assertEquals(0, ui.getWindows().size());
 	}
 
 	@Test

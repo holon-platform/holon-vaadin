@@ -481,11 +481,11 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 	public boolean navigateBack() throws ViewNavigationException {
 
 		// check current View is displayed in Window
-		if (!closeCurrentViewWindow()) {
-			// pop current if page not excluded from history
-			if (!getNavigationHistory().isEmpty() && !isVolatile(navigator.getCurrentView(), null)) {
-				getNavigationHistory().pop();
-			}
+		closeCurrentViewWindow();
+
+		// pop current if page not excluded from history
+		if (!getNavigationHistory().isEmpty() && !isVolatile(navigator.getCurrentView(), null)) {
+			getNavigationHistory().pop();
 		}
 
 		// peek previous
@@ -527,6 +527,10 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 	 * @throws ViewNavigationException Navigation error
 	 */
 	public void navigateToDefault() throws ViewNavigationException {
+
+		// close any Window displayed View
+		closeAllViewWindows();
+
 		// default view navigation strategy
 		DefaultViewNavigationStrategy strategy = getDefaultViewNavigationStrategy();
 		if (strategy != null) {
@@ -1092,33 +1096,25 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 	}
 
 	/**
-	 * If current View is displayed in a Window, close the Window and removes navigation state from history
-	 * @return <code>true</code> if current View was displayed in a Window and it was closed
+	 * If current View is displayed in a Window, close the Window
 	 */
-	protected boolean closeCurrentViewWindow() {
-		// check current View is displayed in Window
-		if (!getNavigationHistory().isEmpty() && viewWindows.containsKey(getNavigationHistory().peek())) {
-
-			// remove from history
-			String navigationState = getNavigationHistory().pop();
-
-			WeakReference<Window> windowRef = viewWindows.get(navigationState);
-			if (windowRef != null && windowRef.get() != null && windowRef.get().getParent() != null) {
-				// if was displayed in Window, close the Window
-				try {
-					navigateBackOnWindowClose = false;
-					windowRef.get().close();
-				} finally {
-					navigateBackOnWindowClose = true;
+	protected void closeCurrentViewWindow() {
+		final String currentState = navigator.getState();
+		if (currentState != null && viewWindows.containsKey(currentState)) {
+			synchronized (viewWindows) {
+				final WeakReference<Window> windowRef = viewWindows.get(currentState);
+				if (windowRef != null && windowRef.get() != null && windowRef.get().getParent() != null) {
+					// if was displayed in Window, close the Window
+					try {
+						navigateBackOnWindowClose = false;
+						windowRef.get().close();
+					} finally {
+						navigateBackOnWindowClose = true;
+					}
 				}
+				viewWindows.remove(currentState);
 			}
-			viewWindows.remove(navigationState);
-
-			// closed and removed from history
-			return true;
-
 		}
-		return false;
 	}
 
 	/**

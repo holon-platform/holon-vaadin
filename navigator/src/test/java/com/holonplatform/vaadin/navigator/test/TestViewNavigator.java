@@ -285,8 +285,8 @@ public class TestViewNavigator extends AbstractVaadinTest {
 		assertNotNull(current);
 
 		assertTrue(current instanceof ViewFour);
-		
-		ViewFour v4 = (ViewFour)current;
+
+		ViewFour v4 = (ViewFour) current;
 		assertEquals("/one", v4.getOldViewName());
 		assertTrue(v4.getOldView() instanceof ViewOne);
 
@@ -318,7 +318,7 @@ public class TestViewNavigator extends AbstractVaadinTest {
 
 		assertTrue(wnd.getContent() instanceof Label);
 		assertEquals("FOUR", ((Label) wnd.getContent()).getValue());
-		
+
 		assertEquals("View4", wnd.getCaption());
 
 		assertEquals(1, ui.getWindows().size());
@@ -345,16 +345,66 @@ public class TestViewNavigator extends AbstractVaadinTest {
 		assertTrue(((ViewFive) current).isShowed());
 		assertTrue(((ViewFive) current).isEntered());
 
-		//assertTrue(navigator.navigateBack());
+		assertFalse(navigator.navigateBack());
 
-		//assertEquals(VIEW_FOUR, navigator.getCurrentViewName());
+		// wnd.close();
+
+		assertEquals(1, ui.getWindows().size());
 
 		navigator.navigateTo(VIEW_ONE, null);
 
 		assertEquals(0, ui.getWindows().size());
 
+		wnd = navigator.navigateInWindow(VIEW_FOUR);
+
+		assertEquals(1, ui.getWindows().size());
+
 	}
-	
+
+	@Test
+	public void testNavigateInWindowToDefault() {
+
+		NavigatorTestUI ui = createUi(NavigatorTestUI.class, "http://localhost");
+
+		DefaultViewProvider provider = new DefaultViewProvider();
+		provider.registerView(VIEW_ONE, ViewOne.class);
+		provider.registerView(VIEW_FOUR, ViewFour.class);
+		provider.registerView(VIEW_FIVE, ViewFive.class);
+
+		ViewNavigator navigator = ViewNavigator.builder().viewDisplay(viewer).addProvider(provider)
+				.defaultViewName(VIEW_ONE).buildAndBind(ui);
+
+		Window wnd = navigator.navigateInWindow(VIEW_FOUR);
+
+		assertEquals(1, ui.getWindows().size());
+
+		wnd.close();
+
+		assertEquals(0, ui.getWindows().size());
+
+		assertEquals(VIEW_ONE, navigator.getCurrentViewName());
+
+		wnd = navigator.navigateInWindow(VIEW_FOUR);
+
+		assertEquals(VIEW_FOUR, navigator.getCurrentViewName());
+
+		assertEquals(1, ui.getWindows().size());
+
+		assertTrue(navigator.navigateBack());
+
+		assertEquals(0, ui.getWindows().size());
+
+		assertEquals(VIEW_ONE, navigator.getCurrentViewName());
+
+		wnd = navigator.navigateInWindow(VIEW_FOUR);
+
+		assertEquals(1, ui.getWindows().size());
+
+		navigator.navigateToDefault();
+
+		assertEquals(0, ui.getWindows().size());
+	}
+
 	@Test
 	public void testWindowCaption() {
 		NavigatorTestUI ui = createUi(NavigatorTestUI.class, "http://localhost");
@@ -364,7 +414,7 @@ public class TestViewNavigator extends AbstractVaadinTest {
 
 		ViewNavigator navigator = ViewNavigator.builder().viewDisplay(viewer).addProvider(provider).buildAndBind(ui);
 		Window wnd = navigator.navigateInWindow(VIEW_FOUR, cfg -> cfg.caption("Overridden"));
-		
+
 		assertEquals("Overridden", wnd.getCaption());
 	}
 
