@@ -275,6 +275,10 @@ public class TestNavigator extends AbstractVaadinSpringTest {
 		assertNotNull(current);
 
 		assertTrue(current instanceof ViewFour);
+		
+		ViewFour v4 = (ViewFour)current;
+		assertEquals("/one", v4.getOldViewName());
+		assertTrue(v4.getOldView() instanceof ViewOne);
 
 		navigator.toView(VIEW_TWO).navigate();
 		assertEquals(VIEW_TWO, navigator.getCurrentViewName());

@@ -18,7 +18,6 @@ package com.holonplatform.vaadin.ui.spring.test.components;
 import com.holonplatform.vaadin.spring.DefaultView;
 import com.holonplatform.vaadin.ui.spring.test.TestNavigator;
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.CssLayout;
 
@@ -27,13 +26,5 @@ import com.vaadin.ui.CssLayout;
 public class ViewHome extends CssLayout implements View {
 
 	private static final long serialVersionUID = 1L;
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
-	 */
-	@Override
-	public void enter(ViewChangeEvent event) {
-	}
 
 }

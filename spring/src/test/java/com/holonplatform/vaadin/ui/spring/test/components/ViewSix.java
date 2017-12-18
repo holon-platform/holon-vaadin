@@ -22,7 +22,6 @@ import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.vaadin.navigator.annotations.ViewContext;
 import com.holonplatform.vaadin.ui.spring.test.TestNavigator;
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.CssLayout;
 
@@ -44,10 +43,6 @@ public class ViewSix extends CssLayout implements View {
 
 	public AuthContext getAuthContext() {
 		return authContext;
-	}
-
-	@Override
-	public void enter(ViewChangeEvent event) {
 	}
 
 }

@@ -19,7 +19,6 @@ import com.holonplatform.vaadin.navigator.annotations.ViewContext;
 import com.holonplatform.vaadin.navigator.annotations.ViewParameter;
 import com.holonplatform.vaadin.ui.spring.test.TestNavigator;
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.VerticalLayout;
 
@@ -55,10 +54,6 @@ public class ViewSeven extends VerticalLayout implements View {
 
 	public void setParam2(String param2) {
 		this.param2 = param2;
-	}
-
-	@Override
-	public void enter(ViewChangeEvent event) {
 	}
 
 }

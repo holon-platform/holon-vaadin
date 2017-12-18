@@ -23,7 +23,6 @@ import java.util.Date;
 import com.holonplatform.vaadin.navigator.annotations.ViewContext;
 import com.holonplatform.vaadin.navigator.annotations.ViewParameter;
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.VerticalLayout;
 
 public class ViewSeven extends VerticalLayout implements View {
@@ -87,10 +86,6 @@ public class ViewSeven extends VerticalLayout implements View {
 
 	public LocalDateTime getParamLocalDateTime() {
 		return paramLocalDateTime;
-	}
-
-	@Override
-	public void enter(ViewChangeEvent event) {
 	}
 
 }

@@ -63,10 +63,6 @@ public class ViewThree extends VerticalLayout implements View {
 		return intOnEnter;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
-	 */
 	@Override
 	public void enter(ViewChangeEvent event) {
 		intOnEnter = pInt;

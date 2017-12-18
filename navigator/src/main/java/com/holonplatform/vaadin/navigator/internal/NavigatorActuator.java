@@ -113,6 +113,11 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 	private String currentViewName;
 
 	/**
+	 * Previous view name
+	 */
+	private String previousViewName;
+
+	/**
 	 * Default view name
 	 */
 	private String defaultViewName;
@@ -443,8 +448,9 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 				boolean accepted = ((SubViewContainer) parent).display(view, viewName, parsedParameters);
 				// if accepted, fire lifecycle methods
 				if (accepted) {
-					DefaultViewNavigatorChangeEvent evt = new DefaultViewNavigatorChangeEvent(navigator, oldView, view,
-							viewName, parameters, getViewWindow(buildNavigationState(viewName, parameters)));
+					DefaultViewNavigatorChangeEvent evt = new DefaultViewNavigatorChangeEvent(navigator, oldView,
+							previousViewName, view, viewName, parameters,
+							getViewWindow(buildNavigationState(viewName, parameters)));
 					// onLeave on old view
 					if (oldView != null) {
 						ViewNavigationUtils.fireViewOnLeave(oldView, viewConfiguration, evt);
@@ -597,6 +603,7 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 	 * @param event View change event
 	 */
 	public void postUpdateNavigationState(ViewChangeEvent event) {
+		this.previousViewName = this.currentViewName;
 		this.currentViewName = event.getViewName();
 
 		// navigation state
@@ -609,7 +616,7 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 				ViewConfiguration configuration = getViewConfiguration(event.getOldView().getClass());
 				if (configuration != null) {
 					ViewNavigationUtils.fireViewOnLeave(event.getOldView(), configuration,
-							DefaultViewNavigatorChangeEvent.create(event, navigator, null));
+							DefaultViewNavigatorChangeEvent.create(event, previousViewName, navigator, null));
 				} else {
 					LOGGER.warn("Failed to obtain ViewConfiguration for view class " + event.getOldView().getClass()
 							+ ": OnLeave methods firing skipped");
@@ -630,8 +637,8 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 			// fire OnShow methods declared to be fired at refresh
 			if (configuration != null && SharedUtil.equals(event.getOldView(), event.getNewView())) {
 				// is a refresh
-				ViewNavigationUtils.fireViewOnShow(event.getNewView(), configuration,
-						DefaultViewNavigatorChangeEvent.create(event, navigator, getViewWindow(navigationState)), true);
+				ViewNavigationUtils.fireViewOnShow(event.getNewView(), configuration, DefaultViewNavigatorChangeEvent
+						.create(event, previousViewName, navigator, getViewWindow(navigationState)), true);
 			}
 		}
 	}
@@ -642,7 +649,7 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 			ViewConfiguration configuration = getViewConfiguration(event.getNewView().getClass());
 			if (configuration != null) {
 				ViewNavigationUtils.fireViewOnShow(event.getNewView(), configuration,
-						DefaultViewNavigatorChangeEvent.create(event, navigator,
+						DefaultViewNavigatorChangeEvent.create(event, previousViewName, navigator,
 								getViewWindow(buildNavigationState(event.getViewName(), event.getParameters()))),
 						false);
 			} else {

@@ -33,11 +33,13 @@ public class DefaultViewNavigatorChangeEvent extends ViewChangeEvent implements 
 
 	private static final long serialVersionUID = 5477036944760324282L;
 
+	private final String oldViewName;
 	private final Window containerWindow;
 
 	public <N extends Navigator & ViewNavigator> DefaultViewNavigatorChangeEvent(N navigator, View oldView,
-			View newView, String viewName, String parameters, Window containerWindow) {
+			String oldViewName, View newView, String viewName, String parameters, Window containerWindow) {
 		super(navigator, oldView, newView, viewName, parameters);
+		this.oldViewName = oldViewName;
 		this.containerWindow = containerWindow;
 	}
 
@@ -52,6 +54,15 @@ public class DefaultViewNavigatorChangeEvent extends ViewChangeEvent implements 
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.navigator.ViewNavigator.ViewNavigatorChangeEvent#getOldViewName()
+	 */
+	@Override
+	public Optional<String> getOldViewName() {
+		return Optional.ofNullable(oldViewName);
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.navigator.ViewNavigator.ViewChangeEvent#getWindow()
 	 */
 	@Override
@@ -59,9 +70,17 @@ public class DefaultViewNavigatorChangeEvent extends ViewChangeEvent implements 
 		return Optional.ofNullable(containerWindow);
 	}
 
+	/**
+	 * Create a new {@link DefaultViewNavigatorChangeEvent} from a standard {@link ViewChangeEvent}.
+	 * @param event Original {@link ViewChangeEvent}
+	 * @param oldViewName Optional old view name
+	 * @param navigator View navigator source of the event
+	 * @param containerWindow Optional View Window
+	 * @return A new {@link DefaultViewNavigatorChangeEvent}
+	 */
 	public static <N extends Navigator & ViewNavigator> DefaultViewNavigatorChangeEvent create(ViewChangeEvent event,
-			N navigator, Window containerWindow) {
-		return new DefaultViewNavigatorChangeEvent(navigator, event.getOldView(), event.getNewView(),
+			String oldViewName, N navigator, Window containerWindow) {
+		return new DefaultViewNavigatorChangeEvent(navigator, event.getOldView(), oldViewName, event.getNewView(),
 				event.getViewName(), event.getParameters(), containerWindow);
 	}
 

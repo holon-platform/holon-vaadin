@@ -338,6 +338,12 @@ public interface ViewNavigator extends Serializable {
 		View getOldView();
 
 		/**
+		 * Returns the name of the view being deactivated, if any
+		 * @return the old View name, empty if none
+		 */
+		Optional<String> getOldViewName();
+
+		/**
 		 * Returns the view being activated.
 		 * @return the new View (not null)
 		 */

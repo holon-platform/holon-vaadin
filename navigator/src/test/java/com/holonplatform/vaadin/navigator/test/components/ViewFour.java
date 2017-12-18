@@ -16,9 +16,10 @@
 package com.holonplatform.vaadin.navigator.test.components;
 
 import com.holonplatform.core.i18n.Caption;
+import com.holonplatform.vaadin.navigator.ViewNavigator.ViewNavigatorChangeEvent;
+import com.holonplatform.vaadin.navigator.annotations.OnShow;
 import com.holonplatform.vaadin.navigator.annotations.VolatileView;
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 
@@ -28,21 +29,26 @@ public class ViewFour implements View {
 
 	private static final long serialVersionUID = 1L;
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
-	 */
-	@Override
-	public void enter(ViewChangeEvent event) {
-	}
+	private View oldView;
+	private String oldViewName;
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.navigator.ViewContentProvider#getViewContent()
-	 */
 	@Override
 	public Component getViewComponent() {
 		return new Label("FOUR");
+	}
+
+	public View getOldView() {
+		return oldView;
+	}
+
+	public String getOldViewName() {
+		return oldViewName;
+	}
+
+	@OnShow
+	public void onShow(ViewNavigatorChangeEvent evt) {
+		oldView = evt.getOldView();
+		oldViewName = evt.getOldViewName().orElse(null);
 	}
 
 }
