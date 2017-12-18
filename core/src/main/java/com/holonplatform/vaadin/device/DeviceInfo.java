@@ -113,11 +113,11 @@ public interface DeviceInfo extends UserAgentInspector {
 	 */
 	static void ensureInited(VaadinSession session) {
 		ObjectUtils.argumentNotNull(session, "VaadinSession must be not null");
-		session.access(() -> {
+		synchronized (session) {
 			if (session.getAttribute(SESSION_ATTRIBUTE_NAME) == null && VaadinService.getCurrentRequest() != null) {
 				session.setAttribute(SESSION_ATTRIBUTE_NAME, create(VaadinService.getCurrentRequest()));
 			}
-		});
+		}
 	}
 
 }
