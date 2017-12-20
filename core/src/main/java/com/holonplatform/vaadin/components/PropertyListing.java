@@ -27,7 +27,7 @@ import com.holonplatform.vaadin.internal.components.builders.DefaultGridProperty
  * @since 5.0.0
  */
 @SuppressWarnings("rawtypes")
-public interface PropertyListing extends ItemListing<PropertyBox, Property> {
+public interface PropertyListing extends ItemListing<PropertyBox, Property>, PropertySetBound {
 
 	// Builders
 

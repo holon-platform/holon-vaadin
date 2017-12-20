@@ -123,12 +123,28 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	/**
 	 * The Grid
 	 */
-	private final Grid<T> grid;
+	private Grid<T> grid;
 
+	protected DefaultItemListing() {
+		super();
+	}
+
+	/**
+	 * Constructor with internal Grid.
+	 * @param grid The Grid instance (not null)
+	 */
 	public DefaultItemListing(Grid<T> grid) {
 		super();
+		initGrid(grid);
+	}
 
+	/**
+	 * Init internal Grid.
+	 * @param grid Grid
+	 */
+	protected void initGrid(Grid<T> grid) {
 		this.grid = grid;
+
 		grid.setWidth(100, Unit.PERCENTAGE);
 
 		// reset selection model
@@ -137,7 +153,7 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		// row style generator
 		grid.setStyleGenerator(i -> generateRowStyle(i));
 
-		Editor<T> editor = getGrid().getEditor();
+		Editor<T> editor = grid.getEditor();
 		if (editor != null) {
 			editor.addSaveListener(e -> {
 				if (isBuffered()) {
@@ -658,11 +674,18 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	 * @param columns Columns property set
 	 */
 	public void setPropertyColumns(Iterable<P> columns) {
-		ObjectUtils.argumentNotNull(columns, "Property columns must be not null");
+		setupVisibileColumns(columns);
+	}
 
+	/**
+	 * Set given properties as listing visibile columns.
+	 * @param visibleColumns Visible columns properties (not null)
+	 */
+	protected void setupVisibileColumns(Iterable<P> visibleColumns) {
+		ObjectUtils.argumentNotNull(visibleColumns, "Visible columns must be not null");
 		List<String> ids = new LinkedList<>();
 
-		columns.forEach(property -> {
+		visibleColumns.forEach(property -> {
 			final String columnId = getColumnId(property);
 			setupPropertyColumn(property, getGrid().getColumn(columnId));
 			ids.add(getColumnId(property));
@@ -1088,7 +1111,7 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	 * Get the datasource.
 	 * @return the datasource
 	 */
-	protected Optional<ItemDataSource<T, P>> getDataSource() {
+	public Optional<ItemDataSource<T, P>> getDataSource() {
 		return Optional.ofNullable(dataSource);
 	}
 

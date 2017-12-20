@@ -15,6 +15,8 @@
  */
 package com.holonplatform.vaadin.internal.components.builders;
 
+import java.util.List;
+
 import com.holonplatform.core.Path;
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
@@ -164,6 +166,17 @@ public class DefaultGridPropertyListingBuilder extends
 		getInstance().getPropertyColumn(property).setPresentationProvider(presentationProvider);
 		getInstance().getPropertyColumn(property).setRenderer(renderer);
 		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.internal.components.builders.AbstractItemListingBuilder#configureColumns(com.
+	 * holonplatform.vaadin.internal.components.DefaultItemListing, java.util.List)
+	 */
+	@Override
+	protected Iterable<Property> configureColumns(DefaultPropertyListing instance, List<Property> visibleColumns) {
+		// return visible columns or full property set if none
+		return !visibleColumns.isEmpty() ? visibleColumns : instance.getProperties();
 	}
 
 	/*

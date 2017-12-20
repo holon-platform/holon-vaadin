@@ -16,11 +16,12 @@
 package com.holonplatform.vaadin.internal.components;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import com.holonplatform.core.i18n.LocalizationContext;
@@ -28,6 +29,8 @@ import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.core.property.PropertyValueProvider;
+import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.components.Field;
 import com.holonplatform.vaadin.components.PropertyListing;
 import com.holonplatform.vaadin.internal.VaadinLogger;
@@ -60,14 +63,62 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 
 	private static final Logger LOGGER = VaadinLogger.create();
 
-	private final Map<Property, String> propertyIds;
+	private final GridPropertySet propertySet;
 
 	public <P extends Property<?>> DefaultPropertyListing(Iterable<P> properties) {
-		super(Grid.withPropertySet(new GridPropertySet(properties)));
-		propertyIds = new HashMap<>();
-		properties.forEach(p -> {
-			propertyIds.put(p, PropertyUtils.generatePropertyId(p));
-		});
+		super();
+		ObjectUtils.argumentNotNull(properties, "Listing property set must be not null");
+		propertySet = new GridPropertySet(properties);
+		initGrid(Grid.withPropertySet(propertySet));
+	}
+
+	/**
+	 * Get the {@link Property} set to which this listing is bound.
+	 * @return The listing property set
+	 */
+	public Set<Property> getPropertySet() {
+		return propertySet.getPropertySet();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.PropertySetBound#getProperties()
+	 */
+	@Override
+	public Iterable<Property> getProperties() {
+		return getPropertySet();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.PropertySetBound#hasProperty(com.holonplatform.core.property.Property)
+	 */
+	@Override
+	public boolean hasProperty(Property<?> property) {
+		return (property != null) && getPropertySet().contains(property);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.PropertySetBound#propertyStream()
+	 */
+	@Override
+	public Stream<Property> propertyStream() {
+		return getPropertySet().stream();
+	}
+
+	/**
+	 * Adds a column definition which uses given {@link VirtualProperty} value provider to provide the column contents.
+	 * @param property Column property
+	 * @return if the property was not already present in listing property set and it was added to the set, return the
+	 *         column name, <code>null</code> otherwise
+	 */
+	public <T> String addColumn(VirtualProperty<T> property) {
+		String name = propertySet.addVirtualProperty(property);
+		if (name != null) {
+			getGrid().addColumn(name);
+		}
+		return name;
 	}
 
 	/*
@@ -76,7 +127,7 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 	 */
 	@Override
 	public String getColumnId(Property property) {
-		return propertyIds.get(property);
+		return propertySet.getPropertyName(property);
 	}
 
 	/*
@@ -85,11 +136,35 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 	 */
 	@Override
 	protected Property getColumnProperty(String columnId) {
-		if (columnId != null) {
-			return propertyIds.entrySet().stream().filter(e -> columnId.equals(e.getValue())).findFirst()
-					.map(e -> e.getKey()).orElse(null);
+		return propertySet.getPropertyByName(columnId);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.internal.components.DefaultItemListing#setupVisibileColumns(java.lang.Iterable)
+	 */
+	@Override
+	protected void setupVisibileColumns(Iterable<Property> visibleColumns) {
+		ObjectUtils.argumentNotNull(visibleColumns, "Visible columns must be not null");
+
+		final List<String> ids = new LinkedList<>();
+		final Set<Property> propertySet = getPropertySet();
+
+		for (Property visibleColumn : visibleColumns) {
+			// check virtual columns
+			if (!propertySet.contains(visibleColumn)) {
+				// add as virtual column if it is a VirtualProperty
+				if (visibleColumn instanceof VirtualProperty) {
+					addColumn((VirtualProperty<?>) visibleColumn);
+				}
+			}
+
+			final String columnId = getColumnId(visibleColumn);
+			setupPropertyColumn(visibleColumn, getGrid().getColumn(columnId));
+			ids.add(columnId);
 		}
-		return null;
+
+		getGrid().setColumns(ids.toArray(new String[ids.size()]));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -153,37 +228,82 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 	@SuppressWarnings("serial")
 	private final static class GridPropertySet implements PropertySet<PropertyBox> {
 
-		private final List<PropertyDefinition<PropertyBox, ?>> definitions;
+		private final Map<Property, GridPropertyDefinition> propertyDefinitions = new LinkedHashMap<>();
 
-		@SuppressWarnings("unchecked")
 		public <P extends Property<?>> GridPropertySet(Iterable<P> properties) {
 			super();
 			ObjectUtils.argumentNotNull(properties, "Grid property set must be not null");
-			definitions = new LinkedList<>();
 			properties.forEach(p -> {
-				definitions.add(new GridPropertyDefinition<>(this, (Property) p));
+				propertyDefinitions.put(p, new GridPropertyDefinition<>(this, (Property<?>) p));
 			});
+		}
+
+		public Set<Property> getPropertySet() {
+			return propertyDefinitions.keySet();
+		}
+
+		/**
+		 * Get the column id associated with given <code>property</code>.
+		 * @param property The property for which to obtain the column name
+		 * @return The column name, or <code>null</code> if the property is not part of the property set
+		 */
+		public String getPropertyName(Property<?> property) {
+			if (property != null && propertyDefinitions.containsKey(property)) {
+				return propertyDefinitions.get(property).getName();
+			}
+			return null;
+		}
+
+		/**
+		 * Get the {@link Property} which corresponds to given column name.
+		 * @param name Column name
+		 * @return The {@link Property} which corresponds to given column name, <code>null</code> if none
+		 */
+		public Property<?> getPropertyByName(String name) {
+			if (name == null) {
+				return null;
+			}
+			return propertyDefinitions.entrySet().stream().filter(e -> name.equals(e.getValue().getName())).findFirst()
+					.map(d -> d.getKey()).orElse(null);
 		}
 
 		/*
 		 * (non-Javadoc)
 		 * @see com.vaadin.data.PropertySet#getProperties()
 		 */
+		@SuppressWarnings("unchecked")
 		@Override
 		public Stream<PropertyDefinition<PropertyBox, ?>> getProperties() {
-			return definitions.stream();
+			return propertyDefinitions.entrySet().stream().map(e -> e.getValue());
 		}
 
 		/*
 		 * (non-Javadoc)
 		 * @see com.vaadin.data.PropertySet#getProperty(java.lang.String)
 		 */
+		@SuppressWarnings("unchecked")
 		@Override
 		public Optional<PropertyDefinition<PropertyBox, ?>> getProperty(String name) {
 			if (name != null) {
-				return definitions.stream().filter(d -> name.equals(d.getName())).findFirst();
+				return propertyDefinitions.entrySet().stream().filter(e -> name.equals(e.getValue().getName()))
+						.findFirst().map(d -> d.getValue());
 			}
 			return Optional.empty();
+		}
+
+		/**
+		 * Add a property definition using given {@link VirtualProperty}, if not already present.
+		 * @param property Property to add
+		 * @return Column name, or <code>null</code> if the property column was already present
+		 */
+		public <V> String addVirtualProperty(VirtualProperty<V> property) {
+			if (property != null && !propertyDefinitions.containsKey(property)) {
+				GridPropertyDefinition definition = new GridPropertyDefinition<>(this, property,
+						property.getValueProvider());
+				propertyDefinitions.put(property, definition);
+				return definition.getName();
+			}
+			return null;
 		}
 
 	}
@@ -193,13 +313,29 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 
 		private final GridPropertySet propertySet;
 		private final Property<V> property;
+		private final PropertyValueProvider<V> valueProvider;
 		private final String name;
 
 		public GridPropertyDefinition(GridPropertySet propertySet, Property<V> property) {
+			this(propertySet, property, null);
+		}
+
+		public GridPropertyDefinition(GridPropertySet propertySet, Property<V> property,
+				PropertyValueProvider<V> valueProvider) {
 			super();
 			this.propertySet = propertySet;
 			this.property = property;
+			this.valueProvider = valueProvider;
 			this.name = PropertyUtils.generatePropertyId(property);
+		}
+
+		/**
+		 * Get the property bound to this definition
+		 * @return the property
+		 */
+		@SuppressWarnings("unused")
+		public Property<V> getProperty() {
+			return property;
 		}
 
 		/*
@@ -208,7 +344,7 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 		 */
 		@Override
 		public ValueProvider<PropertyBox, V> getGetter() {
-			return pb -> pb.getValue(property);
+			return pb -> (valueProvider != null) ? valueProvider.getPropertyValue(pb) : pb.getValue(property);
 		}
 
 		/*

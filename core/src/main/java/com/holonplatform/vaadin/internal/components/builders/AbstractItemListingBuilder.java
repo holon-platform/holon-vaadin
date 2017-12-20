@@ -15,11 +15,13 @@
  */
 package com.holonplatform.vaadin.internal.components.builders;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import com.holonplatform.core.Path;
 import com.holonplatform.core.i18n.Localizable;
+import com.holonplatform.core.internal.utils.ConversionUtils;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
@@ -539,23 +541,18 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 	 */
 	protected C buildAndConfigure(Iterable<P> visibleColumns) {
 		// build
-		I listing = getInstance();
+		final I listing = getInstance();
 		localize(listing);
 
 		// data source
-		ItemDataSource<T, P> dataSource = dataSourceBuilder.build();
+		setupDataSource(listing);
 
-		dataSource.getConfiguration().getDataProvider().ifPresent(dp -> {
-			if (dp instanceof DatastoreItemDataProvider) {
-				((DatastoreItemDataProvider) dp).addQueryConfigurationProvider(dataSource.getConfiguration());
-			}
-		});
-
-		listing.setDataSource(dataSource);
+		// columns
+		Iterable<P> columns = configureColumns(listing,
+				(visibleColumns != null) ? ConversionUtils.iterableAsList(visibleColumns) : Collections.emptyList());
 
 		// visible columns
-		listing.setPropertyColumns(
-				(visibleColumns != null) ? visibleColumns : dataSource.getConfiguration().getProperties());
+		listing.setPropertyColumns(columns);
 
 		// additional configuration
 		configure(listing);
@@ -574,6 +571,30 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 		// done
 		return built;
 	}
+
+	/**
+	 * Setup the listing data source.
+	 * @param listing Listing instance
+	 */
+	protected void setupDataSource(I listing) {
+		ItemDataSource<T, P> dataSource = dataSourceBuilder.build();
+
+		dataSource.getConfiguration().getDataProvider().ifPresent(dp -> {
+			if (dp instanceof DatastoreItemDataProvider) {
+				((DatastoreItemDataProvider) dp).addQueryConfigurationProvider(dataSource.getConfiguration());
+			}
+		});
+
+		listing.setDataSource(dataSource);
+	}
+
+	/**
+	 * Configure the listing columns before setting the visible columns list.
+	 * @param instance Listing instance
+	 * @param visibleColumns Visible columns
+	 * @return the actual listing visible columns
+	 */
+	protected abstract Iterable<P> configureColumns(I instance, List<P> visibleColumns);
 
 	/**
 	 * Additional listing configuration
