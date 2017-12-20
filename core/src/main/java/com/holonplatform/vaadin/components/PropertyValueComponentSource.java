@@ -26,7 +26,7 @@ import com.holonplatform.core.property.Property;
  *
  * @since 5.0.0
  */
-public interface PropertyValueComponentSource extends ComponentSource, PropertySetBound {
+public interface PropertyValueComponentSource extends PropertyComponentSource, PropertySetBound {
 
 	/**
 	 * Gets all the {@link ValueComponent}s that have been bound to a property.

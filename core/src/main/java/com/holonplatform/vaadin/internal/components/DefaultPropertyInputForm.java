@@ -721,6 +721,19 @@ public class DefaultPropertyInputForm<C extends Component> extends
 
 		/*
 		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.PropertyInputForm.PropertyInputFormBuilder#componentConfigurator(com.
+		 * holonplatform.core.property.Property, java.util.function.Consumer)
+		 */
+		@Override
+		public PropertyInputFormBuilder<C> componentConfigurator(Property<?> property,
+				Consumer<BaseComponentConfigurator> configurator) {
+			getInstance().setPropertyComponentConfigurator(property, configurator);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.internal.components.builders.AbstractComponentBuilder#builder()
 		 */
 		@Override

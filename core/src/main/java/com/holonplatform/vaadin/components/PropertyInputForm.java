@@ -15,13 +15,17 @@
  */
 package com.holonplatform.vaadin.components;
 
+import java.util.function.Consumer;
+
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.vaadin.components.builders.ComponentBuilder;
+import com.holonplatform.vaadin.components.builders.ComponentConfigurator;
 import com.holonplatform.vaadin.internal.components.DefaultPropertyInputForm;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 
 /**
@@ -101,6 +105,18 @@ public interface PropertyInputForm extends ComposableComponent, ValueComponent<P
 		 * @return this
 		 */
 		PropertyInputFormBuilder<C> hidePropertyCaption(Property<?> property);
+
+		/**
+		 * Provide a custom configurator {@link Consumer} to configure the {@link Component} associated with given
+		 * <code>property</code> before render it in UI. The Component instance must be a subclass of
+		 * {@link AbstractComponent} to allow component configuration.
+		 * @param property Property for which to set component configurator (not null)
+		 * @param configurator Consumer to invoke the {@link ComponentConfigurator} method and configure the component
+		 *        associated to the property (not null)
+		 * @return this
+		 */
+		PropertyInputFormBuilder<C> componentConfigurator(Property<?> property,
+				Consumer<BaseComponentConfigurator> configurator);
 
 	}
 

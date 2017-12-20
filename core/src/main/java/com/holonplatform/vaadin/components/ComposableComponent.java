@@ -77,7 +77,7 @@ public interface ComposableComponent extends Component {
 	 * @param <S> Components source
 	 */
 	@FunctionalInterface
-	public interface Composer<C extends Component, S extends ComponentSource> {
+	public interface Composer<C extends Component, S extends PropertyComponentSource> {
 
 		/**
 		 * Compose the components provided by given <code>source</code> into given <code>content</code> component.
@@ -95,7 +95,7 @@ public interface ComposableComponent extends Component {
 	 * @param <C> Content component type
 	 * @param <B> Concrete builder type
 	 */
-	public interface Builder<S extends ComponentSource, C extends Component, B extends Builder<S, C, B>> {
+	public interface Builder<S extends PropertyComponentSource, C extends Component, B extends Builder<S, C, B>> {
 
 		/**
 		 * Set a content initializer to setup the content component. This initiliazer is called every time the content
@@ -141,7 +141,7 @@ public interface ComposableComponent extends Component {
 	 * @param <S> Actual components source
 	 * @return A new {@link ComponentContainer} composer
 	 */
-	static <C extends ComponentContainer, S extends ComponentSource> Composer<C, S> componentContainerComposer() {
+	static <C extends ComponentContainer, S extends PropertyComponentSource> Composer<C, S> componentContainerComposer() {
 		return new DefaultComponentContainerComposer<>();
 	}
 

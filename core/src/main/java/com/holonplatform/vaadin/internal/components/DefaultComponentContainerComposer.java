@@ -15,20 +15,20 @@
  */
 package com.holonplatform.vaadin.internal.components;
 
-import com.holonplatform.vaadin.components.ComponentSource;
+import com.holonplatform.vaadin.components.PropertyComponentSource;
 import com.holonplatform.vaadin.components.ComposableComponent.Composer;
 import com.vaadin.ui.ComponentContainer;
 
 /**
  * Default {@link Composer} using a {@link ComponentContainer} as composition layout and adding the componens to the
- * layout in the order they are returned from the a {@link ComponentSource}.
+ * layout in the order they are returned from the a {@link PropertyComponentSource}.
  * 
  * @param <C> Actual ComponentContainer type
  * @param <S> Component source
  * 
  * @since 5.0.0
  */
-public class DefaultComponentContainerComposer<C extends ComponentContainer, S extends ComponentSource>
+public class DefaultComponentContainerComposer<C extends ComponentContainer, S extends PropertyComponentSource>
 		implements Composer<C, S> {
 
 	/*

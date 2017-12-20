@@ -17,19 +17,26 @@ package com.holonplatform.vaadin.components;
 
 import java.util.stream.Stream;
 
+import com.holonplatform.core.property.Property;
 import com.vaadin.ui.Component;
 
 /**
- * Represents a source of {@link Component}s.
+ * Represents a source of {@link Component}s associated with a {@link Property}.
  *
- * @since 5.0.5
+ * @since 5.0.6
  */
-public interface ComponentSource {
+public interface PropertyComponentSource {
 
 	/**
 	 * Get the stream of available components.
 	 * @return Components stream
 	 */
 	Stream<Component> getComponents();
+	
+	/**
+	 * Return a {@link Stream} of the available {@link Property} and {@link Component}s bindings.
+	 * @return Property-Component {@link PropertyBinding} stream
+	 */
+	Stream<PropertyBinding<?, Component>> streamOfComponents();
 
 }

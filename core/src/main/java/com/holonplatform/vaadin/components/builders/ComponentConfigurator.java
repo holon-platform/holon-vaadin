@@ -18,6 +18,7 @@ package com.holonplatform.vaadin.components.builders;
 import com.holonplatform.core.Context;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
+import com.holonplatform.vaadin.internal.components.builders.DefaultComponentConfigurator;
 import com.vaadin.event.ContextClickEvent.ContextClickListener;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.ClientConnector.AttachListener;
@@ -25,6 +26,7 @@ import com.vaadin.server.ClientConnector.DetachListener;
 import com.vaadin.server.ErrorHandler;
 import com.vaadin.server.Resource;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 
 /**
@@ -346,6 +348,15 @@ public interface ComponentConfigurator<B extends ComponentConfigurator<B>> {
 	 * Base component configurator.
 	 */
 	public interface BaseComponentConfigurator extends ComponentConfigurator<BaseComponentConfigurator> {
+
+		/**
+		 * Create a new {@link BaseComponentConfigurator} on given <code>component</code>.
+		 * @param component Component to configure (not null)
+		 * @return A new {@link BaseComponentConfigurator} to configure given component
+		 */
+		static BaseComponentConfigurator create(AbstractComponent component) {
+			return new DefaultComponentConfigurator(component);
+		}
 
 	}
 

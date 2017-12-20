@@ -152,6 +152,17 @@ public class DefaultPropertyViewGroup implements PropertyViewGroup, PropertyValu
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.PropertyComponentSource#streamOfComponents()
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public Stream<PropertyBinding<?, Component>> streamOfComponents() {
+		return properties.stream().filter(p -> propertyViews.containsKey(p))
+				.map(p -> PropertyBinding.create(p, propertyViews.get(p).getComponent()));
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.PropertyViewGroup#getViewComponents()
 	 */
 	@SuppressWarnings("rawtypes")

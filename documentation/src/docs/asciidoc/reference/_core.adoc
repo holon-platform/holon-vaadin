@@ -532,6 +532,19 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleComposable.java[
 ----
 <1> Set the `ComponentsWidthMode` to `FULL`: all the form Components will be 100% wide
 
+==== Component configurators
+
+The `ComposableComponent` builders allow to provide custom _configurators_ to configure the UI components associated with the properties to be rendered.
+
+For each `Property` of the component property set, you can provide a `Consumer` to use a `ComponentConfigurator`, which makes available a complete set of methods to configure the `Component` associated with the property before rendering it in UI. For example, you can set the component size, the icon, the description and so on.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleComposable.java[tag=ccfg,indent=0]
+----
+<1> Configure the `ID` property Component
+<2> Configure the `DESCRIPTION` property Component
+
 == Item listing
 
 The link:{apidir}/com/holonplatform/vaadin/components/ItemListing.html[ItemListing^] component can be used to display a set of items as tabular data. By default, it is backed by a Vaadin `Grid` as concrete UI component.

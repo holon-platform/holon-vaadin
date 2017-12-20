@@ -23,13 +23,17 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.holonplatform.core.Path;
+import com.holonplatform.core.exceptions.TypeMismatchException;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
-import com.holonplatform.vaadin.components.ComponentSource;
 import com.holonplatform.vaadin.components.Components;
 import com.holonplatform.vaadin.components.ComposableComponent;
+import com.holonplatform.vaadin.components.PropertyComponentSource;
+import com.holonplatform.vaadin.components.builders.ComponentConfigurator;
+import com.holonplatform.vaadin.components.builders.ComponentConfigurator.BaseComponentConfigurator;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 
@@ -41,8 +45,8 @@ import com.vaadin.ui.CustomComponent;
  * 
  * @since 5.0.0
  */
-public abstract class AbstractComposableForm<C extends Component, S extends ComponentSource> extends CustomComponent
-		implements ComposableComponent {
+public abstract class AbstractComposableForm<C extends Component, S extends PropertyComponentSource>
+		extends CustomComponent implements ComposableComponent {
 
 	private static final long serialVersionUID = 6196476129131362753L;
 
@@ -80,6 +84,11 @@ public abstract class AbstractComposableForm<C extends Component, S extends Comp
 	 * Hidden property captions
 	 */
 	private Collection<Property<?>> hiddenPropertyCaptions = new HashSet<>(8);
+
+	/**
+	 * Component configurators
+	 */
+	private Map<Property<?>, Consumer<BaseComponentConfigurator>> propertyComponentConfigurators = new HashMap<>(8);
 
 	/**
 	 * Constructor
@@ -203,6 +212,27 @@ public abstract class AbstractComposableForm<C extends Component, S extends Comp
 		}
 	}
 
+	/**
+	 * Set the {@link ComponentConfigurator} consumer associated to given {@link Property}.
+	 * @param property Property (not null)
+	 * @param configurator Component configurator (not null)
+	 */
+	public void setPropertyComponentConfigurator(Property<?> property,
+			Consumer<BaseComponentConfigurator> configurator) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		ObjectUtils.argumentNotNull(configurator, "ComponentConfigurator Consumer must be not null");
+		propertyComponentConfigurators.put(property, configurator);
+	}
+
+	/**
+	 * Get the {@link ComponentConfigurator} consumer associated to given {@link Property}, if available.
+	 * @param property Property
+	 * @return Optional component configurator
+	 */
+	protected Optional<Consumer<BaseComponentConfigurator>> getPropertyComponentConfigurator(Property<?> property) {
+		return Optional.ofNullable(propertyComponentConfigurators.get(property));
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.ComposableComponent#compose()
@@ -230,19 +260,39 @@ public abstract class AbstractComposableForm<C extends Component, S extends Comp
 		// init form content
 		getInitializer().ifPresent(i -> i.accept(content));
 
-		// setup components width
-		if (getComponentsWidthMode() != ComponentsWidthMode.NONE) {
-			boolean fullWidth = (getComponentsWidthMode() == ComponentsWidthMode.FULL)
-					|| ((getComponentsWidthMode() == ComponentsWidthMode.AUTO) && getWidth() > -1);
-			if (fullWidth) {
-				getComponentSource().getComponents().forEach(component -> component.setWidth(100, Unit.PERCENTAGE));
-			}
-		}
+		// setup components
+		final boolean fullWidth = (getComponentsWidthMode() == ComponentsWidthMode.FULL)
+				|| ((getComponentsWidthMode() == ComponentsWidthMode.AUTO) && getWidth() > -1);
+
+		getComponentSource().streamOfComponents().forEach(binding -> {
+			setupPropertyComponent(binding.getProperty(), binding.getComponent(), fullWidth);
+		});
 
 		// compose
 		getComposer().compose(content, getComponentSource());
 
 		this.composed = true;
+	}
+
+	/**
+	 * Setup the {@link Component} associated with given {@link Property}.
+	 * @param property Property
+	 * @param component Component
+	 * @param fullWidth whether to set the Component to 100% width according to {@link #getComponentsWidthMode()}
+	 */
+	protected void setupPropertyComponent(Property<?> property, Component component, boolean fullWidth) {
+		if (fullWidth) {
+			component.setWidth(100, Unit.PERCENTAGE);
+		}
+		// check configurator
+		getPropertyComponentConfigurator(property).ifPresent(consumer -> {
+			if (!(component instanceof AbstractComponent)) {
+				throw new TypeMismatchException("Cannot configure Component of type [" + component.getClass().getName()
+						+ "] using the ComponentConfigurator associated with property [" + property
+						+ "]: the Component must extend AbstractComponent");
+			}
+			consumer.accept(BaseComponentConfigurator.create((AbstractComponent) component));
+		});
 	}
 
 	/**

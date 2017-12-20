@@ -270,11 +270,6 @@ public class DefaultPropertyViewForm<C extends Component>
 			return this;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.PropertyViewGroup.Builder#hidden(com.holonplatform.core.property.
-		 * Property)
-		 */
 		@Override
 		public <T> PropertyViewFormBuilder<C> hidden(Property<T> property) {
 			viewGroupBuilder.hidden(property);
@@ -360,6 +355,13 @@ public class DefaultPropertyViewForm<C extends Component>
 		public PropertyViewFormBuilder<C> hidePropertyCaption(Property<?> property) {
 			ObjectUtils.argumentNotNull(property, "Property must be not null");
 			getInstance().hidePropertyCaption(property);
+			return this;
+		}
+
+		@Override
+		public PropertyViewFormBuilder<C> componentConfigurator(Property<?> property,
+				Consumer<BaseComponentConfigurator> configurator) {
+			getInstance().setPropertyComponentConfigurator(property, configurator);
 			return this;
 		}
 

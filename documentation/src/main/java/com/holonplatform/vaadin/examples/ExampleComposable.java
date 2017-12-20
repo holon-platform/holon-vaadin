@@ -20,10 +20,11 @@ import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.vaadin.components.Components;
 import com.holonplatform.vaadin.components.ComposableComponent.ComponentsWidthMode;
 import com.holonplatform.vaadin.components.PropertyInputForm;
+import com.vaadin.icons.VaadinIcons;
 
+@SuppressWarnings("unused")
 public class ExampleComposable {
 
-	@SuppressWarnings("unused")
 	public void wmode() {
 		// tag::wmode[]
 		final PathProperty<Long> ID = PathProperty.create("id", Long.class);
@@ -34,6 +35,19 @@ public class ExampleComposable {
 				.componentsWidthMode(ComponentsWidthMode.FULL) // <1>
 				.build();
 		// end::wmode[]
+	}
+
+	public void ccfg() {
+		// tag::ccfg[]
+		final PathProperty<Long> ID = PathProperty.create("id", Long.class);
+		final PathProperty<String> DESCRIPTION = PathProperty.create("description", String.class);
+		final PropertySet<?> PROPERTIES = PropertySet.of(ID, DESCRIPTION);
+
+		PropertyInputForm form = Components.input.form().properties(PROPERTIES)
+				.componentConfigurator(ID, cfg -> cfg.styleName("id-input").description("The ID")) // <1>
+				.componentConfigurator(DESCRIPTION, cfg -> cfg.icon(VaadinIcons.CLIPBOARD_TEXT)) // <2>
+				.build();
+		// end::ccfg[]
 	}
 
 }

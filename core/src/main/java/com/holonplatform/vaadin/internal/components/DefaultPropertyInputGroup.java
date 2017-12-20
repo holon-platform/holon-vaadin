@@ -238,7 +238,8 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 				.map(p -> PropertyBinding.create(p, _propertyConfiguration(p).getInput().get()));
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.ComponentSource#getComponents()
 	 */
 	@Override
@@ -246,6 +247,18 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 		return propertySet.stream().filter(p -> !_propertyConfiguration(p).isHidden())
 				.filter(p -> _propertyConfiguration(p).getInput().isPresent())
 				.map(p -> _propertyConfiguration(p).getInput().get().getComponent());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.PropertyComponentSource#streamOfComponents()
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public Stream<PropertyBinding<?, Component>> streamOfComponents() {
+		return propertySet.stream().filter(p -> !_propertyConfiguration(p).isHidden())
+				.filter(p -> _propertyConfiguration(p).getInput().isPresent())
+				.map(p -> PropertyBinding.create(p, _propertyConfiguration(p).getInput().get().getComponent()));
 	}
 
 	/*
@@ -902,7 +915,8 @@ public class DefaultPropertyInputGroup implements PropertyInputGroup, PropertyVa
 
 		// get all property configurations
 		List<PropertyConfiguration<?>> configurations = propertySet.stream().map(p -> _propertyConfiguration(p))
-				.filter(cfg -> !cfg.isReadOnly() && !cfg.isHidden() && cfg.getInput().isPresent()).collect(Collectors.toList());
+				.filter(cfg -> !cfg.isReadOnly() && !cfg.isHidden() && cfg.getInput().isPresent())
+				.collect(Collectors.toList());
 
 		if (configurations != null) {
 
