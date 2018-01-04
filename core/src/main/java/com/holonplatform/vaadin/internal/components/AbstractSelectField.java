@@ -78,6 +78,11 @@ public abstract class AbstractSelectField<T, S, ITEM, I, F extends HasValue<I> &
 	private ItemIconGenerator<ITEM> itemIconGenerator;
 
 	/**
+	 * Item description generator
+	 */
+	private ItemDescriptionGenerator<ITEM> itemDescriptionGenerator;
+
+	/**
 	 * Explicit item captions
 	 */
 	protected final Map<ITEM, Localizable> explicitItemCaptions = new HashMap<>(8);
@@ -142,6 +147,15 @@ public abstract class AbstractSelectField<T, S, ITEM, I, F extends HasValue<I> &
 		return renderingMode;
 	}
 
+	/**
+	 * Gets whether the rendering mode is {@link RenderingMode#SELECT} or {@link RenderingMode#NATIVE_SELECT}.
+	 * @return <code>true</code> if in select mode
+	 */
+	protected boolean isSelectMode() {
+		return renderingMode != null
+				&& (renderingMode == RenderingMode.SELECT || renderingMode == RenderingMode.NATIVE_SELECT);
+	}
+
 	public Optional<Converter<S, ITEM>> getItemConverter() {
 		return Optional.ofNullable(itemConverter);
 	}
@@ -203,6 +217,22 @@ public abstract class AbstractSelectField<T, S, ITEM, I, F extends HasValue<I> &
 	 */
 	public void setItemIconGenerator(ItemIconGenerator<ITEM> itemIconGenerator) {
 		this.itemIconGenerator = itemIconGenerator;
+	}
+
+	/**
+	 * Get the item description generator
+	 * @return the ItemDescriptionGenerator
+	 */
+	public Optional<ItemDescriptionGenerator<ITEM>> getItemDescriptionGenerator() {
+		return Optional.ofNullable(itemDescriptionGenerator);
+	}
+
+	/**
+	 * Set the item description generator
+	 * @param itemDescriptionGenerator the ItemDescriptionGenerator to set
+	 */
+	public void setItemDescriptionGenerator(ItemDescriptionGenerator<ITEM> itemDescriptionGenerator) {
+		this.itemDescriptionGenerator = itemDescriptionGenerator;
 	}
 
 	/**
@@ -328,6 +358,18 @@ public abstract class AbstractSelectField<T, S, ITEM, I, F extends HasValue<I> &
 			return item.toString();
 		}
 		return "";
+	}
+
+	/**
+	 * Generate the select item description for given <code>item</code>.
+	 * @param item Item to generate the description for
+	 * @return Item description
+	 */
+	protected String generateItemDescription(ITEM item) {
+		if (item != null) {
+			return getItemDescriptionGenerator().map(g -> g.getItemDescription(item)).orElse(null);
+		}
+		return null;
 	}
 
 }

@@ -20,6 +20,7 @@ import java.util.Set;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.components.Input;
 import com.holonplatform.vaadin.components.ItemSet.ItemCaptionGenerator;
+import com.holonplatform.vaadin.components.ItemSet.ItemDescriptionGenerator;
 import com.holonplatform.vaadin.components.ItemSet.ItemIconGenerator;
 import com.holonplatform.vaadin.components.MultiSelect;
 import com.holonplatform.vaadin.components.SingleSelect;
@@ -79,6 +80,14 @@ public interface BaseSelectInputBuilder<T, C extends Input<T>, S, ITEM, B extend
 	 * @return this
 	 */
 	B itemIconGenerator(ItemIconGenerator<ITEM> itemIconGenerator);
+
+	/**
+	 * Set the item description generator to use to display item descriptions (tooltips).
+	 * @param itemDescriptionGenerator The generator to set
+	 * @return this
+	 * @since 5.0.6
+	 */
+	B itemDescriptionGenerator(ItemDescriptionGenerator<ITEM> itemDescriptionGenerator);
 
 	/**
 	 * Set an explicit caption for given item.

@@ -96,6 +96,7 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 		if (mode == RenderingMode.NATIVE_SELECT) {
 			final NativeSelect<ITEM> field = new NativeSelect<>();
 			field.setItemCaptionGenerator(i -> generateItemCaption(i));
+			field.addSelectionListener(e -> setupDescriptionFromSelection(e));
 			field.addSelectionListener(e -> fireSelectionListeners(buildSelectionEvent(e)));
 			return field;
 		}
@@ -104,6 +105,7 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 			final RadioButtonGroup<ITEM> field = new RadioButtonGroup<>();
 			field.setItemCaptionGenerator(i -> generateItemCaption(i));
 			field.setItemIconGenerator(i -> generateItemIcon(i));
+			field.setItemDescriptionGenerator(i -> generateItemDescription(i));
 			field.addSelectionListener(e -> fireSelectionListeners(buildSelectionEvent(e)));
 			return field;
 		}
@@ -111,6 +113,7 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 		final ComboBox<ITEM> field = new ComboBox<>();
 		field.setItemCaptionGenerator(i -> generateItemCaption(i));
 		field.setItemIconGenerator(i -> generateItemIcon(i));
+		field.addSelectionListener(e -> setupDescriptionFromSelection(e));
 		field.addSelectionListener(e -> fireSelectionListeners(buildSelectionEvent(e)));
 		return field;
 	}
@@ -119,6 +122,12 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 		return new DefaultSelectionEvent<>(
 				event.getFirstSelectedItem().map(item -> fromInternalValue(item)).orElse(null),
 				event.isUserOriginated());
+	}
+
+	protected void setupDescriptionFromSelection(SingleSelectionEvent<ITEM> event) {
+		getItemDescriptionGenerator().ifPresent(g -> {
+			getInternalField().setDescription(generateItemDescription(event.getFirstSelectedItem().orElse(null)));
+		});
 	}
 
 	/*

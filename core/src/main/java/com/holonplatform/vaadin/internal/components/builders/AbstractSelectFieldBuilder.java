@@ -23,6 +23,7 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.components.Field;
 import com.holonplatform.vaadin.components.Input;
 import com.holonplatform.vaadin.components.ItemSet.ItemCaptionGenerator;
+import com.holonplatform.vaadin.components.ItemSet.ItemDescriptionGenerator;
 import com.holonplatform.vaadin.components.ItemSet.ItemIconGenerator;
 import com.holonplatform.vaadin.components.builders.SelectInputBuilder;
 import com.holonplatform.vaadin.data.ItemDataProvider;
@@ -132,6 +133,18 @@ public abstract class AbstractSelectFieldBuilder<T, C extends Input<T>, S, ITEM,
 	@Override
 	public B itemIcon(ITEM item, Resource icon) {
 		getInstance().setItemIcon(item, icon);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.components.builders.BaseSelectInputBuilder#itemDescriptionGenerator(com.holonplatform.
+	 * vaadin.components.ItemSet.ItemDescriptionGenerator)
+	 */
+	@Override
+	public B itemDescriptionGenerator(ItemDescriptionGenerator<ITEM> itemDescriptionGenerator) {
+		getInstance().setItemDescriptionGenerator(itemDescriptionGenerator);
 		return builder();
 	}
 

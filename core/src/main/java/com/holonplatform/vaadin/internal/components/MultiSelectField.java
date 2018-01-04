@@ -95,6 +95,7 @@ public class MultiSelectField<T, ITEM>
 			final CheckBoxGroup<ITEM> field = new CheckBoxGroup<>();
 			field.setItemCaptionGenerator(i -> generateItemCaption(i));
 			field.setItemIconGenerator(i -> generateItemIcon(i));
+			field.setItemDescriptionGenerator(i -> generateItemDescription(i));
 			field.addSelectionListener(e -> fireSelectionListeners(buildSelectionEvent(e)));
 			return field;
 		}

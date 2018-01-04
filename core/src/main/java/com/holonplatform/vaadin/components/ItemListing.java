@@ -256,22 +256,6 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, Component {
 	}
 
 	/**
-	 * Item descriptions generator.
-	 * @param <T> Item type
-	 */
-	@FunctionalInterface
-	public interface ItemDescriptionGenerator<T> extends Serializable {
-
-		/**
-		 * Get the description for given <code>item</code>.
-		 * @param item Item bound to the row for which to generate the description
-		 * @return Item description, <code>null</code> for none
-		 */
-		String getItemDescription(T item);
-
-	}
-
-	/**
 	 * Listener for user click events on an item (a listing row).
 	 * @param <T> Item type
 	 * @param <P> Item property type

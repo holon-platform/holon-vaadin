@@ -43,7 +43,7 @@ public interface ItemSet {
 
 		/**
 		 * Get the caption for given <code>item</code>.
-		 * @param item the item to get caption for
+		 * @param item the item for which to get the caption
 		 * @return Item caption (not null)
 		 */
 		String getItemCaption(ITEM item);
@@ -59,10 +59,26 @@ public interface ItemSet {
 
 		/**
 		 * Get the icon for given <code>item</code>.
-		 * @param item the item to get icon for
+		 * @param item the item for which to get the icon
 		 * @return Item icon
 		 */
 		Resource getItemIcon(ITEM item);
+
+	}
+
+	/**
+	 * Item description generator.
+	 * @param <ITEM> Item type
+	 */
+	@FunctionalInterface
+	public interface ItemDescriptionGenerator<ITEM> extends Serializable {
+
+		/**
+		 * Get the description for given <code>item</code>.
+		 * @param item the item for which to get the description
+		 * @return Item description
+		 */
+		String getItemDescription(ITEM item);
 
 	}
 
