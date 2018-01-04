@@ -928,11 +928,35 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	}
 
 	/**
-	 * Set the row height of the internal grid.
+	 * Set the row height of all the sections of the internal grid.
 	 * @param rowHeight the row height to set
 	 */
 	public void setRowHeight(double rowHeight) {
 		getGrid().setRowHeight(rowHeight);
+	}
+
+	/**
+	 * Set the row height of the internal grid body section.
+	 * @param rowHeight the row height to set
+	 */
+	public void setBodyRowHeight(double rowHeight) {
+		getGrid().setBodyRowHeight(rowHeight);
+	}
+
+	/**
+	 * Set the row height of the internal grid header section.
+	 * @param rowHeight the row height to set
+	 */
+	public void setHeaderRowHeight(double rowHeight) {
+		getGrid().setHeaderRowHeight(rowHeight);
+	}
+
+	/**
+	 * Set the row height of the internal grid footer section.
+	 * @param rowHeight the row height to set
+	 */
+	public void setFooterRowHeight(double rowHeight) {
+		getGrid().setFooterRowHeight(rowHeight);
 	}
 
 	/**

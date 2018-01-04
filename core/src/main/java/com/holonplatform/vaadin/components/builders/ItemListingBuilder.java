@@ -139,8 +139,35 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 	 * </p>
 	 * @param rowHeight The height of a row in pixels or -1 for automatic calculation
 	 * @return this
+	 * @see #bodyRowHeight(double)
+	 * @see #headerRowHeight(double)
+	 * @see #footerRowHeight(double)
 	 */
 	B rowHeight(double rowHeight);
+
+	/**
+	 * Sets the height of a body row. If -1 (default), the row height is calculated based on the theme for an empty row
+	 * before the listing is displayed.
+	 * @param rowHeight The height of a body row in pixels or -1 for automatic calculation
+	 * @return this
+	 */
+	B bodyRowHeight(double rowHeight);
+
+	/**
+	 * Sets the height of a header row. If -1 (default), the row height is calculated based on the theme for an empty
+	 * row before the listing is displayed.
+	 * @param rowHeight The height of a header row in pixels or -1 for automatic calculation
+	 * @return this
+	 */
+	B headerRowHeight(double rowHeight);
+
+	/**
+	 * Sets the height of a footer row. If -1 (default), the row height is calculated based on the theme for an empty
+	 * row before the listing is displayed.
+	 * @param rowHeight The height of a footer row in pixels or -1 for automatic calculation
+	 * @return this
+	 */
+	B footerRowHeight(double rowHeight);
 
 	/**
 	 * Hides the table/grid column headers

@@ -129,6 +129,36 @@ public abstract class AbstractGridItemListingBuilder<T, P, C extends ItemListing
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder#bodyRowHeight(double)
+	 */
+	@Override
+	public B bodyRowHeight(double rowHeight) {
+		getInstance().setBodyRowHeight(rowHeight);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder#headerRowHeight(double)
+	 */
+	@Override
+	public B headerRowHeight(double rowHeight) {
+		getInstance().setHeaderRowHeight(rowHeight);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder#footerRowHeight(double)
+	 */
+	@Override
+	public B footerRowHeight(double rowHeight) {
+		getInstance().setFooterRowHeight(rowHeight);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see
 	 * com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder#minWidth(java.lang.
 	 * Object, int)
