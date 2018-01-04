@@ -15,9 +15,14 @@
  */
 package com.holonplatform.vaadin.internal.components.builders;
 
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
 import com.holonplatform.vaadin.components.builders.ComponentBuilder;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.dnd.DragSourceExtension;
+import com.vaadin.ui.dnd.DropTargetExtension;
 
 /**
  * Base class for {@link ComponentBuilder}s.
@@ -31,12 +36,39 @@ import com.vaadin.ui.Component;
 public abstract class AbstractComponentBuilder<C extends Component, I extends AbstractComponent, B extends ComponentBuilder<C, B>>
 		extends AbstractLocalizableComponentConfigurator<I, B> implements ComponentBuilder<C, B> {
 
+	protected DropTargetExtension<I> dropTargetExtension;
+	protected BiConsumer<DropTargetExtension<? extends AbstractComponent>, C> dropTargetConfigurator;
+
 	/**
 	 * Constructor
 	 * @param instance Instance to build and return (not null)
 	 */
 	public AbstractComponentBuilder(I instance) {
 		super(instance);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.ComponentBuilder#dragSource(java.util.function.Consumer)
+	 */
+	@Override
+	public B dragSource(Consumer<DragSourceExtension<? extends AbstractComponent>> configurator) {
+		final DragSourceExtension<I> extension = new DragSourceExtension<>(getInstance());
+		if (configurator != null) {
+			configurator.accept(extension);
+		}
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.ComponentBuilder#dropTarget(java.util.function.BiConsumer)
+	 */
+	@Override
+	public B dropTarget(BiConsumer<DropTargetExtension<? extends AbstractComponent>, C> configurator) {
+		this.dropTargetExtension = new DropTargetExtension<>(getInstance());
+		this.dropTargetConfigurator = configurator;
+		return builder();
 	}
 
 	/**
@@ -62,7 +94,12 @@ public abstract class AbstractComponentBuilder<C extends Component, I extends Ab
 	 */
 	@Override
 	public C build() {
-		return build(setupLocalization(instance));
+		C component = build(setupLocalization(instance));
+		// setup drop target extension
+		if (dropTargetExtension != null && dropTargetConfigurator != null) {
+			dropTargetConfigurator.accept(dropTargetExtension, component);
+		}
+		return component;
 	}
 
 }

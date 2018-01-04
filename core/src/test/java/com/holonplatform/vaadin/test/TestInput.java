@@ -41,7 +41,7 @@ public class TestInput {
 
 	@Test
 	public void testEmptyInput() {
-
+		
 		StringField sf = new StringField();
 		assertTrue(sf.isEmpty());
 

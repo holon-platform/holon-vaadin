@@ -15,10 +15,16 @@
  */
 package com.holonplatform.vaadin.components.builders;
 
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
 import com.holonplatform.vaadin.components.Field;
 import com.holonplatform.vaadin.components.Input;
 import com.holonplatform.vaadin.components.ValidatableInput;
 import com.vaadin.data.HasValue;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.dnd.DragSourceExtension;
+import com.vaadin.ui.dnd.DropTargetExtension;
 
 /**
  * Builder to create {@link Input} instances.
@@ -30,6 +36,27 @@ import com.vaadin.data.HasValue;
  * @since 5.0.0
  */
 public interface InputBuilder<T, C extends Input<T>, B extends InputBuilder<T, C, B>> extends InputConfigurator<T, B> {
+
+	/**
+	 * Makes the component a drag source. The provided <code>configurator</code> can be used to configure the drag
+	 * source using {@link DragSourceExtension}, allowing for example to set the drag effect, to set the transferred
+	 * data or to register drag start/end listeners.
+	 * @param configurator Consumer to configure the drag source
+	 * @return this
+	 * @since 5.0.6
+	 */
+	B dragSource(Consumer<DragSourceExtension<? extends AbstractComponent>> configurator);
+
+	/**
+	 * Makes the component a drop target. The provided <code>configurator</code> can be used to configure the drop
+	 * target behaviour using {@link DragSourceExtension}, allowing for example to control when the drop is acceptable
+	 * and then react to the drop event.
+	 * @param configurator BiConsumer to configure the drop target, providing also the component that will be built by
+	 *        this builder
+	 * @return this
+	 * @since 5.0.6
+	 */
+	B dropTarget(BiConsumer<DropTargetExtension<? extends AbstractComponent>, C> configurator);
 
 	/**
 	 * Instructs the builder to resolve any message localization (for example component caption and description) only

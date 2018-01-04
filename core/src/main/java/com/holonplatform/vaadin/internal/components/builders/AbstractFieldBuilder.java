@@ -16,6 +16,8 @@
 package com.holonplatform.vaadin.internal.components.builders;
 
 import java.util.Locale;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import com.holonplatform.vaadin.components.Field;
 import com.holonplatform.vaadin.components.Input;
@@ -26,7 +28,10 @@ import com.holonplatform.vaadin.components.builders.InputBuilder;
 import com.holonplatform.vaadin.components.builders.ValidatableInputBuilder;
 import com.holonplatform.vaadin.internal.components.ValueChangeListenerUtils;
 import com.vaadin.data.HasValue;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.dnd.DragSourceExtension;
+import com.vaadin.ui.dnd.DropTargetExtension;
 
 /**
  * Base {@link InputBuilder} class
@@ -39,6 +44,9 @@ import com.vaadin.ui.AbstractField;
  */
 public abstract class AbstractFieldBuilder<T, C extends Input<T>, I extends AbstractField<T>, B extends InputBuilder<T, C, B>>
 		extends AbstractLocalizableComponentConfigurator<I, B> implements InputBuilder<T, C, B> {
+
+	protected DropTargetExtension<I> dropTargetExtension;
+	protected BiConsumer<DropTargetExtension<? extends AbstractComponent>, C> dropTargetConfigurator;
 
 	public AbstractFieldBuilder(I instance) {
 		super(instance);
@@ -117,6 +125,30 @@ public abstract class AbstractFieldBuilder<T, C extends Input<T>, I extends Abst
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.InputBuilder#dragSource(java.util.function.Consumer)
+	 */
+	@Override
+	public B dragSource(Consumer<DragSourceExtension<? extends AbstractComponent>> configurator) {
+		final DragSourceExtension<I> extension = new DragSourceExtension<>(getInstance());
+		if (configurator != null) {
+			configurator.accept(extension);
+		}
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.InputBuilder#dropTarget(java.util.function.BiConsumer)
+	 */
+	@Override
+	public B dropTarget(BiConsumer<DropTargetExtension<? extends AbstractComponent>, C> configurator) {
+		this.dropTargetExtension = new DropTargetExtension<>(getInstance());
+		this.dropTargetConfigurator = configurator;
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.builders.ComponentBuilder#deferLocalization()
 	 */
 	@Override
@@ -131,7 +163,12 @@ public abstract class AbstractFieldBuilder<T, C extends Input<T>, I extends Abst
 	 */
 	@Override
 	public C build() {
-		return build(setupLocalization(instance));
+		C component = build(setupLocalization(instance));
+		// setup drop target extension
+		if (dropTargetExtension != null && dropTargetConfigurator != null) {
+			dropTargetConfigurator.accept(dropTargetExtension, component);
+		}
+		return component;
 	}
 
 	/*
