@@ -21,7 +21,9 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.components.BeanListing;
 import com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridItemListingBuilder;
 import com.holonplatform.vaadin.internal.components.DefaultBeanListing;
+import com.vaadin.data.BeanPropertySet;
 import com.vaadin.data.HasValue;
+import com.vaadin.data.PropertySet;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.renderers.Renderer;
@@ -39,6 +41,11 @@ public class DefaultGridItemListingBuilder<T> extends
 
 	public DefaultGridItemListingBuilder(Class<T> beanType) {
 		super(new DefaultBeanListing<>(beanType), String.class);
+		// read bean property names
+		PropertySet<T> propertySet = BeanPropertySet.get(beanType);
+		propertySet.getProperties().forEach(pd -> {
+			dataSourceBuilder.withReadOnlyProperty(pd.getName(), pd.getType());
+		});
 	}
 
 	/*
