@@ -22,13 +22,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import javax.sql.DataSource;
+
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
@@ -36,22 +33,24 @@ import com.holonplatform.core.property.PathProperty;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.property.PropertyValueConverter;
-import com.holonplatform.datastore.jdbc.spring.EnableJdbcDatastore;
-import com.holonplatform.jdbc.spring.EnableDataSource;
+import com.holonplatform.datastore.jdbc.JdbcDatastore;
+import com.holonplatform.jdbc.DataSourceBuilder;
 import com.holonplatform.vaadin.components.Components;
 import com.holonplatform.vaadin.components.MultiSelect;
 import com.holonplatform.vaadin.components.SingleSelect;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestPropertySelect.Config.class)
 public class TestPropertySelect {
 
-	@Configuration
-	@PropertySource("test_datastore.properties")
-	@EnableDataSource
-	@EnableJdbcDatastore
-	protected static class Config {
+	private static Datastore datastore;
 
+	@BeforeClass
+	public static void initDatastore() {
+
+		final DataSource dataSource = DataSourceBuilder.builder()
+				.url("jdbc:h2:mem:vaadin1;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE").username("sa")
+				.withInitScriptResource("test-db.sql").build();
+
+		datastore = JdbcDatastore.builder().dataSource(dataSource).traceEnabled(true).build();
 	}
 
 	private static final DataTarget<?> TARGET = DataTarget.named("testdata");
@@ -63,9 +62,6 @@ public class TestPropertySelect {
 			.converter(PropertyValueConverter.numericBoolean(Integer.class));
 
 	private static final PropertySet<?> PROPERTIES = PropertySet.of(CODE, DESCRIPTION, SEQUENCE, OBSOLETE);
-
-	@Autowired
-	private Datastore datastore;
 
 	@Test
 	public void testSetup() {

@@ -40,7 +40,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.util.CurrentInstance;
 
 /**
- * Abstract JUnit test class using Spring to enable a web environment to test Vaadin application elements.
+ * Abstract JUnit test to enable a web environment for Vaadin tests.
  * 
  * @since 5.0.0
  */

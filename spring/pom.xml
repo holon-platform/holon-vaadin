@@ -50,7 +50,6 @@
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-spring</artifactId>
-			<version>${vaadin.spring.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.springframework</groupId>
