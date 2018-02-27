@@ -673,7 +673,7 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	 * Configure and set the listing columns according to given visible property set.
 	 * @param columns Columns property set
 	 */
-	public void setPropertyColumns(Iterable<P> columns) {
+	public void setPropertyColumns(Iterable<? extends P> columns) {
 		setupVisibileColumns(columns);
 	}
 
@@ -681,7 +681,7 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	 * Set given properties as listing visibile columns.
 	 * @param visibleColumns Visible columns properties (not null)
 	 */
-	protected void setupVisibileColumns(Iterable<P> visibleColumns) {
+	protected void setupVisibileColumns(Iterable<? extends P> visibleColumns) {
 		ObjectUtils.argumentNotNull(visibleColumns, "Visible columns must be not null");
 		List<String> ids = new LinkedList<>();
 

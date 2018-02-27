@@ -15,6 +15,7 @@
  */
 package com.holonplatform.vaadin.internal.components.builders;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.holonplatform.core.Path;
@@ -27,11 +28,8 @@ import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.vaadin.components.PropertyListing;
 import com.holonplatform.vaadin.components.builders.PropertyListingBuilder.GridPropertyListingBuilder;
 import com.holonplatform.vaadin.data.ItemDataProvider;
-import com.holonplatform.vaadin.data.ItemIdentifierProvider;
+import com.holonplatform.vaadin.data.ItemDataSource.CommitHandler;
 import com.holonplatform.vaadin.internal.components.DefaultPropertyListing;
-import com.holonplatform.vaadin.internal.data.DatastoreCommitHandler;
-import com.holonplatform.vaadin.internal.data.DatastoreItemDataProvider;
-import com.holonplatform.vaadin.internal.data.PropertiesItemIdentifier;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.Validator;
 import com.vaadin.data.ValueProvider;
@@ -72,14 +70,43 @@ public class DefaultGridPropertyListingBuilder extends
 	 * com.holonplatform.vaadin.components.builders.PropertyListingBuilder#dataSource(com.holonplatform.vaadin.data.
 	 * ItemDataProvider, com.holonplatform.core.property.Property[])
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public GridPropertyListingBuilder dataSource(ItemDataProvider<PropertyBox> dataProvider,
-			Property... identifierProperties) {
+			final Property... identifierProperties) {
 		ObjectUtils.argumentNotNull(identifierProperties, "Identifier properties must be not null");
 		if (identifierProperties.length == 0) {
 			throw new IllegalArgumentException("Identifier properties must be not empty");
 		}
-		return dataSource(dataProvider, new PropertiesItemIdentifier(identifierProperties));
+
+		final PropertySet<?> propertySet = PropertySet.builderOf(identifierProperties)
+				.identifiers(Arrays.asList(identifierProperties)).build();
+
+		return dataSource(dataProvider, item -> {
+			PropertyBox.Builder builder = PropertyBox.builder(propertySet);
+			for (Property p : identifierProperties) {
+				item.getValueIfPresent(p).ifPresent(v -> builder.set(p, v));
+			}
+			return builder.build();
+		});
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.components.builders.PropertyListingBuilder#dataSource(com.holonplatform.core.datastore.
+	 * Datastore, com.holonplatform.core.datastore.DataTarget)
+	 */
+	@Override
+	public GridPropertyListingBuilder dataSource(Datastore datastore, DataTarget<?> dataTarget) {
+		// Use item listing property set
+		PropertySet<?> propertySet = (properties instanceof PropertySet) ? (PropertySet<?>) properties
+				: PropertySet.of(properties);
+		// set data source
+		dataSource(ItemDataProvider.create(datastore, dataTarget, propertySet));
+		// set commit handler
+		commitHandler(CommitHandler.datastore(datastore, dataTarget));
+		return builder();
 	}
 
 	/*
@@ -91,14 +118,16 @@ public class DefaultGridPropertyListingBuilder extends
 	@Override
 	public GridPropertyListingBuilder dataSource(Datastore datastore, DataTarget<?> dataTarget,
 			Property... identifierProperties) {
-		ObjectUtils.argumentNotNull(identifierProperties, "Identifier properties must be not null");
-		if (identifierProperties.length == 0) {
-			throw new IllegalArgumentException("Identifier properties must be not empty");
+		if (identifierProperties == null || identifierProperties.length == 0) {
+			return dataSource(datastore, dataTarget);
 		}
-		final ItemIdentifierProvider<PropertyBox, ?> identifier = new PropertiesItemIdentifier(identifierProperties);
-		commitHandler(new DatastoreCommitHandler(datastore, dataTarget));
-		dataSource(new DatastoreItemDataProvider(datastore, dataTarget, PropertySet.of(properties), identifier),
-				identifier);
+		// set given identifier properties ad property set identifiers
+		PropertySet<?> propertySet = PropertySet.builder().add(properties)
+				.identifiers(Arrays.asList(identifierProperties)).build();
+		// set data source
+		dataSource(ItemDataProvider.create(datastore, dataTarget, propertySet));
+		// set commit handler
+		commitHandler(CommitHandler.datastore(datastore, dataTarget));
 		return builder();
 	}
 
@@ -174,7 +203,8 @@ public class DefaultGridPropertyListingBuilder extends
 	 * holonplatform.vaadin.internal.components.DefaultItemListing, java.util.List)
 	 */
 	@Override
-	protected Iterable<Property> configureColumns(DefaultPropertyListing instance, List<Property> visibleColumns) {
+	protected Iterable<? extends Property> configureColumns(DefaultPropertyListing instance,
+			List<? extends Property> visibleColumns) {
 		// return visible columns or full property set if none
 		return !visibleColumns.isEmpty() ? visibleColumns : instance.getProperties();
 	}

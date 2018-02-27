@@ -123,7 +123,8 @@ public class DefaultGridItemListingBuilder<T> extends
 	 * holonplatform.vaadin.internal.components.DefaultItemListing, java.util.List)
 	 */
 	@Override
-	protected Iterable<String> configureColumns(DefaultBeanListing<T> instance, List<String> visibleColumns) {
+	protected Iterable<? extends String> configureColumns(DefaultBeanListing<T> instance,
+			List<? extends String> visibleColumns) {
 		if (visibleColumns.isEmpty() && instance.getDataSource().isPresent()) {
 			return instance.getDataSource().get().getConfiguration().getProperties();
 		}

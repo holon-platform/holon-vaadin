@@ -20,6 +20,7 @@ import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.vaadin.components.PropertyListing;
 import com.holonplatform.vaadin.data.ItemDataProvider;
 import com.holonplatform.vaadin.data.ItemDataSource.CommitHandler;
@@ -47,8 +48,29 @@ public interface PropertyListingBuilder<B extends PropertyListingBuilder<B, X>, 
 	 * @param dataProvider Items data provider (not null)
 	 * @param identifierProperties Properties wich act as item identifier
 	 * @return this
+	 * @deprecated Use {@link #dataSource(ItemDataProvider, com.holonplatform.vaadin.data.ItemIdentifierProvider)} to
+	 *             provide a custom item identifier provider. By default, the identifier properties of the item listing
+	 *             property set will be used to identify each {@link PropertyBox} item.
 	 */
+	@Deprecated
 	B dataSource(ItemDataProvider<PropertyBox> dataProvider, Property... identifierProperties);
+
+	/**
+	 * Use given {@link Datastore} with given <code>dataTarget</code> as items data source.
+	 * <p>
+	 * The item listing property set identifier properties will be used as item identifiers. If no identifier property
+	 * is available, each {@link PropertyBox} item will be considered different from another, regardless of the actual
+	 * property values.
+	 * </p>
+	 * <p>
+	 * A {@link Datastore} based {@link CommitHandler} is also configured by default.
+	 * </p>
+	 * @param datastore Datastore to use (not null)
+	 * @param dataTarget Data target to use to load items (not null)
+	 * @return this
+	 * @see PropertySet#getIdentifiers()
+	 */
+	B dataSource(Datastore datastore, DataTarget<?> dataTarget);
 
 	/**
 	 * Use given {@link Datastore} with given <code>dataTarget</code> as items data source.
@@ -59,7 +81,11 @@ public interface PropertyListingBuilder<B extends PropertyListingBuilder<B, X>, 
 	 * @param dataTarget Data target to use to load items (not null)
 	 * @param identifierProperties Properties wich act as item identifier
 	 * @return this
+	 * @deprecated The properties to use as item identifiers should be derived from the property set to which the item
+	 *             listing is bound. The {@link #dataSource(Datastore, DataTarget)} method should be used and the
+	 *             identifier properties should be properly declared at property set level.
 	 */
+	@Deprecated
 	B dataSource(Datastore datastore, DataTarget<?> dataTarget, Property... identifierProperties);
 
 	/**

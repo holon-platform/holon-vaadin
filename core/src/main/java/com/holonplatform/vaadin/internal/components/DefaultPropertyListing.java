@@ -144,7 +144,7 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 	 * @see com.holonplatform.vaadin.internal.components.DefaultItemListing#setupVisibileColumns(java.lang.Iterable)
 	 */
 	@Override
-	protected void setupVisibileColumns(Iterable<Property> visibleColumns) {
+	protected void setupVisibileColumns(Iterable<? extends Property> visibleColumns) {
 		ObjectUtils.argumentNotNull(visibleColumns, "Visible columns must be not null");
 
 		final List<String> ids = new LinkedList<>();

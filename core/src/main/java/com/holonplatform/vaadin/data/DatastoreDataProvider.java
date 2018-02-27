@@ -25,26 +25,22 @@ import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
-import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.vaadin.internal.data.DefaultDatastoreDataProvider;
-import com.holonplatform.vaadin.internal.data.PropertiesItemIdentifier;
 import com.vaadin.data.provider.DataProvider;
-import com.vaadin.shared.Registration;
 
 /**
  * A {@link DataProvider} backed by a {@link Datastore}.
+ * <p>
+ * The data type is {@link PropertyBox} and the supported filter type is {@link QueryFilter}.
+ * </p>
+ * <p>
+ * Supports {@link QueryConfigurationProvider} registration through {@link QueryConfigurationProviderSupport}.
+ * </p>
  *
  * @since 5.0.0
  */
-public interface DatastoreDataProvider extends DataProvider<PropertyBox, QueryFilter> {
-
-	/**
-	 * Add a {@link QueryConfigurationProvider} to provide additional query parameters, such as {@link QueryFilter}s and
-	 * {@link QuerySort}s.
-	 * @param queryConfigurationProvider The provider to add (not null)
-	 * @return the provider {@link Registration}.
-	 */
-	Registration addQueryConfigurationProvider(QueryConfigurationProvider queryConfigurationProvider);
+public interface DatastoreDataProvider
+		extends DataProvider<PropertyBox, QueryFilter>, QueryConfigurationProviderSupport {
 
 	/**
 	 * Create a {@link DatastoreDataProvider}.
@@ -64,11 +60,22 @@ public interface DatastoreDataProvider extends DataProvider<PropertyBox, QueryFi
 	 * @param propertySet The query projection property set (not null)
 	 * @param identifierProperties The properties which act as item identifier(s)
 	 * @return A new {@link DatastoreDataProvider} instance
+	 * @deprecated Use {@link #create(Datastore, DataTarget, PropertySet, ItemIdentifierProvider)} to provide a custom
+	 *             item identifier provider. By default, the identifier properties of given property set will be used to
+	 *             identify each {@link PropertyBox} item.
 	 */
+	@Deprecated
 	static DatastoreDataProvider create(Datastore datastore, DataTarget<?> target, PropertySet<?> propertySet,
 			Property<?>... identifierProperties) {
-		return builder().datastore(datastore).target(target).withProperties(propertySet)
-				.itemIdentifierProvider(new PropertiesItemIdentifier(identifierProperties)).build();
+		if (identifierProperties == null || identifierProperties.length == 0) {
+			return create(datastore, target, propertySet);
+		}
+
+		// set given identifier properties ad property set identifiers
+		PropertySet<?> propertySetWithIds = PropertySet.builder().add(propertySet)
+				.identifiers(Arrays.asList(identifierProperties)).build();
+
+		return builder().datastore(datastore).target(target).withProperties(propertySetWithIds).build();
 	}
 
 	/**

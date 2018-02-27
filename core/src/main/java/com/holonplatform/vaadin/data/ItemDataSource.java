@@ -20,11 +20,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import com.holonplatform.core.datastore.DataTarget;
+import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.exceptions.DataAccessException;
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
+import com.holonplatform.vaadin.internal.data.DatastoreCommitHandler;
 import com.holonplatform.vaadin.internal.data.DefaultItemDataSource;
 import com.holonplatform.vaadin.internal.data.DefaultItemSort;
 import com.vaadin.data.provider.Query;
@@ -371,6 +375,16 @@ public interface ItemDataSource<ITEM, PROPERTY> extends Serializable {
 		 * @param removedItems Removed items: an empty collection if none
 		 */
 		void commit(Collection<ITEM> addedItems, Collection<ITEM> modifiedItems, Collection<ITEM> removedItems);
+
+		/**
+		 * Construct a new {@link CommitHandler} for {@link PropertyBox} type items using a {@link Datastore} to perform
+		 * persistence operations.
+		 * @param datastore The datastore to use (not null)
+		 * @param target The data target to use (not null)
+		 */
+		static CommitHandler<PropertyBox> datastore(Datastore datastore, DataTarget<?> target) {
+			return new DatastoreCommitHandler(datastore, target);
+		}
 
 	}
 

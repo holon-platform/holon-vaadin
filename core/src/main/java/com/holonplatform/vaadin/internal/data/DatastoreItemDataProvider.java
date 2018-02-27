@@ -17,7 +17,6 @@ package com.holonplatform.vaadin.internal.data;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.holonplatform.core.ParameterSet;
@@ -33,16 +32,19 @@ import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.vaadin.data.ItemDataProvider;
-import com.holonplatform.vaadin.data.ItemIdentifierProvider;
+import com.holonplatform.vaadin.data.QueryConfigurationProviderSupport;
 import com.vaadin.shared.Registration;
 
 /**
  * An {@link ItemDataProvider} using a {@link Datastore} to perform item set count and load operations, using
  * {@link Property} as item property type and {@link PropertyBox} as concrete item data container.
+ * <p>
+ * Supports {@link QueryConfigurationProvider} registration through {@link QueryConfigurationProviderSupport}.
+ * </p>
  * 
  * @since 5.0.0
  */
-public class DatastoreItemDataProvider implements ItemDataProvider<PropertyBox> {
+public class DatastoreItemDataProvider implements ItemDataProvider<PropertyBox>, QueryConfigurationProviderSupport {
 
 	private static final long serialVersionUID = -3647676181555142846L;
 
@@ -60,11 +62,6 @@ public class DatastoreItemDataProvider implements ItemDataProvider<PropertyBox> 
 	 * Property set provider
 	 */
 	private final PropertySet<?> propertySet;
-
-	/**
-	 * Item identifier
-	 */
-	private ItemIdentifierProvider<PropertyBox, ?> itemIdentifier;
 
 	/**
 	 * Query configuration providers
@@ -87,18 +84,6 @@ public class DatastoreItemDataProvider implements ItemDataProvider<PropertyBox> 
 		this.propertySet = propertySet;
 	}
 
-	public DatastoreItemDataProvider(Datastore datastore, DataTarget<?> target, PropertySet<?> propertySet,
-			ItemIdentifierProvider<PropertyBox, ?> itemIdentifier) {
-		super();
-		ObjectUtils.argumentNotNull(datastore, "Datastore must be not null");
-		ObjectUtils.argumentNotNull(target, "DataTarget must be not null");
-		ObjectUtils.argumentNotNull(propertySet, "PropertySet must be not null");
-		this.datastore = datastore;
-		this.target = target;
-		this.propertySet = propertySet;
-		this.itemIdentifier = itemIdentifier;
-	}
-
 	/**
 	 * Get the {@link Datastore} to use to perform count and load operations.
 	 * @return the datastore
@@ -116,21 +101,28 @@ public class DatastoreItemDataProvider implements ItemDataProvider<PropertyBox> 
 	}
 
 	/**
-	 * Get the item identifier provider.
-	 * @return the optional item identifier provider
+	 * Get the {@link PropertySet} to use as query projection.
+	 * @return the query projection {@link PropertySet}
 	 */
-	public Optional<ItemIdentifierProvider<PropertyBox, ?>> getItemIdentifier() {
-		return Optional.ofNullable(itemIdentifier);
+	protected PropertySet<?> getPropertySet() {
+		return propertySet;
 	}
 
 	/**
-	 * Set the item identifier provider.
-	 * @param itemIdentifier the item identifier provider to set
+	 * Get the registered {@link QueryConfigurationProvider}s.
+	 * @return the available query configuration providers, an empty List if none
 	 */
-	public void setItemIdentifier(ItemIdentifierProvider<PropertyBox, ?> itemIdentifier) {
-		this.itemIdentifier = itemIdentifier;
+	protected List<QueryConfigurationProvider> getQueryConfigurationProviders() {
+		return queryConfigurationProviders;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.data.QueryConfigurationProviderSupport#addQueryConfigurationProvider(com.holonplatform.
+	 * core.query.QueryConfigurationProvider)
+	 */
+	@Override
 	public Registration addQueryConfigurationProvider(QueryConfigurationProvider queryConfigurationProvider) {
 		ObjectUtils.argumentNotNull(queryConfigurationProvider, "QueryConfigurationProvider must be not null");
 		queryConfigurationProviders.add(queryConfigurationProvider);
@@ -158,18 +150,18 @@ public class DatastoreItemDataProvider implements ItemDataProvider<PropertyBox> 
 	@Override
 	public Stream<PropertyBox> load(QueryConfigurationProvider configuration, int offset, int limit)
 			throws DataAccessException {
-		Query q = buildQuery(configuration, true);
-		// paging
+
+		// build a configure a query
+		final Query query = buildQuery(configuration, true);
+
+		// limit and offset
 		if (limit > 0) {
-			q.limit(limit);
-			q.offset(offset);
+			query.limit(limit);
+			query.offset(offset);
 		}
+
 		// execute
-		Stream<PropertyBox> results = q.stream(propertySet);
-		if (getItemIdentifier().isPresent()) {
-			return results.map(pb -> new IdentifiablePropertyBox(pb, getItemIdentifier().get()));
-		}
-		return results;
+		return query.stream(getPropertySet());
 	}
 
 	/*
@@ -182,20 +174,21 @@ public class DatastoreItemDataProvider implements ItemDataProvider<PropertyBox> 
 	}
 
 	/**
-	 * Build a {@link Query} using the Datastore and configuring query filters and sorts.
-	 * @param configuration Query configuration
+	 * Build and configure a {@link Query}, using given <code>configuration</code> and any available
+	 * {@link QueryConfigurationProvider}.
+	 * @param configuration Query configuration (not null)
 	 * @param withSorts Whether to apply sorts, if any, to query
-	 * @return Query instance
+	 * @return A new query instance
 	 */
 	protected Query buildQuery(QueryConfigurationProvider configuration, boolean withSorts) {
-		Query q = getDatastore().query();
+
+		// get a Query form Datastore
+		final Query query = getDatastore().query();
 
 		// target
-		if (getTarget() != null) {
-			q.target(getTarget());
-		}
+		query.target(getTarget());
 
-		// filter
+		// filters
 		final List<QueryFilter> filters = new LinkedList<>();
 
 		QueryFilter filter = configuration.getQueryFilter();
@@ -203,16 +196,16 @@ public class DatastoreItemDataProvider implements ItemDataProvider<PropertyBox> 
 			filters.add(filter);
 		}
 
-		queryConfigurationProviders.forEach(p -> {
+		getQueryConfigurationProviders().forEach(p -> {
 			QueryFilter qf = p.getQueryFilter();
 			if (qf != null) {
 				filters.add(qf);
 			}
 		});
 
-		QueryFilter.allOf(filters).ifPresent(f -> q.filter(f));
+		QueryFilter.allOf(filters).ifPresent(f -> query.filter(f));
 
-		// sort
+		// sorts
 		if (withSorts) {
 
 			final List<QuerySort> sorts = new LinkedList<>();
@@ -222,7 +215,7 @@ public class DatastoreItemDataProvider implements ItemDataProvider<PropertyBox> 
 				sorts.add(sort);
 			}
 
-			queryConfigurationProviders.forEach(p -> {
+			getQueryConfigurationProviders().forEach(p -> {
 				QuerySort qs = p.getQuerySort();
 				if (qs != null) {
 					sorts.add(qs);
@@ -231,25 +224,26 @@ public class DatastoreItemDataProvider implements ItemDataProvider<PropertyBox> 
 
 			if (!sorts.isEmpty()) {
 				if (sorts.size() == 1) {
-					q.sort(sorts.get(0));
+					query.sort(sorts.get(0));
 				} else {
-					q.sort(QuerySort.of(sorts));
+					query.sort(QuerySort.of(sorts));
 				}
 			}
 		}
+
 		// parameters
 		ParameterSet parameters = configuration.getQueryParameters();
 		if (parameters != null) {
-			parameters.forEachParameter((n, v) -> q.parameter(n, v));
+			parameters.forEachParameter((n, v) -> query.parameter(n, v));
 		}
 
-		queryConfigurationProviders.forEach(p -> {
+		getQueryConfigurationProviders().forEach(p -> {
 			if (p.getQueryParameters() != null) {
-				p.getQueryParameters().forEachParameter((n, v) -> q.parameter(n, v));
+				p.getQueryParameters().forEachParameter((n, v) -> query.parameter(n, v));
 			}
 		});
 
-		return q;
+		return query;
 	}
 
 }

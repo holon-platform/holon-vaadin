@@ -865,7 +865,7 @@ public interface Components {
 				P... additionalProperties) {
 			ObjectUtils.argumentNotNull(properties, "Properties must be not null");
 			if (additionalProperties != null && additionalProperties.length > 0) {
-				PropertySet.Builder<Property> builder = PropertySet.builder().add(properties);
+				PropertySet.Builder<Property<?>> builder = PropertySet.builder().add(properties);
 				for (P property : additionalProperties) {
 					builder.add(property);
 				}

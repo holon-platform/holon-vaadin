@@ -45,7 +45,7 @@ public class DatastoreCommitHandler implements CommitHandler<PropertyBox> {
 	/**
 	 * Construct a new DatastoreItemDataProvider.
 	 * @param datastore Datastore to use (not null)
-	 * @param target Query target (not null)
+	 * @param target Data target (not null)
 	 */
 	public DatastoreCommitHandler(Datastore datastore, DataTarget<?> target) {
 		super();

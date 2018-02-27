@@ -387,7 +387,7 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 	 * @param visibleColumns Visible column properties (not null)
 	 * @return {@link ItemListing} component
 	 */
-	C build(Iterable<P> visibleColumns);
+	C build(Iterable<? extends P> visibleColumns);
 
 	// Using Grid
 

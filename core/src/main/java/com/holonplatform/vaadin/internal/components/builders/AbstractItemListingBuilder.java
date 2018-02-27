@@ -520,7 +520,7 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder#build(java.lang.Iterable)
 	 */
 	@Override
-	public C build(Iterable<P> visibleColumns) {
+	public C build(Iterable<? extends P> visibleColumns) {
 		return buildAndConfigure(visibleColumns);
 	}
 
@@ -539,7 +539,7 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 	 *        visibile columns.
 	 * @return Listing component
 	 */
-	protected C buildAndConfigure(Iterable<P> visibleColumns) {
+	protected C buildAndConfigure(Iterable<? extends P> visibleColumns) {
 		// build
 		final I listing = getInstance();
 		localize(listing);
@@ -548,7 +548,7 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 		setupDataSource(listing);
 
 		// columns
-		Iterable<P> columns = configureColumns(listing,
+		Iterable<? extends P> columns = configureColumns(listing,
 				(visibleColumns != null) ? ConversionUtils.iterableAsList(visibleColumns) : Collections.emptyList());
 
 		// visible columns
@@ -594,7 +594,7 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 	 * @param visibleColumns Visible columns
 	 * @return the actual listing visible columns
 	 */
-	protected abstract Iterable<P> configureColumns(I instance, List<P> visibleColumns);
+	protected abstract Iterable<? extends P> configureColumns(I instance, List<? extends P> visibleColumns);
 
 	/**
 	 * Additional listing configuration
