@@ -17,9 +17,11 @@ package com.holonplatform.vaadin.internal.data;
 
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import com.holonplatform.core.ParameterSet;
 import com.holonplatform.core.Validator.ValidationException;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
@@ -49,7 +51,7 @@ public class IdentifiablePropertyBox implements PropertyBox {
 		this.identifier = identifier.apply(propertyBox);
 		if (this.identifier == null) {
 			throw new IllegalStateException(
-					"The identifier function returned a null identifier for ProprtyBox [" + propertyBox + "]");
+					"The identifier function returned a null identifier for PropertyBox [" + propertyBox + "]");
 		}
 	}
 
@@ -59,6 +61,23 @@ public class IdentifiablePropertyBox implements PropertyBox {
 	 */
 	public Object getIdentifier() {
 		return identifier;
+	}
+
+	// TODO
+	/* (non-Javadoc)
+	 * @see com.holonplatform.core.property.PropertySet#getIdentifiers()
+	 */
+	@Override
+	public Set<Property> getIdentifiers() {
+		return propertyBox.getIdentifiers();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.holonplatform.core.property.PropertySet#getConfiguration()
+	 */
+	@Override
+	public ParameterSet getConfiguration() {
+		return propertyBox.getConfiguration();
 	}
 
 	/*

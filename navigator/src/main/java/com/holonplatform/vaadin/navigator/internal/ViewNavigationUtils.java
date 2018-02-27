@@ -310,10 +310,7 @@ public final class ViewNavigationUtils implements Serializable {
 				return dateFormat.format((Date) value);
 			}
 			if (TypeUtils.isTemporal(value.getClass())) {
-				TemporalType type = TemporalType.getTemporalType((Temporal) value);
-				if (type == null) {
-					type = TemporalType.DATE;
-				}
+				final TemporalType type = TemporalType.getTemporalType((Temporal) value).orElse(TemporalType.DATE);
 				switch (type) {
 				case DATE_TIME:
 					return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format((Temporal) value);
