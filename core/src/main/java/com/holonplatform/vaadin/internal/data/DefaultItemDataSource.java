@@ -126,7 +126,7 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 	/**
 	 * Additional QueryConfigurationProviders
 	 */
-	private List<QueryConfigurationProvider> queryConfigurationProviders;
+	private List<QueryConfigurationProvider> queryConfigurationProviders = new LinkedList<>();
 
 	/**
 	 * Fixed query filter: if not null, it will always be added to query filters
@@ -216,7 +216,25 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 	 * @param batchSize the batch size to use
 	 */
 	protected void init(int batchSize) {
-		this.itemStore = new DefaultItemStore<>(this,
+		final QueryConfigurationProvider qcp = new QueryConfigurationProvider() {
+
+			@Override
+			public QueryFilter getQueryFilter() {
+				return DefaultItemDataSource.this.getQueryFilter().orElse(null);
+			}
+
+			@Override
+			public QuerySort getQuerySort() {
+				return DefaultItemDataSource.this.getQuerySort(Collections.emptySet()).orElse(null);
+			}
+
+			@Override
+			public ParameterSet getQueryParameters() {
+				return DefaultItemDataSource.this.getQueryParameters();
+			}
+
+		};
+		this.itemStore = new DefaultItemStore<>(qcp,
 				getDataProvider().orElseThrow(() -> new IllegalStateException("Missing ItemDataProvider")),
 				getItemIdentifierProvider().orElse(null), batchSize, determineMaxCacheSize(batchSize));
 		this.itemStore.setFreezed(!isAutoRefresh());
@@ -595,9 +613,6 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 	@Override
 	public Registration addQueryConfigurationProvider(QueryConfigurationProvider queryConfigurationProvider) {
 		ObjectUtils.argumentNotNull(queryConfigurationProvider, "QueryConfigurationProvider must be not null");
-		if (queryConfigurationProviders == null) {
-			queryConfigurationProviders = new LinkedList<>();
-		}
 		if (!queryConfigurationProviders.contains(queryConfigurationProvider)) {
 			queryConfigurationProviders.add(queryConfigurationProvider);
 			// reset store
@@ -688,7 +703,7 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 
 	/**
 	 * Additional QueryConfigurationProvider
-	 * @return QueryConfigurationProviders, or <code>null</code> if none
+	 * @return QueryConfigurationProviders, an empty List if none
 	 */
 	public List<QueryConfigurationProvider> getQueryConfigurationProviders() {
 		return queryConfigurationProviders;
@@ -751,12 +766,8 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.core.query.QueryConfigurationProvider#getQueryFilter()
-	 */
 	@Override
-	public QueryFilter getQueryFilter() {
+	public Optional<QueryFilter> getQueryFilter() {
 		final LinkedList<QueryFilter> filters = new LinkedList<>();
 
 		// fixed
@@ -766,25 +777,21 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 		}
 
 		// externally provided
-		if (getQueryConfigurationProviders() != null) {
-			for (QueryConfigurationProvider provider : getQueryConfigurationProviders()) {
-				QueryFilter filter = provider.getQueryFilter();
-				if (filter != null) {
-					filters.add(filter);
-				}
+		getQueryConfigurationProviders().forEach(p -> {
+			QueryFilter filter = p.getQueryFilter();
+			if (filter != null) {
+				filters.add(filter);
 			}
-		}
+		});
 
-		// return overall filter
-		return QueryFilter.allOf(filters).orElse(null);
+		return QueryFilter.allOf(filters);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.core.query.QueryConfigurationProvider#getQuerySort()
-	 */
 	@Override
-	public QuerySort getQuerySort() {
+	public Optional<QuerySort> getQuerySort(Collection<QuerySort> currentSorts) {
+
+		final boolean hasPreviousSorts = currentSorts != null && currentSorts.size() > 0;
+
 		LinkedList<QuerySort> sorts = new LinkedList<>();
 
 		// sorts
@@ -796,18 +803,16 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 			}
 		} else {
 			// externally provided
-			if (getQueryConfigurationProviders() != null) {
-				for (QueryConfigurationProvider provider : getQueryConfigurationProviders()) {
-					QuerySort sort = provider.getQuerySort();
-					if (sort != null) {
-						sorts.add(sort);
-					}
+			getQueryConfigurationProviders().forEach(p -> {
+				QuerySort sort = p.getQuerySort();
+				if (sort != null) {
+					sorts.add(sort);
 				}
-			}
+			});
 		}
 
 		// default sort
-		if (sorts.isEmpty()) {
+		if (!hasPreviousSorts && sorts.isEmpty()) {
 			QuerySort dft = getDefaultSort();
 			if (dft != null) {
 				sorts.add(dft);
@@ -820,13 +825,7 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 			sorts.add(fixed);
 		}
 
-		if (!sorts.isEmpty()) {
-			if (sorts.size() == 1) {
-				return sorts.getFirst();
-			}
-			return QuerySort.of(sorts);
-		}
-		return null;
+		return sorts.isEmpty() ? Optional.empty() : Optional.of(QuerySort.of(sorts));
 	}
 
 	/*
@@ -835,6 +834,16 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 	 */
 	@Override
 	public ParameterSet getQueryParameters() {
+		final ParameterSet.Builder<?> builder = ParameterSet.builder().parameters(queryParameters);
+
+		// externally provided
+		getQueryConfigurationProviders().forEach(p -> {
+			ParameterSet parameters = p.getQueryParameters();
+			if (parameters != null) {
+				builder.parameters(parameters);
+			}
+		});
+
 		return queryParameters;
 	}
 
@@ -1178,6 +1187,16 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 		@Override
 		public Builder<ITEM, PROPERTY> propertyId(PROPERTY property, String propertyId) {
 			instance.setPropertyId(property, propertyId);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.data.ItemDataSource.Builder#sortable(boolean)
+		 */
+		@Override
+		public Builder<ITEM, PROPERTY> sortable(boolean sortable) {
+			instance.getProperties().forEach(p -> instance.setPropertySortable(p, sortable));
 			return this;
 		}
 

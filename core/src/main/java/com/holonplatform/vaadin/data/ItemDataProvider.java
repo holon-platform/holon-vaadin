@@ -17,12 +17,14 @@ package com.holonplatform.vaadin.data;
 
 import java.util.function.Function;
 
+import com.holonplatform.core.beans.BeanIntrospector;
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.exceptions.DataAccessException;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.query.QueryConfigurationProvider;
+import com.holonplatform.vaadin.internal.data.DatastoreBeanItemDataProvider;
 import com.holonplatform.vaadin.internal.data.DatastoreItemDataProvider;
 import com.holonplatform.vaadin.internal.data.DefaultItemDataProvider;
 import com.holonplatform.vaadin.internal.data.ItemDataProviderWrapper;
@@ -91,6 +93,48 @@ public interface ItemDataProvider<ITEM> extends ItemSetCounter, ItemSetLoader<IT
 	static ItemDataProvider<PropertyBox> create(Datastore datastore, DataTarget<?> target, PropertySet<?> propertySet,
 			QueryConfigurationProvider... queryConfigurationProviders) {
 		DatastoreItemDataProvider provider = new DatastoreItemDataProvider(datastore, target, propertySet);
+		if (queryConfigurationProviders != null) {
+			for (QueryConfigurationProvider queryConfigurationProvider : queryConfigurationProviders) {
+				provider.addQueryConfigurationProvider(queryConfigurationProvider);
+			}
+		}
+		return provider;
+	}
+
+	/**
+	 * Construct a {@link ItemDataProvider} using a {@link Datastore} and given <code>beanClass</code> as item type.
+	 * <p>
+	 * The query projection will be configured using the bean class property names and the query results will be
+	 * obtained as instances of given bean class. The default {@link BeanIntrospector} will be used to inspect bean
+	 * class properties.
+	 * </p>
+	 * @param <T> Bean type
+	 * @param datastore Datastore to use (not null)
+	 * @param target Data target (not null)
+	 * @param beanClass Item bean type (not null)
+	 * @return the {@link ItemDataProvider} instance
+	 */
+	static <T> ItemDataProvider<T> create(Datastore datastore, DataTarget<?> target, Class<T> beanClass) {
+		return new DatastoreBeanItemDataProvider<>(datastore, target, beanClass);
+	}
+
+	/**
+	 * Construct a {@link ItemDataProvider} using a {@link Datastore} and given <code>beanClass</code> as item type.
+	 * <p>
+	 * The query projection will be configured using the bean class property names and the query results will be
+	 * obtained as instances of given bean class. The default {@link BeanIntrospector} will be used to inspect bean
+	 * class properties.
+	 * </p>
+	 * @param <T> Bean type
+	 * @param datastore Datastore to use (not null)
+	 * @param target Data target (not null)
+	 * @param beanClass Item bean type (not null)
+	 * @param queryConfigurationProviders Optional additional {@link QueryConfigurationProvider}s
+	 * @return the {@link ItemDataProvider} instance
+	 */
+	static <T> ItemDataProvider<T> create(Datastore datastore, DataTarget<?> target, Class<T> beanClass,
+			QueryConfigurationProvider... queryConfigurationProviders) {
+		DatastoreBeanItemDataProvider<T> provider = new DatastoreBeanItemDataProvider<>(datastore, target, beanClass);
 		if (queryConfigurationProviders != null) {
 			for (QueryConfigurationProvider queryConfigurationProvider : queryConfigurationProviders) {
 				provider.addQueryConfigurationProvider(queryConfigurationProvider);

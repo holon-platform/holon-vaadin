@@ -108,6 +108,16 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder#sortable(boolean)
+	 */
+	@Override
+	public B sortable(boolean sortable) {
+		dataSourceBuilder.sortable(sortable);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder#sortable(java.lang.Object, boolean)
 	 */
 	@Override

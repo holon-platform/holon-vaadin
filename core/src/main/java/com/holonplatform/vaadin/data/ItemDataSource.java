@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import com.holonplatform.core.ParameterSet;
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.exceptions.DataAccessException;
@@ -208,7 +209,7 @@ public interface ItemDataSource<ITEM, PROPERTY> extends QueryConfigurationProvid
 	 * @param <ITEM> Item type
 	 * @param <PROPERTY> Item property type
 	 */
-	public interface Configuration<ITEM, PROPERTY> extends QueryConfigurationProvider, Serializable {
+	public interface Configuration<ITEM, PROPERTY> extends Serializable {
 
 		/**
 		 * Get the property representation type.
@@ -307,6 +308,28 @@ public interface ItemDataSource<ITEM, PROPERTY> extends QueryConfigurationProvid
 		 * @return Data source items sorting directives, or an empty list if none
 		 */
 		List<ItemSort<PROPERTY>> getItemSorts();
+
+		/**
+		 * Get the {@link QuerySort} according to this configuration, taking into account the item sorts, default and
+		 * fixed sorts and the query sorts from any registered {@link QueryConfigurationProvider}.
+		 * @param currentSorts Optional corrent query sorts
+		 * @return The {@link QuerySort}, if available
+		 */
+		Optional<QuerySort> getQuerySort(Collection<QuerySort> currentSorts);
+
+		/**
+		 * Get the {@link QueryFilter} according to this configuration, taking into account the fixed filters and the
+		 * query filters from any registered {@link QueryConfigurationProvider}.
+		 * @return The {@link QueryFilter}, if available
+		 */
+		Optional<QueryFilter> getQueryFilter();
+
+		/**
+		 * Get the query parameters according to this configuration, taking into account the query parameters from any
+		 * registered {@link QueryConfigurationProvider}.
+		 * @return The query parameters set, empty if no parameters available
+		 */
+		ParameterSet getQueryParameters();
 
 	}
 
@@ -522,6 +545,16 @@ public interface ItemDataSource<ITEM, PROPERTY> extends QueryConfigurationProvid
 		 * @return this
 		 */
 		Builder<ITEM, PROPERTY> maxCacheSize(int maxCacheSize);
+
+		/**
+		 * Set whether all the properties are sortable.
+		 * <p>
+		 * NOTE: It only applies to already added properties.
+		 * </p>
+		 * @param sortable Whether all the properties are sortable
+		 * @return this
+		 */
+		Builder<ITEM, PROPERTY> sortable(boolean sortable);
 
 		/**
 		 * Set whether given property id is sortable.

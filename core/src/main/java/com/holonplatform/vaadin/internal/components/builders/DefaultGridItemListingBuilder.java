@@ -17,9 +17,12 @@ package com.holonplatform.vaadin.internal.components.builders;
 
 import java.util.List;
 
+import com.holonplatform.core.datastore.DataTarget;
+import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.components.BeanListing;
 import com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridItemListingBuilder;
+import com.holonplatform.vaadin.data.ItemDataProvider;
 import com.holonplatform.vaadin.internal.components.DefaultBeanListing;
 import com.vaadin.data.BeanPropertySet;
 import com.vaadin.data.HasValue;
@@ -39,13 +42,23 @@ public class DefaultGridItemListingBuilder<T> extends
 		AbstractGridItemListingBuilder<T, String, BeanListing<T>, DefaultBeanListing<T>, GridItemListingBuilder<T>>
 		implements GridItemListingBuilder<T> {
 
+	protected final Class<T> beanType;
+
 	public DefaultGridItemListingBuilder(Class<T> beanType) {
 		super(new DefaultBeanListing<>(beanType), String.class);
+		this.beanType = beanType;
 		// read bean property names
 		PropertySet<T> propertySet = BeanPropertySet.get(beanType);
 		propertySet.getProperties().forEach(p -> {
 			dataSourceBuilder.withProperty(p.getName(), p.getType());
 		});
+	}
+
+	@Override
+	public GridItemListingBuilder<T> dataSource(Datastore datastore, DataTarget<?> target) {
+		// set all properties sortable by default
+		dataSourceBuilder.sortable(true);
+		return dataSource(ItemDataProvider.create(datastore, target, beanType));
 	}
 
 	/*

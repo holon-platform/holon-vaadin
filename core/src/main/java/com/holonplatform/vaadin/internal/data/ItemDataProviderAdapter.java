@@ -167,29 +167,19 @@ public class ItemDataProviderAdapter<ITEM> extends AbstractBackEndDataProvider<I
 		// filters
 		final List<QueryFilter> filters = new LinkedList<>();
 		// from data source configuration
-		getConfiguration().ifPresent(c -> {
-			QueryFilter f = c.getQueryFilter();
-			if (f != null) {
-				filters.add(f);
-			}
-		});
+		getConfiguration().flatMap(c -> c.getQueryFilter()).ifPresent(f -> filters.add(f));
 		// from query definition
 		query.getFilter().ifPresent(f -> filters.add(f));
 
 		// sorts
 		final List<QuerySort> sorts = new LinkedList<>();
-		// from data source configuration
-		getConfiguration().ifPresent(c -> {
-			QuerySort s = c.getQuerySort();
-			if (s != null) {
-				sorts.add(s);
-			}
-		});
 		// from query definition
 		sorts.addAll((query.getSortOrders() == null) ? Collections.emptyList()
 				: query.getSortOrders().stream().map(o -> sortFromOrder(o))
 						.flatMap(o -> o.isPresent() ? Stream.of(o.get()) : Stream.empty())
 						.collect(Collectors.toList()));
+		// from data source configuration
+		getConfiguration().flatMap(c -> c.getQuerySort(sorts)).ifPresent(s -> sorts.add(s));
 
 		return new QueryConfigurationProvider() {
 
@@ -234,9 +224,10 @@ public class ItemDataProviderAdapter<ITEM> extends AbstractBackEndDataProvider<I
 			if (sort == null && Path.class.isAssignableFrom(property.getClass())) {
 				sort = QuerySort.of((Path<?>) property, direction);
 			}
-		} else {
+		}
+		if (sort == null) {
 			// use a default path
-			QuerySort.of(Path.of(order.getSorted(), Object.class), direction);
+			sort = QuerySort.of(Path.of(order.getSorted(), Object.class), direction);
 		}
 
 		return Optional.ofNullable(sort);

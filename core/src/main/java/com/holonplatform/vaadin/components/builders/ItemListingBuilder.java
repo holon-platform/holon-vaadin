@@ -19,9 +19,12 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
+import java.util.function.Function;
 
 import com.holonplatform.core.Path;
 import com.holonplatform.core.Validator;
+import com.holonplatform.core.datastore.DataTarget;
+import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ObjectUtils;
@@ -40,6 +43,7 @@ import com.holonplatform.vaadin.components.ItemListing.RowStyleGenerator;
 import com.holonplatform.vaadin.components.ItemSet.ItemDescriptionGenerator;
 import com.holonplatform.vaadin.components.Selectable.SelectionListener;
 import com.holonplatform.vaadin.components.Selectable.SelectionMode;
+import com.holonplatform.vaadin.data.ItemDataProvider;
 import com.holonplatform.vaadin.data.ItemDataSource.CommitHandler;
 import com.holonplatform.vaadin.data.ItemDataSource.PropertySortGenerator;
 import com.holonplatform.vaadin.internal.components.ValidatorWrapper;
@@ -68,6 +72,13 @@ import com.vaadin.ui.renderers.Renderer;
  */
 public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends ItemListingBuilder<T, P, C, B, X>, X extends Component>
 		extends ItemDataSourceComponentBuilder<T, C, B>, ComponentPostProcessorSupport<X, B> {
+
+	/**
+	 * Set whether all the item listing properties are sortable.
+	 * @param sortable Whether all the item listing properties are sortable
+	 * @return this
+	 */
+	B sortable(boolean sortable);
 
 	/**
 	 * Set whether given property is sortable.
@@ -713,6 +724,27 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 	 */
 	public interface GridItemListingBuilder<T>
 			extends BaseGridItemListingBuilder<T, String, BeanListing<T>, GridItemListingBuilder<T>> {
+
+		/**
+		 * Set given {@link Datastore} as data source, using given data target to perform queries and obtain the listing
+		 * items as beans of the required type.
+		 * @param datastore The Datastore to use (not null)
+		 * @param target The data target to use (not null)
+		 * @return this
+		 */
+		GridItemListingBuilder<T> dataSource(Datastore datastore, DataTarget<?> target);
+
+		/**
+		 * Set the item listing data source using an {@link ItemDataProvider} and function to convert data source items
+		 * into required item type.
+		 * @param dataProvider Item data provider (not null)
+		 * @param converter Item converter (not null)
+		 * @return this
+		 */
+		default <ITEM> GridItemListingBuilder<T> dataSource(ItemDataProvider<ITEM> dataProvider,
+				Function<ITEM, T> converter) {
+			return dataSource(ItemDataProvider.convert(dataProvider, converter));
+		}
 
 		/**
 		 * Set the field to use for given property in edit mode.

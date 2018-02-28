@@ -20,49 +20,50 @@ import java.util.stream.Stream;
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.internal.utils.ObjectUtils;
-import com.holonplatform.core.property.PropertyBox;
-import com.holonplatform.core.property.PropertySet;
+import com.holonplatform.core.query.BeanProjection;
 import com.holonplatform.core.query.Query;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.vaadin.data.ItemDataProvider;
 import com.holonplatform.vaadin.data.QueryConfigurationProviderSupport;
 
 /**
- * An {@link ItemDataProvider} using a {@link Datastore} to perform item set count and load operations, using
- * {@link PropertyBox} as item type.
+ * An {@link ItemDataProvider} using a {@link Datastore} to perform item set count and load operations, using a bean
+ * projection to obtain results in the required bean type.
  * <p>
  * Supports {@link QueryConfigurationProvider} registration through {@link QueryConfigurationProviderSupport}.
  * </p>
  * 
- * @since 5.0.0
+ * @param <T> Bean class
+ * 
+ * @since 5.1.0
  */
-public class DatastoreItemDataProvider extends AbstractDatastoreItemDataProvider<PropertyBox> {
+public class DatastoreBeanItemDataProvider<T> extends AbstractDatastoreItemDataProvider<T> {
 
-	private static final long serialVersionUID = 3163918924360548413L;
-
+	private static final long serialVersionUID = 6593984041773960514L;
+	
 	/**
-	 * Query projection property set
+	 * Query projection bean class
 	 */
-	private final PropertySet<?> propertySet;
+	private final Class<T> beanClass;
 
 	/**
 	 * Constructor.
 	 * @param datastore Datastore to use (not null)
 	 * @param target Data target (not null)
-	 * @param propertySet Property set to use as query projection (not null)
+	 * @param beanPropertySet Bean property set (not null)
 	 */
-	public DatastoreItemDataProvider(Datastore datastore, DataTarget<?> target, PropertySet<?> propertySet) {
+	public DatastoreBeanItemDataProvider(Datastore datastore, DataTarget<?> target, Class<T> beanClass) {
 		super(datastore, target);
-		ObjectUtils.argumentNotNull(propertySet, "PropertySet must be not null");
-		this.propertySet = propertySet;
+		ObjectUtils.argumentNotNull(beanClass, "Bean class must be not null");
+		this.beanClass = beanClass;
 	}
 
 	/**
-	 * Get the {@link PropertySet} to use as query projection.
-	 * @return the query projection {@link PropertySet}
+	 * Get the query projection bean class.
+	 * @return the bean class
 	 */
-	protected PropertySet<?> getPropertySet() {
-		return propertySet;
+	protected Class<T> getBeanClass() {
+		return beanClass;
 	}
 
 	/*
@@ -72,8 +73,8 @@ public class DatastoreItemDataProvider extends AbstractDatastoreItemDataProvider
 	 * query.Query)
 	 */
 	@Override
-	protected Stream<PropertyBox> executeQuery(Query query) {
-		return query.stream(getPropertySet());
+	protected Stream<T> executeQuery(Query query) {
+		return query.stream(BeanProjection.of(beanClass));
 	}
 
 }
