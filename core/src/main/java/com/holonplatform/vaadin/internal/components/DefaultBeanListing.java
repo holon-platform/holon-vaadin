@@ -52,6 +52,9 @@ public class DefaultBeanListing<T> extends DefaultItemListing<T, String> impleme
 
 	private static final Logger LOGGER = VaadinLogger.create();
 
+	/**
+	 * Bean property set
+	 */
 	protected final BeanPropertySet<T> beanPropertySet;
 
 	/**
