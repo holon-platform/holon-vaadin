@@ -43,9 +43,24 @@ public interface DatastoreDataProvider
 		extends DataProvider<PropertyBox, QueryFilter>, QueryConfigurationProviderSupport {
 
 	/**
-	 * Create a {@link DatastoreDataProvider}.
+	 * Create a new {@link DatastoreDataProvider}.
+	 * <p>
+	 * The {@link PropertyBox} items will be fetched from the persistence source using a properly configured Datastore
+	 * query, with given <code>dataTarget</code> representing the persistent entity to query. The {@link PropertyBox}
+	 * items will be built using given <code>propertySet</code>.
+	 * </p>
+	 * <p>
+	 * The {@link DataProvider#getId(Object)} method will simply return the {@link PropertyBox} item instance, relying
+	 * on the {@link PropertyBox} <code>equals</code> and <code>hashCode</code> logic to identify each item.
+	 * </p>
+	 * <p>
+	 * If the given {@link PropertySet} provides <em>identifier</em> properties (see
+	 * {@link PropertySet#getIdentifiers()}), the identifier properties will be used as {@link PropertyBox} item
+	 * identifiers, i.e. the <code>equals</code> and <code>hashCode</code> logic of the items will be implemented
+	 * accordingly to the values of the identifier properties.
+	 * </p>
 	 * @param datastore The {@link Datastore} to use (not null)
-	 * @param target The query target (not null)
+	 * @param target The data target to use (not null)
 	 * @param propertySet The query projection property set (not null)
 	 * @return A new {@link DatastoreDataProvider} instance
 	 */
@@ -54,24 +69,31 @@ public interface DatastoreDataProvider
 	}
 
 	/**
-	 * Create a {@link DatastoreDataProvider}.
+	 * Create a {@link DatastoreDataProvider} and use given <code>identifierProperties</code> as {@link PropertyBox}
+	 * items identifiers.
+	 * <p>
+	 * The {@link PropertyBox} items will be fetched from the persistence source using a properly configured Datastore
+	 * query, with given <code>dataTarget</code> representing the persistent entity to query. The {@link PropertyBox}
+	 * items will be built using given <code>propertySet</code>.
+	 * </p>
+	 * <p>
+	 * The provided identifier properties will be used as {@link PropertyBox} item identifiers, i.e. the
+	 * <code>equals</code> and <code>hashCode</code> logic of the items will be implemented accordingly to the values of
+	 * the identifier properties.
+	 * </p>
 	 * @param datastore The {@link Datastore} to use (not null)
-	 * @param target The query target (not null)
+	 * @param target The data target to use (not null)
 	 * @param propertySet The query projection property set (not null)
-	 * @param identifierProperties The properties which act as item identifier(s)
+	 * @param identifierProperties Properties to use as item identifiers
 	 * @return A new {@link DatastoreDataProvider} instance
-	 * @deprecated Use {@link #create(Datastore, DataTarget, PropertySet, ItemIdentifierProvider)} to provide a custom
-	 *             item identifier provider. By default, the identifier properties of given property set will be used to
-	 *             identify each {@link PropertyBox} item.
 	 */
-	@Deprecated
 	static DatastoreDataProvider create(Datastore datastore, DataTarget<?> target, PropertySet<?> propertySet,
 			Property<?>... identifierProperties) {
 		if (identifierProperties == null || identifierProperties.length == 0) {
 			return create(datastore, target, propertySet);
 		}
 
-		// set given identifier properties ad property set identifiers
+		// set given identifier properties as property set identifiers
 		PropertySet<?> propertySetWithIds = PropertySet.builder().add(propertySet)
 				.identifiers(Arrays.asList(identifierProperties)).build();
 
@@ -79,9 +101,19 @@ public interface DatastoreDataProvider
 	}
 
 	/**
-	 * Create a {@link DatastoreDataProvider}.
+	 * Create a {@link DatastoreDataProvider}, using given {@link ItemIdentifierProvider} to obtain the
+	 * {@link PropertyBox} item identifier.
+	 * <p>
+	 * The {@link PropertyBox} items will be fetched from the persistence source using a properly configured Datastore
+	 * query, with given <code>dataTarget</code> representing the persistent entity to query. The {@link PropertyBox}
+	 * items will be built using given <code>propertySet</code>.
+	 * </p>
+	 * <p>
+	 * The given <code>itemIdentifier</code> will be used to provide the item identifier through the
+	 * {@link DataProvider#getId(Object)} method.
+	 * </p>
 	 * @param datastore The {@link Datastore} to use (not null)
-	 * @param target The query target (not null)
+	 * @param target The data target to use (not null)
 	 * @param propertySet The query projection property set (not null)
 	 * @param itemIdentifier Item identifier provider
 	 * @return A new {@link DatastoreDataProvider} instance
@@ -107,17 +139,24 @@ public interface DatastoreDataProvider
 
 		/**
 		 * Set the {@link Datastore} to use to perform query operations.
-		 * @param datastore the Datastore to set
+		 * @param datastore the Datastore to set (not null)
 		 * @return this
 		 */
 		Builder datastore(Datastore datastore);
 
 		/**
 		 * Set the {@link DataTarget} to use.
-		 * @param target the target to set
+		 * @param target the data target to set (not null)
 		 * @return this
 		 */
 		Builder target(DataTarget<?> target);
+
+		/**
+		 * Use given <code>identifierProperty</code> value as item identifier.
+		 * @param identifierProperty The property which acts as item identifier (not null)
+		 * @return this
+		 */
+		Builder itemIdentifier(Property<?> identifierProperty);
 
 		/**
 		 * Set the {@link ItemIdentifierProvider} to use to obtain the item identifiers.
@@ -148,14 +187,14 @@ public interface DatastoreDataProvider
 
 		/**
 		 * Add a {@link QueryConfigurationProvider} to provide additional query configuration parameters.
-		 * @param queryConfigurationProvider the QueryConfigurationProvider to add
+		 * @param queryConfigurationProvider the QueryConfigurationProvider to add (not null)
 		 * @return this
 		 */
 		Builder withQueryConfigurationProvider(QueryConfigurationProvider queryConfigurationProvider);
 
 		/**
 		 * Build the {@link DatastoreDataProvider} instance.
-		 * @return the {@link DatastoreDataProvider} instance
+		 * @return A new {@link DatastoreDataProvider} instance
 		 */
 		DatastoreDataProvider build();
 

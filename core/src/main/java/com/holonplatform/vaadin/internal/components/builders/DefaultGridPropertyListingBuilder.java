@@ -46,8 +46,15 @@ public class DefaultGridPropertyListingBuilder extends
 		AbstractGridItemListingBuilder<PropertyBox, Property, PropertyListing, DefaultPropertyListing, GridPropertyListingBuilder>
 		implements GridPropertyListingBuilder {
 
+	/**
+	 * The listing property set
+	 */
 	private final Iterable<Property<?>> properties;
 
+	/**
+	 * Constructor.
+	 * @param properties The listing property set (not null)
+	 */
 	@SuppressWarnings("unchecked")
 	public <P extends Property<?>> DefaultGridPropertyListingBuilder(Iterable<P> properties) {
 		super(new DefaultPropertyListing(properties), Property.class);

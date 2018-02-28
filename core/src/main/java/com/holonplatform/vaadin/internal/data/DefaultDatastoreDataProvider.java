@@ -325,6 +325,7 @@ public class DefaultDatastoreDataProvider extends AbstractBackEndDataProvider<Pr
 		 */
 		@Override
 		public Builder datastore(Datastore datastore) {
+			ObjectUtils.argumentNotNull(datastore, "Datastore must be not null");
 			instance.setDatastore(datastore);
 			return this;
 		}
@@ -336,7 +337,21 @@ public class DefaultDatastoreDataProvider extends AbstractBackEndDataProvider<Pr
 		 */
 		@Override
 		public Builder target(DataTarget<?> target) {
+			ObjectUtils.argumentNotNull(target, "DataTarget must be not null");
 			instance.setTarget(target);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.data.DatastoreDataProvider.Builder#itemIdentifier(com.holonplatform.core.property.
+		 * Property)
+		 */
+		@Override
+		public Builder itemIdentifier(Property<?> identifierProperty) {
+			ObjectUtils.argumentNotNull(identifierProperty, "Identifier property must be not null");
+			instance.setItemIdentifier(new PropertyItemIdentifier<>(identifierProperty));
 			return this;
 		}
 
@@ -372,6 +387,7 @@ public class DefaultDatastoreDataProvider extends AbstractBackEndDataProvider<Pr
 		 */
 		@Override
 		public Builder withQueryConfigurationProvider(QueryConfigurationProvider queryConfigurationProvider) {
+			ObjectUtils.argumentNotNull(queryConfigurationProvider, "QueryConfigurationProvider must be not null");
 			instance.addQueryConfigurationProvider(queryConfigurationProvider);
 			return this;
 		}

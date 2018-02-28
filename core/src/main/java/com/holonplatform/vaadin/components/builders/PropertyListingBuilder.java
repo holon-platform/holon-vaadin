@@ -21,6 +21,7 @@ import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
+import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.vaadin.components.PropertyListing;
 import com.holonplatform.vaadin.data.ItemDataProvider;
 import com.holonplatform.vaadin.data.ItemDataSource.CommitHandler;
@@ -56,36 +57,53 @@ public interface PropertyListingBuilder<B extends PropertyListingBuilder<B, X>, 
 	B dataSource(ItemDataProvider<PropertyBox> dataProvider, Property... identifierProperties);
 
 	/**
-	 * Use given {@link Datastore} with given <code>dataTarget</code> as items data source.
+	 * Set given {@link Datastore} with the provided <code>dataTarget</code> as items data source. {@link PropertyBox}
+	 * items will be fetched from the persistence source using a properly configured Datastore query, with given
+	 * <code>dataTarget</code> representing the persistent entity to query.
 	 * <p>
-	 * The item listing property set identifier properties will be used as item identifiers. If no identifier property
-	 * is available, each {@link PropertyBox} item will be considered different from another, regardless of the actual
-	 * property values.
+	 * This data source supports {@link QueryConfigurationProvider}s to provide additional query configuration. A
+	 * {@link QueryConfigurationProvider} can be added using
+	 * {@link #withQueryConfigurationProvider(QueryConfigurationProvider)}.
+	 * </p>
+	 * <p>
+	 * If the item listing was built on a {@link PropertySet} which provides <em>identifier</em> properties (see
+	 * {@link PropertySet#getIdentifiers()}), the identifier properties will be used as {@link PropertyBox} item
+	 * identifiers, i.e. the <code>equals</code> and <code>hashCode</code> logic of the items will be implemented
+	 * accordingly to the values of the identifier properties.
 	 * </p>
 	 * <p>
 	 * A {@link Datastore} based {@link CommitHandler} is also configured by default.
 	 * </p>
-	 * @param datastore Datastore to use (not null)
-	 * @param dataTarget Data target to use to load items (not null)
+	 * @param datastore The {@link Datastore} to use (not null)
+	 * @param dataTarget The {@link DataTarget} to use as query target (not null)
 	 * @return this
-	 * @see PropertySet#getIdentifiers()
+	 * @see GridPropertyListingBuilder#dataSource(Datastore, DataTarget, Property...)
 	 */
 	B dataSource(Datastore datastore, DataTarget<?> dataTarget);
 
 	/**
-	 * Use given {@link Datastore} with given <code>dataTarget</code> as items data source.
+	 * Set given {@link Datastore} with the provided <code>dataTarget</code> as items data source, using given
+	 * <code>identifierProperties</code> as item identifiers. {@link PropertyBox} items will be fetched from the
+	 * persistence source using a properly configured Datastore query, with given <code>dataTarget</code> representing
+	 * the persistent entity to query.
+	 * <p>
+	 * The provided identifier properties will be used as {@link PropertyBox} item identifiers, i.e. the
+	 * <code>equals</code> and <code>hashCode</code> logic of the items will be implemented accordingly to the values of
+	 * the identifier properties.
+	 * </p>
+	 * <p>
+	 * This data source supports {@link QueryConfigurationProvider}s to provide additional query configuration. A
+	 * {@link QueryConfigurationProvider} can be added using
+	 * {@link #withQueryConfigurationProvider(QueryConfigurationProvider)}.
+	 * </p>
 	 * <p>
 	 * A {@link Datastore} based {@link CommitHandler} is also configured by default.
 	 * </p>
 	 * @param datastore Datastore to use (not null)
 	 * @param dataTarget Data target to use to load items (not null)
-	 * @param identifierProperties Properties wich act as item identifier
+	 * @param identifierProperties Properties to use as item identifiers
 	 * @return this
-	 * @deprecated The properties to use as item identifiers should be derived from the property set to which the item
-	 *             listing is bound. The {@link #dataSource(Datastore, DataTarget)} method should be used and the
-	 *             identifier properties should be properly declared at property set level.
 	 */
-	@Deprecated
 	B dataSource(Datastore datastore, DataTarget<?> dataTarget, Property... identifierProperties);
 
 	/**
