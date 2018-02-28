@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.internal.components;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,7 +35,6 @@ import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.components.Field;
 import com.holonplatform.vaadin.components.PropertyListing;
 import com.holonplatform.vaadin.internal.VaadinLogger;
-import com.holonplatform.vaadin.internal.utils.PropertyUtils;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.PropertyDefinition;
 import com.vaadin.data.PropertySet;
@@ -78,6 +78,15 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 	 */
 	public Set<Property> getPropertySet() {
 		return propertySet.getPropertySet();
+	}
+
+	/**
+	 * Get the id of given property.
+	 * @param property Property (not null)
+	 * @return The property id
+	 */
+	public String getPropertyId(Property<?> property) {
+		return propertySet.getPropertyName(property);
 	}
 
 	/*
@@ -230,11 +239,14 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 
 		private final Map<Property, GridPropertyDefinition> propertyDefinitions = new LinkedHashMap<>();
 
+		private final Map<String, Integer> generatedPropertyIds = new HashMap<>();
+
 		public <P extends Property<?>> GridPropertySet(Iterable<P> properties) {
 			super();
 			ObjectUtils.argumentNotNull(properties, "Grid property set must be not null");
 			properties.forEach(p -> {
-				propertyDefinitions.put(p, new GridPropertyDefinition<>(this, (Property<?>) p));
+				propertyDefinitions.put(p,
+						new GridPropertyDefinition<>(this, (Property<?>) p, generatePropertyName(p)));
 			});
 		}
 
@@ -299,11 +311,28 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 		public <V> String addVirtualProperty(VirtualProperty<V> property) {
 			if (property != null && !propertyDefinitions.containsKey(property)) {
 				GridPropertyDefinition definition = new GridPropertyDefinition<>(this, property,
-						property.getValueProvider());
+						generatePropertyName(property), property.getValueProvider());
 				propertyDefinitions.put(property, definition);
 				return definition.getName();
 			}
 			return null;
+		}
+
+		private String generatePropertyName(Property<?> property) {
+			String propertyName = property.getName();
+			if (propertyName == null) {
+				propertyName = "property";
+			}
+			// check duplicates
+			Integer count = generatedPropertyIds.get(propertyName);
+			if (count != null && count > 0) {
+				int sequence = count.intValue() + 1;
+				generatedPropertyIds.put(propertyName, sequence);
+				return propertyName + sequence;
+			} else {
+				generatedPropertyIds.put(propertyName, 1);
+				return propertyName;
+			}
 		}
 
 	}
@@ -316,17 +345,17 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 		private final PropertyValueProvider<V> valueProvider;
 		private final String name;
 
-		public GridPropertyDefinition(GridPropertySet propertySet, Property<V> property) {
-			this(propertySet, property, null);
+		public GridPropertyDefinition(GridPropertySet propertySet, Property<V> property, String name) {
+			this(propertySet, property, name, null);
 		}
 
-		public GridPropertyDefinition(GridPropertySet propertySet, Property<V> property,
+		public GridPropertyDefinition(GridPropertySet propertySet, Property<V> property, String name,
 				PropertyValueProvider<V> valueProvider) {
 			super();
 			this.propertySet = propertySet;
 			this.property = property;
 			this.valueProvider = valueProvider;
-			this.name = PropertyUtils.generatePropertyId(property);
+			this.name = name;
 		}
 
 		/**

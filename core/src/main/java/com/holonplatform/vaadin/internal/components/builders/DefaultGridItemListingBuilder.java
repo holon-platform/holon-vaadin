@@ -43,8 +43,8 @@ public class DefaultGridItemListingBuilder<T> extends
 		super(new DefaultBeanListing<>(beanType), String.class);
 		// read bean property names
 		PropertySet<T> propertySet = BeanPropertySet.get(beanType);
-		propertySet.getProperties().forEach(pd -> {
-			dataSourceBuilder.withReadOnlyProperty(pd.getName(), pd.getType());
+		propertySet.getProperties().forEach(p -> {
+			dataSourceBuilder.withProperty(p.getName(), p.getType());
 		});
 	}
 

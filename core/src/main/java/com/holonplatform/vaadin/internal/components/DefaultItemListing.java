@@ -32,7 +32,6 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.components.ItemListing;
 import com.holonplatform.vaadin.components.Selectable;
-import com.holonplatform.vaadin.data.ItemDataProvider;
 import com.holonplatform.vaadin.data.ItemDataSource;
 import com.holonplatform.vaadin.data.ItemDataSource.ItemSort;
 import com.holonplatform.vaadin.internal.data.ItemDataProviderAdapter;
@@ -1186,12 +1185,7 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 			if (isBuffered()) {
 				getGrid().setDataProvider(new ItemDataSourceAdapter<>(this.dataSource));
 			} else {
-				ItemDataProvider<T> dataProvider = this.dataSource.getConfiguration().getDataProvider()
-						.orElseThrow(() -> new IllegalStateException(
-								"The datasource [" + this.dataSource + "] has not a configured ItemDataProvider"));
-				getGrid().setDataProvider(new ItemDataProviderAdapter<>(dataProvider,
-						this.dataSource.getConfiguration().getItemIdentifierProvider().orElse(null),
-						this.dataSource.getConfiguration()));
+				getGrid().setDataProvider(new ItemDataProviderAdapter<>(this.dataSource.getConfiguration()));
 			}
 		}
 	}

@@ -61,7 +61,10 @@ public class DefaultGridPropertyListingBuilder extends
 		this.properties = (Iterable<Property<?>>) properties;
 		// setup datasource
 		properties.forEach(p -> {
-			dataSourceBuilder.withProperty(p, p.getType());
+			dataSourceBuilder.withProperty(p, p.getType(), false);
+
+			dataSourceBuilder.propertyId(p, getInstance().getPropertyId(p));
+
 			if (p.isReadOnly()) {
 				dataSourceBuilder.readOnly(p, true);
 			}

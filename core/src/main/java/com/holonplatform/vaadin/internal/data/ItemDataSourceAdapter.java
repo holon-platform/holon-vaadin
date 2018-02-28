@@ -37,14 +37,25 @@ public class ItemDataSourceAdapter<ITEM> extends AbstractBackEndDataProvider<ITE
 
 	private static final long serialVersionUID = -6247532604680268068L;
 
+	/**
+	 * Actual data source
+	 */
 	private final ItemDataSource<ITEM, ?> dataSource;
 
+	/**
+	 * Constructor.
+	 * @param dataSource The data source (not null)
+	 */
 	public ItemDataSourceAdapter(ItemDataSource<ITEM, ?> dataSource) {
 		super();
 		ObjectUtils.argumentNotNull(dataSource, "ItemDataSource must be not null");
 		this.dataSource = dataSource;
 	}
 
+	/**
+	 * Get the data source.
+	 * @return The item data source
+	 */
 	protected ItemDataSource<ITEM, ?> getDataSource() {
 		return dataSource;
 	}
@@ -84,6 +95,10 @@ public class ItemDataSourceAdapter<ITEM> extends AbstractBackEndDataProvider<ITE
 		return super.getId(item);
 	}
 
+	/**
+	 * Get all available items.
+	 * @return Items list, empty if none
+	 */
 	private List<ITEM> getAllItems() {
 		Collection<?> ids = getDataSource().getItemIds();
 		if (ids != null && !ids.isEmpty()) {
@@ -97,6 +112,12 @@ public class ItemDataSourceAdapter<ITEM> extends AbstractBackEndDataProvider<ITE
 		return Collections.emptyList();
 	}
 
+	/**
+	 * Get <code>numberOfItems</code> items from given <code>startIndex</code>.
+	 * @param startIndex Start index
+	 * @param numberOfItems Number of items to obtain
+	 * @return Items list
+	 */
 	private List<ITEM> getItemsByIndex(int startIndex, int numberOfItems) {
 
 		final int size = getDataSource().size();
