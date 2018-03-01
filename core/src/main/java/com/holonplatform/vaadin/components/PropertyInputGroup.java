@@ -580,6 +580,7 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 
 		/**
 		 * Add a {@link ValueChangeListener} to the {@link Input} bound to given <code>property</code>.
+		 * @param <T> Property type
 		 * @param property Property (not null)
 		 * @param listener The ValueChangeListener to add (not null)
 		 * @return this
@@ -593,6 +594,7 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		 * provides also a reference to the {@link PropertyInputBinder} to which the value change source belongs, i.e.
 		 * the PropertyInputGroup/Form.
 		 * </p>
+		 * @param <T> Property type
 		 * @param property Property (not null)
 		 * @param listener The {@link PropertyInputValueChangeListener} to add (not null)
 		 * @return this
@@ -606,6 +608,7 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		 * The {@link ValueChangeMode} may not be supported by the {@link Input}, in this case this setting will be
 		 * ignored.
 		 * </p>
+		 * @param <T> Property type
 		 * @param property Property (not null)
 		 * @param valueChangeMode The {@link ValueChangeMode} to set (not null)
 		 * @return this
@@ -616,6 +619,7 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		 * Sets how often value change events are triggered by the {@link Input} bound to given <code>property</code>,
 		 * when the {@link ValueChangeMode} is set to either {@link ValueChangeMode#LAZY} or
 		 * {@link ValueChangeMode#TIMEOUT}.
+		 * @param <T> Property type
 		 * @param property Property (not null)
 		 * @param valueChangeTimeout Timeout in milliseconds (greater or equal to 0)
 		 * @return this

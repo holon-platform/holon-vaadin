@@ -63,8 +63,15 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 
 	private static final Logger LOGGER = VaadinLogger.create();
 
+	/**
+	 * Grid property set
+	 */
 	private final GridPropertySet propertySet;
 
+	/**
+	 * Constructor.
+	 * @param properties Listing property set (not null)
+	 */
 	public <P extends Property<?>> DefaultPropertyListing(Iterable<P> properties) {
 		super();
 		ObjectUtils.argumentNotNull(properties, "Listing property set must be not null");
@@ -78,15 +85,6 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 	 */
 	public Set<Property> getPropertySet() {
 		return propertySet.getPropertySet();
-	}
-
-	/**
-	 * Get the id of given property.
-	 * @param property Property (not null)
-	 * @return The property id
-	 */
-	public String getPropertyId(Property<?> property) {
-		return propertySet.getPropertyName(property);
 	}
 
 	/*

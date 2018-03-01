@@ -737,6 +737,7 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		/**
 		 * Set the item listing data source using an {@link ItemDataProvider} and function to convert data source items
 		 * into required item type.
+		 * @param <ITEM> Item type
 		 * @param dataProvider Item data provider (not null)
 		 * @param converter Item converter (not null)
 		 * @return this

@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
+import com.holonplatform.core.exceptions.DataAccessException;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
@@ -74,6 +75,14 @@ public class DatastoreItemDataProvider extends AbstractDatastoreItemDataProvider
 	@Override
 	protected Stream<PropertyBox> executeQuery(Query query) {
 		return query.stream(getPropertySet());
+	}
+
+	@Override
+	public PropertyBox refresh(PropertyBox item) throws UnsupportedOperationException, DataAccessException {
+		if (item == null) {
+			return null;
+		}
+		return getDatastore().refresh(getTarget(), item);
 	}
 
 }

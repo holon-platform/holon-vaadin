@@ -17,9 +17,12 @@ package com.holonplatform.vaadin.internal.data;
 
 import java.util.stream.Stream;
 
+import com.holonplatform.core.beans.BeanPropertySet;
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
+import com.holonplatform.core.exceptions.DataAccessException;
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.query.BeanProjection;
 import com.holonplatform.core.query.Query;
 import com.holonplatform.core.query.QueryConfigurationProvider;
@@ -40,11 +43,16 @@ import com.holonplatform.vaadin.data.QueryConfigurationProviderSupport;
 public class DatastoreBeanItemDataProvider<T> extends AbstractDatastoreItemDataProvider<T> {
 
 	private static final long serialVersionUID = 6593984041773960514L;
-	
+
 	/**
 	 * Query projection bean class
 	 */
 	private final Class<T> beanClass;
+
+	/**
+	 * Bean property set
+	 */
+	private BeanPropertySet<T> beanPropertySet = null;
 
 	/**
 	 * Constructor.
@@ -66,6 +74,17 @@ public class DatastoreBeanItemDataProvider<T> extends AbstractDatastoreItemDataP
 		return beanClass;
 	}
 
+	/**
+	 * Get the bean property set.
+	 * @return The bean property set
+	 */
+	protected BeanPropertySet<T> getBeanPropertySet() {
+		if (beanPropertySet == null) {
+			beanPropertySet = BeanPropertySet.create(getBeanClass());
+		}
+		return beanPropertySet;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see
@@ -75,6 +94,21 @@ public class DatastoreBeanItemDataProvider<T> extends AbstractDatastoreItemDataP
 	@Override
 	protected Stream<T> executeQuery(Query query) {
 		return query.stream(BeanProjection.of(beanClass));
+	}
+
+	@Override
+	public T refresh(T item) throws UnsupportedOperationException, DataAccessException {
+		if (item == null) {
+			return null;
+		}
+		PropertyBox pb = PropertyBox.builder(getBeanPropertySet()).invalidAllowed(true).build();
+		getBeanPropertySet().read(pb, item);
+
+		// refresh using Datastore
+		pb = getDatastore().refresh(getTarget(), pb);
+
+		// return refreshed values
+		return getBeanPropertySet().write(pb, item);
 	}
 
 }

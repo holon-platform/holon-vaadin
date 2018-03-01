@@ -423,6 +423,7 @@ public interface ItemDataSource<ITEM, PROPERTY> extends QueryConfigurationProvid
 		 * persistence operations.
 		 * @param datastore The datastore to use (not null)
 		 * @param target The data target to use (not null)
+		 * @return The {@link CommitHandler} instance
 		 */
 		static CommitHandler<PropertyBox> datastore(Datastore datastore, DataTarget<?> target) {
 			return new DatastoreCommitHandler(datastore, target);
@@ -467,7 +468,7 @@ public interface ItemDataSource<ITEM, PROPERTY> extends QueryConfigurationProvid
 
 		/**
 		 * Add an Item property to this data source.
-		 * @param propertyId Property to add (not null)
+		 * @param property Property to add (not null)
 		 * @param type Property value type (not null)
 		 * @param generatePropertyId Whether to auto generate a property id as String
 		 * @return this
@@ -476,7 +477,7 @@ public interface ItemDataSource<ITEM, PROPERTY> extends QueryConfigurationProvid
 
 		/**
 		 * Add an Item property to this data source.
-		 * @param propertyId Property to add (not null)
+		 * @param property Property to add (not null)
 		 * @param type Property value type (not null)
 		 * @return this
 		 */

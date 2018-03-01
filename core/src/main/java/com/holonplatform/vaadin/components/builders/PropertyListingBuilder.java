@@ -22,6 +22,7 @@ import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.query.QueryConfigurationProvider;
+import com.holonplatform.vaadin.components.ItemListing;
 import com.holonplatform.vaadin.components.PropertyListing;
 import com.holonplatform.vaadin.data.ItemDataProvider;
 import com.holonplatform.vaadin.data.ItemDataSource.CommitHandler;
@@ -35,14 +36,15 @@ import com.vaadin.ui.renderers.Renderer;
 /**
  * An {@link ItemListingBuilder} using {@link Property} as item properties and {@link PropertyBox} as item data type.
  *
+ * @param <C> Actual listing type
  * @param <B> Concrete builder type
  * @param <X> Concrete backing component type
  *
  * @since 5.0.0
  */
 @SuppressWarnings("rawtypes")
-public interface PropertyListingBuilder<B extends PropertyListingBuilder<B, X>, X extends Component>
-		extends ItemListingBuilder<PropertyBox, Property, PropertyListing, B, X> {
+public interface PropertyListingBuilder<C extends ItemListing<PropertyBox, Property>, B extends PropertyListingBuilder<C, B, X>, X extends Component>
+		extends ItemListingBuilder<PropertyBox, Property, C, B, X> {
 
 	/**
 	 * Set the items data provider.
@@ -107,11 +109,15 @@ public interface PropertyListingBuilder<B extends PropertyListingBuilder<B, X>, 
 	B dataSource(Datastore datastore, DataTarget<?> dataTarget, Property... identifierProperties);
 
 	/**
-	 * Builder to create {@link PropertyListing} components using a {@link Grid} as backing component.
+	 * Builder to create {@link ItemListing} component with {@link Property} as property type, {@link PropertyBox} as
+	 * item type and using a {@link Grid} as backing component.
+	 * 
+	 * @param <C> Actual listing type
+	 * @param <B> Concrete builder type
 	 */
-	public interface GridPropertyListingBuilder
-			extends PropertyListingBuilder<GridPropertyListingBuilder, Grid<PropertyBox>>,
-			BaseGridItemListingBuilder<PropertyBox, Property, PropertyListing, GridPropertyListingBuilder> {
+	public interface BaseGridPropertyListingBuilder<C extends ItemListing<PropertyBox, Property>, B extends BaseGridPropertyListingBuilder<C, B>>
+			extends PropertyListingBuilder<C, B, Grid<PropertyBox>>,
+			BaseGridItemListingBuilder<PropertyBox, Property, C, B> {
 
 		/**
 		 * Set the field to use for given property in edit mode.
@@ -121,7 +127,7 @@ public interface PropertyListingBuilder<B extends PropertyListingBuilder<B, X>, 
 		 * @param editor Editor field (not null)
 		 * @return this
 		 */
-		<T, E extends HasValue<T> & Component> GridPropertyListingBuilder editor(Property<T> property, final E editor);
+		<T, E extends HasValue<T> & Component> B editor(Property<T> property, final E editor);
 
 		/**
 		 * Adds a {@link Validator} to the field bound to given <code>property</code> in the item listing editor.
@@ -130,7 +136,7 @@ public interface PropertyListingBuilder<B extends PropertyListingBuilder<B, X>, 
 		 * @param validator Validator to add (not null)
 		 * @return this
 		 */
-		default <T> GridPropertyListingBuilder withValidator(Property<T> property, Validator<T> validator) {
+		default <T> B withValidator(Property<T> property, Validator<T> validator) {
 			return withValidator(property, new ValidatorWrapper<>(validator));
 		}
 
@@ -142,7 +148,7 @@ public interface PropertyListingBuilder<B extends PropertyListingBuilder<B, X>, 
 		 * @param validator Validator to add (not null)
 		 * @return this
 		 */
-		<T> GridPropertyListingBuilder withValidator(Property<T> property, com.vaadin.data.Validator<T> validator);
+		<T> B withValidator(Property<T> property, com.vaadin.data.Validator<T> validator);
 
 		/**
 		 * Set a custom {@link Renderer} for given item property.
@@ -151,7 +157,7 @@ public interface PropertyListingBuilder<B extends PropertyListingBuilder<B, X>, 
 		 * @param renderer Renderer to use
 		 * @return this
 		 */
-		<T> GridPropertyListingBuilder render(Property<T> property, Renderer<? super T> renderer);
+		<T> B render(Property<T> property, Renderer<? super T> renderer);
 
 		/**
 		 * Set a custom {@link Renderer} and presentation provider for given item property.
@@ -162,8 +168,15 @@ public interface PropertyListingBuilder<B extends PropertyListingBuilder<B, X>, 
 		 * @param renderer Renderer to use
 		 * @return this
 		 */
-		<T, P> GridPropertyListingBuilder render(Property<T> property, ValueProvider<T, P> presentationProvider,
-				Renderer<? super P> renderer);
+		<T, P> B render(Property<T> property, ValueProvider<T, P> presentationProvider, Renderer<? super P> renderer);
+
+	}
+
+	/**
+	 * Builder to create a {@link PropertyListing} component using a {@link Grid} as backing component.
+	 */
+	public interface GridPropertyListingBuilder
+			extends BaseGridPropertyListingBuilder<PropertyListing, GridPropertyListingBuilder> {
 
 	}
 
