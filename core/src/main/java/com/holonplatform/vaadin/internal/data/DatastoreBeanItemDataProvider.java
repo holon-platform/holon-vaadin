@@ -20,9 +20,7 @@ import java.util.stream.Stream;
 import com.holonplatform.core.beans.BeanPropertySet;
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
-import com.holonplatform.core.exceptions.DataAccessException;
 import com.holonplatform.core.internal.utils.ObjectUtils;
-import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.query.BeanProjection;
 import com.holonplatform.core.query.Query;
 import com.holonplatform.core.query.QueryConfigurationProvider;
@@ -94,21 +92,6 @@ public class DatastoreBeanItemDataProvider<T> extends AbstractDatastoreItemDataP
 	@Override
 	protected Stream<T> executeQuery(Query query) {
 		return query.stream(BeanProjection.of(beanClass));
-	}
-
-	@Override
-	public T refresh(T item) throws UnsupportedOperationException, DataAccessException {
-		if (item == null) {
-			return null;
-		}
-		PropertyBox pb = PropertyBox.builder(getBeanPropertySet()).invalidAllowed(true).build();
-		getBeanPropertySet().read(pb, item);
-
-		// refresh using Datastore
-		pb = getDatastore().refresh(getTarget(), pb);
-
-		// return refreshed values
-		return getBeanPropertySet().write(pb, item);
 	}
 
 }

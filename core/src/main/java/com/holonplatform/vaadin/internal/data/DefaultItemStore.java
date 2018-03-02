@@ -304,15 +304,12 @@ public class DefaultItemStore<ITEM> implements ItemStore<ITEM> {
 		ObjectUtils.argumentNotNull(item, "Item to refresh must be not null");
 		int index = indexOfItem(getItemId(item));
 		if (index > -1) {
-			ITEM refreshed = getItemQuery().refresh(item);
-			if (refreshed != null) {
-				refreshItem(refreshed, index);
-			}
+			refreshItem(item, index);
 		}
 	}
 
 	/**
-	 * Refresh given Item instance at given item <code>index</code>
+	 * Refresh given item instance at given item <code>index</code>.
 	 * @param item Item to refresh
 	 * @param index Item index
 	 * @return <code>true</code> if found and refreshed

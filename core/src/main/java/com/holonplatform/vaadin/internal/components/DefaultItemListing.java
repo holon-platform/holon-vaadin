@@ -1298,8 +1298,6 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 
 		if (isBuffered()) {
 			requireDataSource().refresh(item);
-		} else {
-			requireDataSource().getConfiguration().getDataProvider().ifPresent(dp -> dp.refresh(item));
 		}
 
 		getGrid().getDataProvider().refreshItem(item);

@@ -39,7 +39,6 @@ public class TestItemStore {
 
 	private final AtomicInteger scount = new AtomicInteger();
 	private final AtomicInteger qcount = new AtomicInteger();
-	private final AtomicInteger rcount = new AtomicInteger();
 
 	@Test
 	public void testStore() {
@@ -142,12 +141,6 @@ public class TestItemStore {
 		store.refreshItem("a");
 
 		assertEquals(4, qcount.get());
-
-		store.refreshItem("f");
-
-		assertEquals(4, qcount.get());
-
-		assertEquals(2, rcount.get());
 	}
 
 	@SuppressWarnings("serial")
@@ -185,17 +178,6 @@ public class TestItemStore {
 				throws DataAccessException {
 			qcount.incrementAndGet();
 			return data.stream().skip(offset).limit(limit);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.data.ItemDataProvider#refresh(com.holonplatform.vaadin.data.ItemDataSource.
-		 * Configuration, java.lang.Object)
-		 */
-		@Override
-		public String refresh(String item) throws UnsupportedOperationException, DataAccessException {
-			rcount.incrementAndGet();
-			return item;
 		}
 
 	}
