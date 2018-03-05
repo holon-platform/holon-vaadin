@@ -77,7 +77,7 @@ public class DefaultViewNavigator extends Navigator implements ViewNavigatorAdap
 	 * @param display The ViewDisplay used to display the views.
 	 */
 	public DefaultViewNavigator(UI ui, ViewDisplay display) {
-		this(ui, new UriFragmentManager(ui.getPage()), display);
+		this(ui, null, display);
 	}
 
 	/**
