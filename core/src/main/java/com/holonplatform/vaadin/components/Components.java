@@ -41,6 +41,7 @@ import com.holonplatform.vaadin.components.builders.BaseSelectModeSingleProperty
 import com.holonplatform.vaadin.components.builders.BaseSelectModeSingleSelectInputBuilder.NativeModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.components.builders.BaseSelectModeSingleSelectInputBuilder.OptionsModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.components.builders.BaseSelectModeSingleSelectInputBuilder.SelectModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BeanListingBuilder;
 import com.holonplatform.vaadin.components.builders.BooleanInputBuilder;
 import com.holonplatform.vaadin.components.builders.ButtonBuilder;
 import com.holonplatform.vaadin.components.builders.ButtonConfigurator;
@@ -57,7 +58,6 @@ import com.holonplatform.vaadin.components.builders.GridLayoutBuilder;
 import com.holonplatform.vaadin.components.builders.HorizontalLayoutBuilder;
 import com.holonplatform.vaadin.components.builders.InputConfigurator;
 import com.holonplatform.vaadin.components.builders.InputConfigurator.BaseFieldConfigurator;
-import com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridItemListingBuilder;
 import com.holonplatform.vaadin.components.builders.LabelBuilder;
 import com.holonplatform.vaadin.components.builders.LayoutConfigurator;
 import com.holonplatform.vaadin.components.builders.LayoutConfigurator.BaseLayoutConfigurator;
@@ -827,7 +827,7 @@ public interface Components {
 		 * @param itemType Item bean type
 		 * @return Grid {@link ItemListing} builder
 		 */
-		static <T> GridItemListingBuilder<T> items(Class<T> itemType) {
+		static <T> BeanListingBuilder<T> items(Class<T> itemType) {
 			return BeanListing.builder(itemType);
 		}
 

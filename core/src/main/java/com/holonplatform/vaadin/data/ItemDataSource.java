@@ -29,6 +29,7 @@ import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
+import com.holonplatform.vaadin.internal.data.DatastoreBeanCommitHandler;
 import com.holonplatform.vaadin.internal.data.DatastoreCommitHandler;
 import com.holonplatform.vaadin.internal.data.DefaultItemDataSource;
 import com.holonplatform.vaadin.internal.data.DefaultItemSort;
@@ -427,6 +428,19 @@ public interface ItemDataSource<ITEM, PROPERTY> extends QueryConfigurationProvid
 		 */
 		static CommitHandler<PropertyBox> datastore(Datastore datastore, DataTarget<?> target) {
 			return new DatastoreCommitHandler(datastore, target);
+		}
+
+		/**
+		 * Construct a new {@link CommitHandler} for bean type items using a {@link Datastore} to perform persistence
+		 * operations.
+		 * @param <T> Bean type
+		 * @param beanClass Bean class (not null)
+		 * @param datastore The datastore to use (not null)
+		 * @param target The data target to use (not null)
+		 * @return The {@link CommitHandler} instance
+		 */
+		static <T> CommitHandler<T> datastore(Class<? extends T> beanClass, Datastore datastore, DataTarget<?> target) {
+			return new DatastoreBeanCommitHandler<>(beanClass, datastore, target);
 		}
 
 	}

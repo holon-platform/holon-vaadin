@@ -15,8 +15,8 @@
  */
 package com.holonplatform.vaadin.components;
 
-import com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridItemListingBuilder;
-import com.holonplatform.vaadin.internal.components.builders.DefaultGridItemListingBuilder;
+import com.holonplatform.vaadin.components.builders.BeanListingBuilder;
+import com.holonplatform.vaadin.internal.components.builders.DefaultBeanListingBuilder;
 import com.vaadin.ui.Grid;
 
 /**
@@ -34,8 +34,8 @@ public interface BeanListing<T> extends ItemListing<T, String> {
 	 * @param itemType Item bean type
 	 * @return Grid {@link BeanListing} builder
 	 */
-	static <T> GridItemListingBuilder<T> builder(Class<T> itemType) {
-		return new DefaultGridItemListingBuilder<>(itemType);
+	static <T> BeanListingBuilder<T> builder(Class<T> itemType) {
+		return new DefaultBeanListingBuilder<>(itemType);
 	}
 
 }
