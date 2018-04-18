@@ -1,4 +1,4 @@
-== Vaadin integration
+== Vaadin UI integration
 
 The `holon-vaadin` artifact is the main entry point to use the Holon platform Vaadin integration.
 
@@ -12,13 +12,14 @@ _Maven coordinates_:
 
 == Component builders
 
-A complete set of _fluent_ builders is available to create and configure the most common Vaadin standard components and the ones provided by the Holon platform Vaadin integration module.
+A complete set of _fluent_ builders is available to create and configure the most common Vaadin *components* and the additional components provided by the Holon platform Vaadin module.
 
-TIP: See <<UIComponents>> for a list of the additional components made available by the Holon platform Vaadin integration module.
+TIP: See <<UIComponents>> for a list of the additional components made available by the Holon platform Vaadin module.
 
-All the builders can be obtained by using the link:{apidir}/com/holonplatform/vaadin/components/Components.html[Components^] interface, which is organized in  sub-interfaces by components kind.
+All the builders can be obtained by using the link:{apidir}/com/holonplatform/vaadin/components/Components.html[Components^] API, which is organized in  sub-APIs by components category.
 
-.Components builders structure
+The available *component categories* are the following:
+
 |===
 |Sub-interface |Provides
 
@@ -36,6 +37,53 @@ All the builders can be obtained by using the link:{apidir}/com/holonplatform/va
 |===
 
 TIP: For each UI displayed text of a component (for example, the component caption or description), the builders provide the opportunity to set a _localizable_ text, using a `Localizable` object or directly providing the _message code_ and the _default message_ of the localizable text. In order for the localization to work, a `LocalizationContext` must be available as a context resource. See the link:holon-core.html#i18n[Internationalization] documentation for further information.
+
+[[ComponentBuildersCommonFeatures]]
+== Component builders common features
+
+The Holon Platform Vaadin component builders make available a set of common features, partly related to standard Vaadin features configuration and partly dedicated to the integration with some core Holon Platform APIs.
+
+[[MessagesLocalization]]
+=== Messages localization support
+
+The component builder methods that can be used to configure a _text to display_ for a component supports the *message localization* using the standard link:holon-core.html#i18n[Holon Platform internationalization APIs^].
+
+The message localization attributes can be provided either using:
+
+* A `Localizable` object instance;
+* Or directly providing the message localization attributes, such as the *message code*, the *default message* and the optional message localization _arguments_.
+
+A set of _localizable_ message builder methods are available, for example, for standard Vaadin component attributes, such as the component _caption_ and _description_.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleBuilders.java[tag=i18n,indent=0]
+----
+<1> Set the Button _caption_ using a default caption message (`DefaultCaption`) and a message localization code (`button.caption.code`)
+<2> Set a _localizable_ Label content using a `Localizable`
+
+IMPORTANT: In order for the message localization to work, a valid `LocalizationContext` instance must be available as a *context resource* using the default `LocalizationContext` resource key (i.e. the `LocalizationContext` class name). See the link:holon-core.html#LocalizationContext[LocalizationContext documentation^] for details about the `LocalizationContext` API and the link:holon-core.html#Context[Context resources documentation^] for information about the Holon Platform _Context_ architecture.
+
+[[DragAndDrop]]
+=== Drag and Drop support
+
+The Vaadin module component builders supports component *drag and drop* configuration, allowing to declare a component as _draggable_ and configure the drag mode and attributes and to declare a component as a _drop target_ providing the target configuration and logic to react to a drop event.
+
+The standard Vaadin `DragSourceExtension` and `DropTargetExtension` extensions are used to configure components drag and drop capabilities.
+
+The `dragSource` builder method can be used to declare a component as _draggable_. The provided `Consumer` can be used to configure the `DragSourceExtension` for the component.
+
+The `dropTarget` builder method can be used to declare a component as a _drop target_ and the provided `BiConsumer` can be used to configure the `DropTargetExtension` for the component and to obtain the actual component instance when a drop event occurs.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleBuilders.java[tag=dnd,indent=0]
+----
+<1> Configure the Label as _draggable_
+<2> The `DragSourceExtension` can be configured using the provided `Consumer` function
+<3> Configure the VerticalLayout as a _drop target_
+<4> The `DropTargetExtension` can be configured using the provided `BiConsumer` function
+<5> The second argument of the `BiConsumer` function is the actual VerticalLayout instance, used in this case to add the dropped component to the layout when a drop event occurs
 
 [[UIComponents]]
 == UI Components
