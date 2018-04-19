@@ -19,13 +19,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
+import com.holonplatform.core.property.NumericProperty;
 import com.holonplatform.core.property.PathProperty;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
+import com.holonplatform.core.property.StringProperty;
+import com.holonplatform.core.query.QueryConfigurationProvider;
+import com.holonplatform.core.query.QueryFilter;
+import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.vaadin.components.BeanListing;
 import com.holonplatform.vaadin.components.Components;
 import com.holonplatform.vaadin.components.ItemListing.ColumnAlignment;
@@ -40,8 +46,8 @@ import com.vaadin.ui.renderers.TextRenderer;
 @SuppressWarnings("unused")
 public class ExampleListing {
 
-	private final static PathProperty<Long> ID = PathProperty.create("id", Long.class);
-	private final static PathProperty<String> DESCRIPTION = PathProperty.create("description", String.class);
+	private final static NumericProperty<Long> ID = NumericProperty.longType("id");
+	private final static PathProperty<String> DESCRIPTION = StringProperty.create("description");
 	private final static PropertySet<?> PROPERTIES = PropertySet.of(ID, DESCRIPTION);
 
 	// tag::beanListing1[]
@@ -95,7 +101,7 @@ public class ExampleListing {
 		// tag::beanListing5[]
 		BeanListing<TestData> listing = Components.listing.items(TestData.class) //
 				.dataSource(getDatastore(), DataTarget.named("test")).build();
-		
+
 		listing.refresh(); // <1>
 		// end::beanListing5[]
 	}
@@ -111,8 +117,8 @@ public class ExampleListing {
 
 	public void propertyListing() {
 		// tag::propertyListing[]
-		final PathProperty<Long> ID = PathProperty.create("id", Long.class);
-		final PathProperty<String> DESCRIPTION = PathProperty.create("description", String.class);
+		final NumericProperty<Long> ID = NumericProperty.longType("id");
+		final StringProperty DESCRIPTION = StringProperty.create("description");
 
 		final PropertySet<?> PROPERTIES = PropertySet.of(ID, DESCRIPTION);
 
@@ -120,13 +126,36 @@ public class ExampleListing {
 		// end::propertyListing[]
 	}
 
+	public void identifiers() {
+		// tag::identifiers[]
+		final NumericProperty<Long> ID = NumericProperty.longType("id");
+		final StringProperty DESCRIPTION = StringProperty.create("description");
+
+		final PropertySet<?> PROPERTIES = PropertySet.builderOf(ID, DESCRIPTION).identifier(ID).build(); // <1>
+
+		PropertyListing listing = Components.listing.properties(PROPERTIES).build();
+		// end::identifiers[]
+	}
+
 	public void listing1() {
 		// tag::listing1[]
-		ItemDataProvider<PropertyBox> dataProvider = getDataProvider();
+		ItemDataProvider<PropertyBox> dataProvider = ItemDataProvider.create(cfg -> 0, // <1>
+				(cfg, offset, limit) -> Stream.empty()); // <2>
+
 		PropertyListing listing = Components.listing.properties(PROPERTIES) //
-				.dataSource(dataProvider) // <1>
+				.dataSource(dataProvider) // <3>
 				.build();
 		// end::listing1[]
+	}
+
+	public void listing1b() {
+		// tag::listing1b[]
+		Datastore datastore = getDatastore();
+
+		PropertyListing listing = Components.listing.properties(PROPERTIES) //
+				.dataSource(datastore, DataTarget.named("test")) // <1>
+				.build();
+		// end::listing1b[]
 	}
 
 	public void listing2() {
@@ -138,18 +167,28 @@ public class ExampleListing {
 				.build();
 
 		listing = Components.listing.properties(PROPERTIES) //
-				.dataSource(dataProvider, ID) // <2>
+				.dataSource(getDatastore(), DataTarget.named("test"), ID) // <2>
 				.build();
 		// end::listing2[]
 	}
 
 	public void listing3() {
 		// tag::listing3[]
-		Datastore datastore = getDatastore();
-
 		PropertyListing listing = Components.listing.properties(PROPERTIES) //
-				.dataSource(datastore, DataTarget.named("test"), ID) // <1>
-				.build();
+				.dataSource(getDatastore(), DataTarget.named("test")) //
+				.withQueryConfigurationProvider(new QueryConfigurationProvider() { // <1>
+
+					@Override
+					public QueryFilter getQueryFilter() {
+						return ID.gt(0L);
+					}
+
+					@Override
+					public QuerySort getQuerySort() {
+						return DESCRIPTION.asc();
+					}
+
+				}).build();
 		// end::listing3[]
 	}
 

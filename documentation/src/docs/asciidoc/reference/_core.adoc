@@ -1023,225 +1023,83 @@ Two `ItemListing` implementations are available to use this component:
 [[PropertyListing]]
 === PropertyListing
 
-A link:{apidir}/com/holonplatform/vaadin/components/PropertyListing.html[PropertyListing^] can be obtained by providing the `Property` set to use for the listing items.
+A link:{apidir}/com/holonplatform/vaadin/components/PropertyListing.html[PropertyListing^] implementation can be obtained using the link:{apidir}/com/holonplatform/vaadin/components/Components.html[Components^] API, through the `listing.properties` method.
 
-The listing columns will be generated according to the item property set `Property` types and each column will be identified by the `Property` itself.
+The `Property` set to use to configure the `PropertyListing` must be provided, for each `Property` of the property set a listing column and configured to the `Property` types. Each column will be identified by the `Property` itself.
 
-For each property:
+In particular, for each `Property` of the _property set_:
 
-* The property _caption_, if available, will be used as column header. The caption/header localization is fully supported and performed if a `LocalizationContext` is available;
-* The cells of the column which corresponds to a property will be rendered according to the property type and relying on the available property value _presenters_;
-* For any property of `com.vaadin.ui.Component` type, a `ComponentRenderer` will be automatically used to render the Vaadin components in the cells.
+* The property _caption_, if available, will be used as *column header*. The caption/header _localization_ is fully supported and performed if a `LocalizationContext` is available. See <<MessagesLocalization>> for details.
+* The cells of the column which corresponds to a property will be rendered according to the *property type* and relying on the available property value _presenters_.
+* For any property of `com.vaadin.ui.Component` type, a `ComponentRenderer` will be automatically used to render the Vaadin Component in the listing column cells.
 
 [source, java]
 ----
 include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=propertyListing,indent=0]
 ----
-<1> Create a `PropertyListing` using given `Property` set
+<1> Create a `PropertyListing` using given `PROPERTIES` property set 
 
-=== Items data source
+[[PropertySetIdentifiers]]
+==== Items type and identifiers
 
-To build an item listing, the *data source* of the items must be provided using the link:{apidir}/com/holonplatform/vaadin/data/ItemDataProvider.html[ItemDataProvider^] interface.
+The link:holon-core.html#PropertyBox[PropertyBox^] type is used to represent a `PropertyListing` _item_, i.e. a listing _row_. For each property listing row, the `PropertyBox` type item collects the values of each `Property` bound to the listing columns.
+
+By default, the listing property set *identifier properties* are used to provide the `PropertyBox` items identifiers, if available. See the link:holon-core.html#IdentifierProperties[property set identifier properties^] documentation for details.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=identifiers,indent=0]
+----
+<1> Set the `ID` property as property set identifier property
+
+==== Items data source
+
+The `PropertyBox` type item set handled by the `PropertyListing` is provided using an items *data source*, which can be configured using the `PropertyListing` builder API using the `dataSource` methods.
+
+The link:{apidir}/com/holonplatform/vaadin/data/ItemDataProvider.html[ItemDataProvider^] API is used to represent the items data source. 
+
+An `ItemDataProvider` implementation provides methods to obtain the item set *size* and to load a subset of the items using a *limit* which represents the subset size and a *offset* index to specify which subset to return. For a `PropertyListing`, the items subset is returned as a Stream of `PropertyBox` instances.
+
+The `ItemDataProvider` methods accepts a `QueryConfigurationProvider` instance, to provide the `QueryFilter` and the `QuerySort` to be used to query the item set.
+
+TIP: See the link:holon-core.html#Query[Query documentation^] for information about the _query_ definition using the Holon Platform link:holon-core.html#Property[Property model^].
 
 [source, java]
 ----
 include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing1,indent=0]
 ----
-<1> Create a `PropertyListing` and provide an `ItemDataProvider` as data source
+<1> Create a `ItemDataProvider` which always returns a 0 size item set
+<2> Return an empty Stream as item set
+<3> Create a `PropertyListing` using the `dataProvider` as items data source
 
-Furthermore, an link:{apidir}/com/holonplatform/vaadin/data/ItemIdentifierProvider.html[ItemIdentifierProvider^] should be configured to provide the item *identifiers*, expecially for the item selection consistency. The default behaviour is to use the item itself as its own identifier, which it is not always the right semantic to use, expecially for `PropertyBox` type objects.
+A convenience method is available to use the link:holon-core.html#Datastore[Datastore API^] as items data source, providing the `DataTarget` to use to perform the query on the concrete persistence source.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing1b,indent=0]
+----
+<1> Use a `Datastore` as data source. The `Datastore` API will be used to perform the queries to obtain the items set, with the given `DataTarget` as query target
+
+==== Item identifier configuration
+
+When the property set of the `PropertyListing`, used to represent the `PropertyBox` type items, does not provide one or more _identifier properties_ as described in the <<PropertySetIdentifiers>> section, the link:{apidir}/com/holonplatform/vaadin/data/ItemIdentifierProvider.html[ItemIdentifierProvider^] interface can be used to provide the item identifiers.
 
 [source, java]
 ----
 include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing2,indent=0]
 ----
-<1> Create a `PropertyListing` and provide an `ItemDataProvider` as data source, along with an `ItemIdentifierProvider` which provides the value of the `ID` property as item id
-<2> A shorter builder method to use the `ID` property as item identifier
+<1> Create a `PropertyListing` and provide an `ItemDataProvider` as data source, along with an `ItemIdentifierProvider` which provides the value of the `ID` property as item identifier
+<2> A shorter builder method to use the `ID` property as item identifier when a `Datastore` is used as items data source
 
-The item listing builders make available convenience methods to use a `Datastore` as data source, providing the `DataTarget` to use as target of the query on the backend data (for example, the name of a RDBMS table).
+==== Item query configuration
+
+One or more `QueryConfigurationProvider` can be registered in the `PropertyListing` to provide additional and dynamic items query configuration elements, such as `QueryFilter` and `QuerySort`.
 
 [source, java]
 ----
 include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing3,indent=0]
 ----
-<1> Create a `PropertyListing` and use a `Datastore` to build a data source which performs a query using the `test` data target (which can be, for example, the name of a RDBMS table), the property set of the listing as query projection and the `ID` property as item identifier
-
-=== Columns configuration
-
-The listing component columns can be configured in a number of ways:
-
-[source, java]
-----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing4,indent=0]
-----
-<1> Set a custom header caption for the `ID` property/column
-<2> Set whether the listing columns can be hidden
-<3> Set that the `ID` property/column cannot be hidden
-<4> Set whether the listing columns can reordered
-<5> Set the `ID` property/column cell contents alignment
-<6> Set the `DESCRIPTION` property/column as hidden by default
-<7> Set the `ID` property/column as not resizable
-<8> Set the `ID` property/column width in pixels
-<9> Set the `DESCRIPTION` property/column expand ratio
-<10> Set the `DESCRIPTION` property/column minimum width
-<11> Set the `DESCRIPTION` property/column maximum width
-<12> Set the `ID` property/column CSS style generator
-<13> Add a listener to be notified when the listing columns order changes
-<14> Add a listener to be notified when a property/column is resized 
-<15> Add a listener to be notified when a property/column is shown or hidden 
-
-=== Column rendering
-
-The default column rendering can be overridden using a custom vaadin `Renderer`. The `Renderer` must handle the same data type of the property/column for which it is configured. 
-
-Furthermore, a property/column value can be converted to a different value type, and, in this case, a suitable `Renderer` for the converted type must be provided.
-
-[source, java]
-----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing5,indent=0]
-----
-<1> Set a custom `NumberRenderer` for the `ID` property/column (which is of type `Long`)
-<2> Set a converter to convert the `Long` type value of the `ID` property/column into a `String` and a suitable render according to the new value type
-
-=== Listing configuration
-
-The item listing component is highly configurable. Through the builders you can configure:
-
-* The *header appeareance*, adding and removing header rows and joining header columns
-* Showing and configuring a *footer* section
-* Set a number of column as *frozen*
-* Provide *rows CSS style* using a style generator
-* Provide item *description* (tooltip) for item rows
-* Provide a *item click listener* to listen for user clicks on item rows
-* Provide a *row details component* which can be shown for each item row
-
-[source, java]
-----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing6,indent=0]
-----
-<1> Set the height of the listing defined by its contents
-<2> Set the _frozen_ columns count
-<3> Hide all the listing headers
-<4> Set the row CSS style generator
-<5> Set the item/row description (tooltip) generator
-<6> Set the item/row _details_ component generator
-<7> Register a item click listener
-<8> Add a style class name to the default header row
-<9> Append a row to the listing footer and set a style class name for it
-<10> Set the footer _generator_ to invoke to update the listing footer contents
-<11> Set a post-processor to customize the internal `Grid` component
-
-=== Item selection
-
-The item listing component supports items selection, both in single and multiple mode. The listing can be made selectable by using the `setSelectionMode` method or the `selectionMode` builder method.
-
-Just like any other `Selectable` component, the item listing component provides methods to inspect the current selected item/s and change the current selection.
-
-.Single selection mode
-[source, java]
-----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing7,indent=0]
-----
-<1> Set the listing _selectable_ in `SINGLE` selection mode
-<2> Get the currently selected item, if any
-<3> Check whether the given item is selected
-<4> Select the given item
-<5> Deselect all (clear current selection)
-
-.Multiple selection mode
-[source, java]
-----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing8,indent=0]
-----
-<1> Set the listing _selectable_ in `MULTI` selection mode
-<2> Get the selected items
-<3> Check whether the given item is selected
-<4> Select the given item
-<5> Deselect all items
-<6> Select all items
-
-NOTE: The *select all* checkbox shown in the top left corner of the listing is visible by default. You can control the checkbox visibility using the `selectAllCheckBoxVisibility(...)` method of the item listing builder.
-
-=== Item query configuration
-
-The item listing builder provides a number of methods to control the data source items query, allowing to:
-
-* Set a property/column as *sortable* or not and *override the default sort behaviour*, for example using another property as query sort target or providing a custom `QuerySort`;
-* Set a *fixed sort*, which will be always appended to current query sorts
-* Set a *default sort*, to be used when no other query sort is configured
-* Set a *fixed filter*, which will be always applied to the query
-* Register one or more `QueryConfigurationProvider` to provide custom query configuration logic
-
-[source, java]
-----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing9,indent=0]
-----
-<1> Set the `ID` property/column as sortable
-<2> Set to use the `DESCRIPTION` property to sort the `ID` property/column
-<3> Set a custom `QuerySort` for the `ID` property/column
-<4> Set a fixed `QuerySort`, which will always to appended to current query sorts
-<5> Set the default `QuerySort`, to be used when no other query sort is configured
-<6> Set a fixed `QueryFilter`
-<7> Add a `QueryConfigurationProvider`
-
-=== Item set management
-
-The item set component provides methods to manage the item set which is provided as the listing data source, to add, update and remove one or more items in the set.
-
-To reflect the item set management operations in the underlyng data source (for example, a RDBMS), the `CommitHandler` interface is used. The `commit(...)` method of that interface is invoked at each item set modification, providing the _added_, _updated_ and _removed_ items. The `CommitHandler` implementation should persist the item set modifications in the concrete data source.
-
-NOTE: When using the `dataSource(...)` builder method which accepts a `Datastore` as data source, a default `CommitHandler` is automatically configured, using the provided `Datastore` to perform the item persistence operations.
-
-[source, java]
-----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing10,indent=0]
-----
-<1> When using the `Datastore` method of the data source builder, a default `CommitHandler` is automatically configured
-<2> You can provide a custom `CommitHandler` using the `commitHandler(...)` builder method
-<3> Add an item 
-<4> Refresh (update) the item
-<5> Remove the item
-
-==== Buffered mode
-
-The item set component supports a *buffered* mode to handle its items set. When in _buffered_ mode, the item set modifications are cached internally and not reflected to the concrete data source until the `commit()` method is called.
-
-A `discard()` method is provided to discards all changes since last commit.
-
-The same `CommitHandler` as before is used to persist the item set modifications, but it is invoked only when the `commit()` method is called.
-
-[source, java]
-----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing11,indent=0]
-----
-<1> Set the listing in _buffered_ mode
-<2> Add an item 
-<3> Refresh (update) the item
-<4> Remove the item
-<5> _commit_ the item set modifications
-<6> _discard_ the item set modifications since the last commit
-
-=== Editing items
-
-The item listing component supports line-based editing, where double-clicking a row opens the row editor, using the default Vaadin `Grid` editor. The item listing editor must be enabled using the `editable(true)` method of the builder in order to activate the row editor at double-click.
-
-The *editor fields* to use for each listing property/column will be auto-generated according to the property/column type. This behaviour can be overridden providing custom editor fields for one or more of the listing properties.
-
-The item listing component editor supports *validation*, allowing to register value validators both for the single property/column fields and for the overall value validation. 
-
-[source, java]
-----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing12,indent=0]
-----
-<1> Set the listing as editable
-<2> Set the row editor in buffered mode
-<3> Set the editor _save_ button caption
-<4> Set the editor _cancel_ button caption
-<5> Set a property as not editable
-<6> Set a custom editor field
-<7> Add an overall value validator
-<8> Add a property value validator
-<9> Set the `ID` property as required, automatically adding a _not empty_ validator
+<1> Add a `QueryConfigurationProvider` to the `PropertyListing`
 
 [[BeanListing]]
 === BeanListing
@@ -1306,6 +1164,198 @@ The `BeanListing` API makes available a `refresh()` method to _refresh_ the curr
 include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=beanListing5,indent=0]
 ----
 <1> Refresh the items set
+
+[[ItemListingConfiguration]]
+=== Item listing API and configuration
+
+The item listing component _builder_ API provides a wide set of configuration methods which can be used to:
+
+* Configure the listing columns, header and footer sections.
+* Register a number of _listeners_ for different event types.
+* Configure the items data source query.
+
+See the next sections for details.
+
+==== Columns configuration
+
+The listing component columns can be configured in a number of ways. Below is provided an example which uses a `PropertyListing` and shows the available column configuration methods:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing4,indent=0]
+----
+<1> Set a custom header caption for the `ID` property/column
+<2> Set whether the listing columns can be hidden
+<3> Set that the `ID` property/column cannot be hidden
+<4> Set whether the listing columns can reordered
+<5> Set the `ID` property/column cell contents alignment
+<6> Set the `DESCRIPTION` property/column as hidden by default
+<7> Set the `ID` property/column as not resizable
+<8> Set the `ID` property/column width in pixels
+<9> Set the `DESCRIPTION` property/column expand ratio
+<10> Set the `DESCRIPTION` property/column minimum width
+<11> Set the `DESCRIPTION` property/column maximum width
+<12> Set the `ID` property/column CSS style generator
+<13> Add a listener to be notified when the listing columns order changes
+<14> Add a listener to be notified when a property/column is resized 
+<15> Add a listener to be notified when a property/column is shown or hidden 
+
+==== Columns rendering
+
+By default, the cells of a column bound to a `Property` are _rendered_ using the Holon Platform property value _presenters_ available from the default registry, to provide the String representation of the cell value. 
+
+NOTE: See the link:holon-core.html#StringValuePresenter[String value presenters^] documentation for details.
+
+The default column rendering can be overridden using a custom Vaadin `Renderer`. The provided `Renderer` must handle the same data type of the property/column for which it is configured. 
+
+Furthermore, a property/column value can be converted to a different value type, and, in this case, a suitable `Renderer` for the converted type must be provided.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing5,indent=0]
+----
+<1> Set a custom `NumberRenderer` for the `ID` property/column (which is of type `Long`)
+<2> Set a converter to convert the `Long` type value of the `ID` property/column into a `String` and a suitable render according to the new value type
+
+==== Item listing configuration
+
+The item listing component is highly configurable. Through the builders you can configure:
+
+* The *header appeareance*, adding and removing header rows and joining header columns
+* Showing and configuring a *footer* section
+* Set a number of column as *frozen*
+* Provide *rows CSS style* using a style generator
+* Provide item *description* (tooltip) for item rows
+* Provide a *item click listener* to listen for user clicks on item rows
+* Provide a *row details component* which can be shown for each item row
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing6,indent=0]
+----
+<1> Set the height of the listing defined by its contents
+<2> Set the _frozen_ columns count
+<3> Hide all the listing headers
+<4> Set the row CSS style generator
+<5> Set the item/row description (tooltip) generator
+<6> Set the item/row _details_ component generator
+<7> Register a item click listener
+<8> Add a style class name to the default header row
+<9> Append a row to the listing footer and set a style class name for it
+<10> Set the footer _generator_ to invoke to update the listing footer contents
+<11> Set a post-processor to customize the internal `Grid` component
+
+==== Items selection
+
+The item listing component supports items selection, both in single and multiple mode. The listing can be made selectable by using the `setSelectionMode` method or the `selectionMode` builder method.
+
+Just like any other `Selectable` component, the item listing component provides methods to inspect the current selected item/s and change the current selection.
+
+.Single selection mode
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing7,indent=0]
+----
+<1> Set the listing _selectable_ in `SINGLE` selection mode
+<2> Get the currently selected item, if any
+<3> Check whether the given item is selected
+<4> Select the given item
+<5> Deselect all (clear current selection)
+
+.Multiple selection mode
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing8,indent=0]
+----
+<1> Set the listing _selectable_ in `MULTI` selection mode
+<2> Get the selected items
+<3> Check whether the given item is selected
+<4> Select the given item
+<5> Deselect all items
+<6> Select all items
+
+NOTE: The *select all* checkbox shown in the top left corner of the listing is visible by default. You can control the checkbox visibility using the `selectAllCheckBoxVisibility(...)` method of the item listing builder.
+
+==== Items query configuration
+
+The item listing builder provides a number of methods to control the data source items query, allowing to:
+
+* Set a property/column as *sortable* or not and *override the default sort behaviour*, for example using another property as query sort target or providing a custom `QuerySort`;
+* Set a *fixed sort*, which will be always appended to current query sorts
+* Set a *default sort*, to be used when no other query sort is configured
+* Set a *fixed filter*, which will be always applied to the query
+* Register one or more `QueryConfigurationProvider` to provide custom query configuration logic
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing9,indent=0]
+----
+<1> Set the `ID` property/column as sortable
+<2> Set to use the `DESCRIPTION` property to sort the `ID` property/column
+<3> Set a custom `QuerySort` for the `ID` property/column
+<4> Set a fixed `QuerySort`, which will always to appended to current query sorts
+<5> Set the default `QuerySort`, to be used when no other query sort is configured
+<6> Set a fixed `QueryFilter`
+<7> Add a `QueryConfigurationProvider`
+
+==== Item set management
+
+The item set component provides methods to manage the item set which is provided as the listing data source, to add, update and remove one or more items in the set.
+
+To reflect the item set management operations in the underlyng data source (for example, a RDBMS), the `CommitHandler` interface is used. The `commit(...)` method of that interface is invoked at each item set modification, providing the _added_, _updated_ and _removed_ items. The `CommitHandler` implementation should persist the item set modifications in the concrete data source.
+
+NOTE: When using the `dataSource(...)` builder method which accepts a `Datastore` as data source, a default `CommitHandler` is automatically configured, using the provided `Datastore` to perform the item persistence operations.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing10,indent=0]
+----
+<1> When using the `Datastore` method of the data source builder, a default `CommitHandler` is automatically configured
+<2> You can provide a custom `CommitHandler` using the `commitHandler(...)` builder method
+<3> Add an item 
+<4> Refresh (update) the item
+<5> Remove the item
+
+==== Buffered mode
+
+The item set component supports a *buffered* mode to handle its items set. When in _buffered_ mode, the item set modifications are cached internally and not reflected to the concrete data source until the `commit()` method is called.
+
+A `discard()` method is provided to discards all changes since last commit.
+
+The same `CommitHandler` as before is used to persist the item set modifications, but it is invoked only when the `commit()` method is called.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing11,indent=0]
+----
+<1> Set the listing in _buffered_ mode
+<2> Add an item 
+<3> Refresh (update) the item
+<4> Remove the item
+<5> _commit_ the item set modifications
+<6> _discard_ the item set modifications since the last commit
+
+==== Editing items
+
+The item listing component supports line-based editing, where double-clicking a row opens the row editor, using the default Vaadin `Grid` editor. The item listing editor must be enabled using the `editable(true)` method of the builder in order to activate the row editor at double-click.
+
+The *editor fields* to use for each listing property/column will be auto-generated according to the property/column type. This behaviour can be overridden providing custom editor fields for one or more of the listing properties.
+
+The item listing component editor supports *validation*, allowing to register value validators both for the single property/column fields and for the overall value validation. 
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing12,indent=0]
+----
+<1> Set the listing as editable
+<2> Set the row editor in buffered mode
+<3> Set the editor _save_ button caption
+<4> Set the editor _cancel_ button caption
+<5> Set a property as not editable
+<6> Set a custom editor field
+<7> Add an overall value validator
+<8> Add a property value validator
+<9> Set the `ID` property as required, automatically adding a _not empty_ validator
 
 == Dialogs
 
