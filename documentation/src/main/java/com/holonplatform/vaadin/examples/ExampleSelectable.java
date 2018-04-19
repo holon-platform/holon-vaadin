@@ -201,8 +201,20 @@ public class ExampleSelectable {
 		// end::selectable11[]
 	}
 
+	public void selectable12() {
+		// tag::selectable12[]
+		SingleSelect<MyEnum> singleSelect = Components.input.enumSingle(MyEnum.class).build(); // <1>
+		singleSelect = Components.input.enumSingle(MyEnum.class, RenderingMode.NATIVE_SELECT).build(); // <2>
+
+		MultiSelect<MyEnum> multiSelect = Components.input.enumMulti(MyEnum.class).build(); // <3>
+		// end::selectable12[]
+	}
+
 	private static Datastore obtainDatastore() {
 		return null;
+	}
+
+	private enum MyEnum {
 	}
 
 	private class TestData {

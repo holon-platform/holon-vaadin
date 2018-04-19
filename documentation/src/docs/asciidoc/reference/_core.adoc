@@ -493,6 +493,20 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[
 <1> Create a `SingleSelect` using the *OPTIONS* rendering mode: a `CheckBox` group UI component will be used
 <2> Create a `MultiSelect` using the *SELECT* rendering mode: a `ListSelect` UI component will be used
 
+==== Using _selectable_ Inputs for Enumerations
+
+The link:{apidir}/com/holonplatform/vaadin/components/Components.html[Components^] API provides convenience methods to build a _selectable_ `Input` using the values of an *enumeration* as selection items.
+
+The enumeration _selectable_ `Input` can be obtained either as a *single* select or a *multiple* select, even specifying the `RenderingMode` to use.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[tag=selectable12,indent=0]
+----
+<1> Create a `SingleSelect` Input for the `MyEnum` enumeration
+<2> Create a `SingleSelect` Input for the `MyEnum` enumeration using `NATIVE_SELECT` as rendering mode
+<3> Create a `MultiSelect` Input for the `MyEnum` enumeration
+
 ==== Selection items data source
 
 The data source of the available items for a _selectable_ `Input` can be configured in the following ways:
