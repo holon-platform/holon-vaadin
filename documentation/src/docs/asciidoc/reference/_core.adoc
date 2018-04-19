@@ -725,7 +725,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInputGroup.java[
 ----
 <1> Add a `Validator` bound to the `DESCRIPTION` property to check that the value size is not greater than 100 characters
 <2> Add a `com.vaadin.data.Validator` to check the `ID` property value is not null
-<4> Add an overall (group) `Validator` which reads the `ID` property value from the group `PropertyBox` value and checks it is greater than 0
+<3> Add an overall (group) `Validator` which reads the `ID` property value from the group `PropertyBox` value and checks it is greater than 0
 
 Furthermore, a set of `required(...)` group builder methods are provided to add a *required validator* to a property (i.e. a validator that check the value is not `null` or empty) and to *show the required indicator symbol* along with the property `Input` component. 
 
@@ -792,7 +792,7 @@ The property input group supports `ValidationStatusHandler` configuration both f
 
 [source, java]
 ----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInputGroup.java[tag=group6,indent=0]
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInputGroup.java[tag=group6c,indent=0]
 ----
 <1> Configure a `ValidationStatusHandler` for the overall (group) validation
 <2> Configure a `ValidationStatusHandler` for the properties validation
@@ -879,7 +879,7 @@ A `initializer(...)` builder method is available to perform custom configuration
 
 [source, java]
 ----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInputGroup.java[tag=form21,indent=0]
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInputGroup.java[tag=form2,indent=0]
 ----
 <1> Provide base layout component initialization using an _initializer_
 
@@ -955,8 +955,8 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleViewComponent.ja
 ----
 <1> Get a `ViewComponent` builder using a `String` value type
 <2> Configure the `ViewComponent` component
-<2> Set the `ViewComponent` value
-<3> Get the `ViewComponent` value
+<3> Set the `ViewComponent` value
+<4> Get the `ViewComponent` value
 
 ==== View component Groups and Forms
 
@@ -974,8 +974,8 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleViewComponent.ja
 ----
 <1> Create a `PropertyViewGroup` using the `PROPERTIES` property set
 <2> Create a `PropertyViewForm` using the `PROPERTIES` property set and a `VerticalLayout` as base layout
-<4> Set the form value using a `PropertyBox`
-<5> Get the form value as a `PropertyBox`
+<3> Set the form value using a `PropertyBox`
+<4> Get the form value as a `PropertyBox`
 
 The `PropertyViewGroup` and `PropertyViewForm` provide all the base components configuration capabilities of their corresponding <<PropertyInputGroup,PropertyInputGroup>> and <<PropertyInputForm,PropertyInputForm>> implementations.
 

@@ -97,7 +97,7 @@ public class ExampleListing {
 				.dataSource(getDatastore(), DataTarget.named("test")).build();
 		
 		listing.refresh(); // <1>
-		// end::beanListing4[]
+		// end::beanListing5[]
 	}
 
 	public void beanListing() {

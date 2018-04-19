@@ -233,7 +233,7 @@ public class ExampleInput {
 		// tag::input7[]
 		Input<String> stringInput = Components.input.string().build();
 
-		Input<Integer> integerInput = Input.from(stringInput, new StringToIntegerConverter("Conversion error")); // <2>
+		Input<Integer> integerInput = Input.from(stringInput, new StringToIntegerConverter("Conversion error")); // <1>
 
 		Input<Boolean> booleanInput = Input.from(integerInput, // <2>
 				Converter.from(value -> Result.ok((value == null) ? Boolean.FALSE : (value.intValue() > 0)),

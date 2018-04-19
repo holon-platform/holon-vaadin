@@ -101,7 +101,7 @@ public class ExampleComponents {
 		// tag::builder4[]
 		Label lbl = Components.label() //
 				.caption("Default caption", "caption.message.code") //
-				.deferLocalization() // 1>
+				.deferLocalization() // <1>
 				.build();
 		// end::builder4[]
 	}
