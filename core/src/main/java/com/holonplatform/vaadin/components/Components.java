@@ -59,6 +59,8 @@ import com.holonplatform.vaadin.components.builders.HorizontalLayoutBuilder;
 import com.holonplatform.vaadin.components.builders.InputConfigurator;
 import com.holonplatform.vaadin.components.builders.InputConfigurator.BaseFieldConfigurator;
 import com.holonplatform.vaadin.components.builders.LabelBuilder;
+import com.holonplatform.vaadin.components.builders.LabelConfigurator;
+import com.holonplatform.vaadin.components.builders.LabelConfigurator.BaseLabelConfigurator;
 import com.holonplatform.vaadin.components.builders.LayoutConfigurator;
 import com.holonplatform.vaadin.components.builders.LayoutConfigurator.BaseLayoutConfigurator;
 import com.holonplatform.vaadin.components.builders.MultiPropertySelectInputBuilder.GenericMultiPropertySelectInputBuilder;
@@ -99,6 +101,7 @@ import com.holonplatform.vaadin.internal.components.builders.DefaultFormLayoutBu
 import com.holonplatform.vaadin.internal.components.builders.DefaultGridLayoutBuilder;
 import com.holonplatform.vaadin.internal.components.builders.DefaultHorizontalLayoutBuilder;
 import com.holonplatform.vaadin.internal.components.builders.DefaultLabelBuilder;
+import com.holonplatform.vaadin.internal.components.builders.DefaultLabelConfigurator;
 import com.holonplatform.vaadin.internal.components.builders.DefaultLayoutConfigurator;
 import com.holonplatform.vaadin.internal.components.builders.DefaultOrderedLayoutConfigurator;
 import com.holonplatform.vaadin.internal.components.builders.DefaultPanelBuilder;
@@ -145,6 +148,15 @@ public interface Components {
 	 */
 	static BaseComponentConfigurator configure(AbstractComponent component) {
 		return new DefaultComponentConfigurator(component);
+	}
+
+	/**
+	 * Get a {@link LabelConfigurator} to configure given label.
+	 * @param button Label to configure (not null)
+	 * @return BaseLabelConfigurator
+	 */
+	static BaseLabelConfigurator configure(Label label) {
+		return new DefaultLabelConfigurator(label);
 	}
 
 	/**
