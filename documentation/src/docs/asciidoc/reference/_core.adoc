@@ -1039,6 +1039,8 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag
 ----
 <1> Create a `PropertyListing` using given `PROPERTIES` property set 
 
+NOTE: See the <<ItemListingConfiguration>> to learn about the item listing API operations and configuration options.
+
 [[PropertySetIdentifiers]]
 ==== Items type and identifiers
 
@@ -1128,6 +1130,8 @@ A `BeanListing` which uses the bean class can be obtained as follows:
 include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=beanListing2,indent=0]
 ----
 <1> Create a `BeanListing` using `TestData` as items data type
+
+NOTE: See the <<ItemListingConfiguration>> to learn about the item listing API operations and configuration options.
 
 ==== Bean items data source
 
