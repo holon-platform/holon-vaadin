@@ -126,7 +126,7 @@ public interface Input<V> extends ValueHolder<V>, ValueComponent<V>, MaySupportV
 	 * @param converter Value converter (not null)
 	 * @return A new {@link Input} of the converted value type
 	 */
-	static <T, V> Input<T> from(Input<V> input, Converter<T, V> converter) {
+	static <T, V> Input<T> from(Input<V> input, Converter<V, T> converter) {
 		return new InputConverterAdapter<>(input, converter);
 	}
 
@@ -140,7 +140,7 @@ public interface Input<V> extends ValueHolder<V>, ValueComponent<V>, MaySupportV
 	 * @param converter Value converter (not null)
 	 * @return A new {@link Input} of the converted value type
 	 */
-	static <F extends HasValue<V> & Component, T, V> Input<T> from(F field, Converter<T, V> converter) {
+	static <F extends HasValue<V> & Component, T, V> Input<T> from(F field, Converter<V, T> converter) {
 		return from(from(field), converter);
 	}
 
@@ -156,8 +156,8 @@ public interface Input<V> extends ValueHolder<V>, ValueComponent<V>, MaySupportV
 	 */
 	static <T, V> Input<T> from(Input<V> input, Property<T> property, PropertyValueConverter<T, V> converter) {
 		ObjectUtils.argumentNotNull(converter, "PropertyValueConverter must be not null");
-		return new InputConverterAdapter<>(input, Converter.from(value -> converter.toModel(value, property),
-				value -> converter.fromModel(value, property), e -> e.getMessage()));
+		return new InputConverterAdapter<>(input, Converter.from(value -> converter.fromModel(value, property),
+				value -> converter.toModel(value, property), e -> e.getMessage()));
 	}
 
 	/**

@@ -506,7 +506,7 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		 * @param converter Value converter (not null)
 		 * @return this
 		 */
-		default <T, V> B bind(Property<T> property, Input<V> input, Converter<T, V> converter) {
+		default <T, V> B bind(Property<T> property, Input<V> input, Converter<V, T> converter) {
 			return bind(property, Input.from(input, converter));
 		}
 
@@ -536,7 +536,7 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		 * This method also adds property validators to given {@link Input} when applicable.
 		 * </p>
 		 * @param <T> Property type
-		 * @param <V> Input value type type
+		 * @param <V> Input value type
 		 * @param <F> HasValue type
 		 * @param property Property (not null)
 		 * @param field The field to bind (not null)
@@ -544,7 +544,7 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		 * @return this
 		 */
 		default <T, V, F extends HasValue<V> & Component> B bind(Property<T> property, F field,
-				Converter<T, V> converter) {
+				Converter<V, T> converter) {
 			return bind(property, Input.from(field, converter));
 		}
 
