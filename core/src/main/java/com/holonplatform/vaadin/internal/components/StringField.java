@@ -323,6 +323,28 @@ public class StringField extends TextField implements Input<String>, Field<Strin
 		/*
 		 * (non-Javadoc)
 		 * @see
+		 * com.holonplatform.vaadin.components.builders.ValueChangeModeConfigurator#valueChangeMode(com.vaadin.shared.ui
+		 * .ValueChangeMode)
+		 */
+		@Override
+		public StringInputBuilder valueChangeMode(ValueChangeMode valueChangeMode) {
+			getInstance().setValueChangeMode(valueChangeMode);
+			return builder();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.ValueChangeModeConfigurator#valueChangeTimeout(int)
+		 */
+		@Override
+		public StringInputBuilder valueChangeTimeout(int valueChangeTimeout) {
+			getInstance().setValueChangeTimeout(valueChangeTimeout);
+			return builder();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
 		 * com.holonplatform.vaadin.internal.components.builders.AbstractFieldBuilder#build(com.vaadin.ui.AbstractField)
 		 */
 		@Override

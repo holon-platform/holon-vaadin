@@ -26,7 +26,8 @@ import com.holonplatform.vaadin.components.Input;
  * 
  * @since 5.0.0
  */
-public interface NumberInputBuilder<T extends Number> extends TextInputBuilder<T, Input<T>, NumberInputBuilder<T>> {
+public interface NumberInputBuilder<T extends Number> extends TextInputBuilder<T, Input<T>, NumberInputBuilder<T>>,
+		ValueChangeModeConfigurator<NumberInputBuilder<T>> {
 
 	/**
 	 * Sets the {@link NumberFormat} to use to represent number values in UI

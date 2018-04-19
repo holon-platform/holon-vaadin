@@ -319,6 +319,28 @@ public class StringArea extends TextArea implements Input<String>, Field<String>
 			getInstance().setBlankValuesAsNull(enable);
 			return builder();
 		}
+		
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.builders.ValueChangeModeConfigurator#valueChangeMode(com.vaadin.shared.ui
+		 * .ValueChangeMode)
+		 */
+		@Override
+		public StringInputBuilder valueChangeMode(ValueChangeMode valueChangeMode) {
+			getInstance().setValueChangeMode(valueChangeMode);
+			return builder();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.ValueChangeModeConfigurator#valueChangeTimeout(int)
+		 */
+		@Override
+		public StringInputBuilder valueChangeTimeout(int valueChangeTimeout) {
+			getInstance().setValueChangeTimeout(valueChangeTimeout);
+			return builder();
+		}
 
 		/*
 		 * (non-Javadoc)
