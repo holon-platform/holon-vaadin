@@ -1016,73 +1016,9 @@ The `ItemListing` API provides a set of methods to control the listing appearanc
 
 Two `ItemListing` implementations are available to use this component:
 
-* link:{apidir}/com/holonplatform/vaadin/components/BeanListing.html[BeanListing^]: Uses a *Java Bean* as item type and the listing column ids are the Bean property names.
-
 * link:{apidir}/com/holonplatform/vaadin/components/PropertyListing.html[PropertyListing^]: Uses a `PropertyBox` as item type and the listing column ids are the `Property` instances of the provided _property set_.
 
-[[BeanListing]]
-=== BeanListing
-
-A link:{apidir}/com/holonplatform/vaadin/components/BeanListing.html[BeanListing^] implementation can be obtained using the link:{apidir}/com/holonplatform/vaadin/components/Components.html[Components^] API, through the `listing.items` method.
-
-The *Bean class* to use as items type must be provided as construction time.
-
-The Holon Platform link:holon-core.html#BeanIntrospector[Bean introspection API^] is used to detect the Bean class properties to use as listing columns and the Bean property *names* are used as column ids.
-
-All the suitable bean property configuration attributes supported by the Holon Platform Bean introspection API are used to automatically configure the listing component, for example to set the column _headers_ using the localizable property captions.
-
-See the link:holon-core.html#BuiltinBeanPostProcessors[Bean property configuration^] section to learn about the Bean introspection API configuration capabilities and the available builtin annotations which can be used to provide a set of configuration attributes, such as `@Caption` or `@Sequence`.
-
-For example, given the following bean class:
-
-[source, java]
-----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=beanListing1,indent=0]
-----
-
-A `BeanListing` which uses the bean class can be obtained as follows:
-
-[source, java]
-----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=beanListing2,indent=0]
-----
-<1> Create a `BeanListing` using `TestData` as items data type
-
-==== Bean items data source
-
-The *data source* to provide the bean items for a `BeanListing` can be configured using the `dataSource` builder API methods.
-
-*1. Using an `ItemDataProvider` as items data source:*
-
-The link:{apidir}/com/holonplatform/vaadin/data/ItemDataProvider.html[ItemDataProvider^] API can be used as items data source.
-
-For example, given a `List` of `TestData` bean instances, an in-memory `ItemDataProvider` can be configured in the following way:
-
-[source, java]
-----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=beanListing3,indent=0]
-----
-<1> Set an `ItemDataProvider` which uses the `data` List as items data source
-
-*2. Using a `Datastore` as items data source:*
-
-A link:holon-core.html#Datastore[Datastore] implementation can be used as items data source to obtain the bean items from a persistence source. 
-
-The properties which will be used to perform query operations using the `Datastore` API will be the Bean properties obtained as a link:holon-core.html#BeanPropertySet[BeanPropertySet^] using the Holon Platform link:holon-core.html#BeanIntrospector[Bean introspection API^].
-
-[source, java]
-----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=beanListing4,indent=0]
-----
-<1> Use a `Datastore` and given `DataTarget` as items data source
-
-The `BeanListing` API makes available a `refresh()` method to _refresh_ the current items set, causing items reloading from the items data source.
-
-[source, java]
-----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=beanListing5,indent=0]
-----
-<1> Refresh the items set
+* link:{apidir}/com/holonplatform/vaadin/components/BeanListing.html[BeanListing^]: Uses a *Java Bean* as item type and the listing column ids are the Bean property names.
 
 [[PropertyListing]]
 === PropertyListing
@@ -1306,6 +1242,70 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag
 <7> Add an overall value validator
 <8> Add a property value validator
 <9> Set the `ID` property as required, automatically adding a _not empty_ validator
+
+[[BeanListing]]
+=== BeanListing
+
+A link:{apidir}/com/holonplatform/vaadin/components/BeanListing.html[BeanListing^] implementation can be obtained using the link:{apidir}/com/holonplatform/vaadin/components/Components.html[Components^] API, through the `listing.items` method.
+
+The *Bean class* to use as items type must be provided as construction time.
+
+The Holon Platform link:holon-core.html#BeanIntrospector[Bean introspection API^] is used to detect the Bean class properties to use as listing columns and the Bean property *names* are used as column ids.
+
+All the suitable bean property configuration attributes supported by the Holon Platform Bean introspection API are used to automatically configure the listing component, for example to set the column _headers_ using the localizable property captions.
+
+See the link:holon-core.html#BuiltinBeanPostProcessors[Bean property configuration^] section to learn about the Bean introspection API configuration capabilities and the available builtin annotations which can be used to provide a set of configuration attributes, such as `@Caption` or `@Sequence`.
+
+For example, given the following bean class:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=beanListing1,indent=0]
+----
+
+A `BeanListing` which uses the bean class can be obtained as follows:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=beanListing2,indent=0]
+----
+<1> Create a `BeanListing` using `TestData` as items data type
+
+==== Bean items data source
+
+The *data source* to provide the bean items for a `BeanListing` can be configured using the `dataSource` builder API methods.
+
+*1. Using an `ItemDataProvider` as items data source:*
+
+The link:{apidir}/com/holonplatform/vaadin/data/ItemDataProvider.html[ItemDataProvider^] API can be used as items data source.
+
+For example, given a `List` of `TestData` bean instances, an in-memory `ItemDataProvider` can be configured in the following way:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=beanListing3,indent=0]
+----
+<1> Set an `ItemDataProvider` which uses the `data` List as items data source
+
+*2. Using a `Datastore` as items data source:*
+
+A link:holon-core.html#Datastore[Datastore] implementation can be used as items data source to obtain the bean items from a persistence source. 
+
+The properties which will be used to perform query operations using the `Datastore` API will be the Bean properties obtained as a link:holon-core.html#BeanPropertySet[BeanPropertySet^] using the Holon Platform link:holon-core.html#BeanIntrospector[Bean introspection API^].
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=beanListing4,indent=0]
+----
+<1> Use a `Datastore` and given `DataTarget` as items data source
+
+The `BeanListing` API makes available a `refresh()` method to _refresh_ the current items set, causing items reloading from the items data source.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=beanListing5,indent=0]
+----
+<1> Refresh the items set
 
 == Dialogs
 
