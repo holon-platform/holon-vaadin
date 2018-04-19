@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import com.holonplatform.core.Validator;
+import com.holonplatform.core.Validator.ValidationException;
 import com.holonplatform.core.property.PathProperty;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyValueConverter;
@@ -30,16 +31,18 @@ import com.holonplatform.vaadin.components.Input;
 import com.holonplatform.vaadin.components.MultiSelect;
 import com.holonplatform.vaadin.components.SingleSelect;
 import com.holonplatform.vaadin.components.ValidatableInput;
+import com.holonplatform.vaadin.components.ValidationStatusHandler;
+import com.holonplatform.vaadin.components.ValidationStatusHandler.Status;
 import com.holonplatform.vaadin.components.ValueHolder;
 import com.holonplatform.vaadin.components.builders.DateInputBuilder.Resolution;
 import com.vaadin.data.Converter;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.Result;
 import com.vaadin.data.converter.StringToIntegerConverter;
+import com.vaadin.data.converter.StringToLongConverter;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
@@ -139,61 +142,123 @@ public class ExampleInput {
 		// end::valuechange[]
 	}
 
-	public void input4() {
-		// tag::input4[]
-		Field<Locale> localeField = Components.input.singleSelect(Locale.class).items(Locale.US, Locale.CANADA)
-				.caption("Select Locale").fullWidth().withValue(Locale.US).asField(); // <1>
-		// end::input4[]
+	public void valueChangeMode() {
+		// tag::valuechangemode[]
+		Input<String> stringInput = Components.input.string().withValueChangeListener(event -> {
+			// ...
+		}).valueChangeMode(ValueChangeMode.LAZY) // <1>
+				.valueChangeTimeout(1000) // <2>
+				.build();
+
+		boolean supported = stringInput.isValueChangeModeSupported(); // <3>
+		if (supported) {
+			stringInput.setValueChangeMode(ValueChangeMode.BLUR); // <4>
+		}
+		// end::valuechangemode[]
 	}
 
-	public void input5() {
-		// tag::input5[]
+	public void validatableBuilders() {
+		// tag::validatable1[]
 		Input<String> stringInput = Components.input.string().build();
+
 		ValidatableInput<String> validatableInput = ValidatableInput.from(stringInput); // <1>
 
-		validatableInput.addValidator(Validator.email()); // <2>
-		validatableInput.addValidator(Validator.max(100)); // <3>
+		validatableInput = ValidatableInput.from(new TextField()); // <2>
+		// end::validatable1[]
 
-		validatableInput.setValidationStatusHandler(e -> { // <4>
-			if (e.isInvalid()) {
-				Notification.show(e.getErrorMessage(), Type.ERROR_MESSAGE);
-			}
-		});
-
-		validatableInput.validate(); // <5>
-
-		validatableInput.setValidateOnValueChange(true); // <6>
-		// end::input5[]
+		// tag::validatable2[]
+		validatableInput = Components.input.string() //
+				.caption("The caption") //
+				.validatable() // <1>
+				.required("Value is required") // <2>
+				.withValidator(Validator.max(100)) // <3>
+				.build();
+		// end::validatable2[]
 	}
 
-	public void input6() {
-		// tag::input6[]
-		ValidatableInput<String> validatableInput = ValidatableInput.from(Components.input.string().build()); // <1>
+	public void validatable() {
+		// tag::validatable3[]
+		ValidatableInput<String> validatableInput = Components.input.string().validatable().build(); // <1>
 
-		validatableInput = ValidatableInput.from(new TextField()); // <2>
+		validatableInput.addValidator(Validator.max(100)); // <2>
+		validatableInput.addValidator(Validator.email("Must be a valid e-mail address", "invalid.email.message.code")); // <3>
+		validatableInput
+				.addValidator(Validator.create(value -> value.length() >= 3, "Must be at least 3 characters long")); // <4>
+		// end::validatable3[]
 
-		validatableInput = Components.input.string().validatable() // <3>
-				.required("Value is required") // <4>
-				.withValidator(Validator.max(100)).build(); // <5>
-		// end::input6[]
+		// tag::validatable4[]
+		try {
+			validatableInput.validate(); // <1>
+		} catch (ValidationException e) {
+			// do something at validation failure
+		}
+
+		boolean valid = validatableInput.isValid(); // <2>
+		// end::validatable4[]
+	}
+
+	public void validateOnValueChange() {
+		// tag::validatable5[]
+		ValidatableInput<String> validatableInput = Components.input.string().validatable() //
+				.validateOnValueChange(true) // <1>
+				.build();
+
+		validatableInput.setValidateOnValueChange(false); // <2>
+		// end::validatable5[]
+	}
+
+	public void validationHandler() {
+		// tag::validatable6[]
+		ValidatableInput<String> validatableInput = Components.input.string().validatable() //
+				.validationStatusHandler(event -> { // <1>
+					Status status = event.getStatus();
+					// ....
+				}).build();
+
+		validatableInput.setValidationStatusHandler(event -> { // <2>
+			event.getError();
+			// ...
+		});
+		// end::validatable6[]
+
+		// tag::validatable7[]
+		Label statusLabel = new Label();
+		ValidationStatusHandler vsh = ValidationStatusHandler.label(statusLabel); // <1>
+
+		ValidationStatusHandler usingNotifications = ValidationStatusHandler.notification(); // <2>
+		// end::validatable7[]
 	}
 
 	public void input7() {
 		// tag::input7[]
-		Input<Integer> integerInput = Components.input.number(Integer.class).build();
+		Input<String> stringInput = Components.input.string().build();
 
-		Input<Boolean> booleanInput = Input.from(integerInput, // <1>
+		Input<Integer> integerInput = Input.from(stringInput, new StringToIntegerConverter("Conversion error")); // <2>
+
+		Input<Boolean> booleanInput = Input.from(integerInput, // <2>
 				Converter.from(value -> Result.ok((value == null) ? Boolean.FALSE : (value.intValue() > 0)),
 						value -> (value == null) ? null : (value ? 1 : 0)));
 
-		Boolean boolValue = booleanInput.getValue();
-
-		final Property<Boolean> BOOL_PROPERTY = PathProperty.create("bool", Boolean.class);
-		booleanInput = Input.from(integerInput, BOOL_PROPERTY, PropertyValueConverter.numericBoolean(Integer.class)); // <2>
-
-		Input<Integer> longInput = Input.from(new TextField(), // <3>
-				new StringToIntegerConverter("Conversion error"));
+		Input<Long> longInput = Input.from(new TextField(), new StringToLongConverter("Conversion error")); // <3>
 		// end::input7[]
+	}
+
+	public void input8() {
+		// tag::input8[]
+		Input<Integer> integerInput = Components.input.number(Integer.class).build();
+
+		final Property<Boolean> BOOL_PROPERTY = PathProperty.create("bool", Boolean.class); // <1>
+
+		Input<Boolean> booleanInput = Input.from(integerInput, BOOL_PROPERTY,
+				PropertyValueConverter.numericBoolean(Integer.class)); // <2>
+		// end::input8[]
+	}
+
+	public void input10() {
+		// tag::input10[]
+		Field<Locale> localeField = Components.input.singleSelect(Locale.class).items(Locale.US, Locale.CANADA)
+				.caption("Select Locale").fullWidth().withValue(Locale.US).asField(); // <1>
+		// end::input10[]
 	}
 
 	private class TestData {

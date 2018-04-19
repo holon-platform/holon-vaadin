@@ -265,6 +265,32 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=b
 <2> Get the `Input` component as a `LocalDate` type `Field`
 <3> The obtained `Field` is a `HasValue<LocalDate>` and a `Component`
 
+[[InputConverter]]
+==== Input value conversion
+
+The `Input` interface makes available a set of methods to create an `Input` from another `Input` or from a standard Vaadin `HasValue` Component with a different value type, providing a suitable _converter_ to perform value conversions from the presentation value type to the model value type and vice-versa.
+
+The stardard Vaadin `com.vaadin.data.Conveter` API is supported to provide the value conversion logic.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=input7,indent=0]
+----
+<1> Convert a `String` presentation type `Input` into a `Integer` model type `Input` using the standard Vaadin `StringToIntegerConverter`
+<2> Obtain a Boolean type `Input` from the `Integer` type one providing the value conversion logic
+<3> Obtain a `Long` type `Input` from a `String` type `TextField` using the `StringToLongConverter` converter
+
+Besides the standard Vaadin `com.vaadin.data.Conveter`, the Holon `PropertyValueConverter` can be used, providing the `Property` to which the converter is bound.
+
+TIP: See the link:holon-core.html#PropertyValueConverter[Property value conversion documentation^] for information about the `PropertyValueConverter` API.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=input8,indent=0]
+----
+<1> The `Boolean` type `Property` to use for the `PropertyValueConverter`
+<2> Create a `Boolean` type `Input` from an `Integer` type `Input`, using a the default _numericBoolean_ `PropertyValueConverter`
+
 ==== Listening to `Input` value changes
 
 The `Input` API supports link:{apidir}/com/holonplatform/vaadin/components/ValueHolder.ValueChangeListener.html[ValueChangeListener^] registration to listen to `Input` value changes.
@@ -283,56 +309,119 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=v
 
 *Value change mode*
 
-TBD
+The mode and the frequency with which the value change events are triggered can be customized for the `Input` components which supports it. 
 
-=== Input with value converter
+The link:{apidir}/com/holonplatform/vaadin/components/ValueHolder.MaySupportValueChangeMode.html[MaySupportValueChangeMode^] API, extended by the `Input` API, allows to check if the value change mode configuration is supported by a specific `Input` component through the `isValueChangeModeSupported()` method.
 
-The `Input` interface makes available a set of methods to create an `Input` from another `Input` with a different value type, providing a suitable _converter_ to perform value conversions.
+If so, the value change mode can be configured specifying:
 
-Besides the standard Vaadin `com.vaadin.data.Conveter`, the Holon `PropertyValueConverter` can be used, providing the property to which the converter is bound.
-
-The `Input` interface also supports the creation of an `Input` component with value conversion using a Vaadin `HasValue` Component instead of another `Input`.
+* The `com.vaadin.shared.ui.ValueChangeMode` enumeration value which represents when and how often `Input` value changes are transmitted from the client to the server.
+* Set the value change _timeout_, i.e. how often value change events are triggered, when the `ValueChangeMode` is either `LAZY` or `TIMEOUT`.
 
 [source, java]
 ----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=input7,indent=0]
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=valuechangemode,indent=0]
 ----
-<1> Create a `Boolean` type Input from an `Integer` type Input, providing the value `Converter`
-<2> Create a `Boolean` type Input from an `Integer` type Input, using a default `PropertyValueConverter`
-<3> Create a `Long` type Input from a `TextField`, providing the Long-to-String and String-to-Long value `Converter`
+<1> Configure the `ValueChangeMode` using the Input builder. The builder methods to configure the value change mode are available only for Input components which support it.
+<2> Configure the value change timeout using the Input builder
+<3> Check if the value change mode configuration is supported by the `Input` component
+<4> Set the value change mode to `BLUR` using the `Input` API
 
 === ValidatableInput
 
-The link:{apidir}/com/holonplatform/vaadin/components/ValidatableInput.html[ValidatableInput^] interface represents an `Input` component which supports value validation using the standard Holon platform `Validator` interface.
+The link:{apidir}/com/holonplatform/vaadin/components/ValidatableInput.html[ValidatableInput^] interface represents an `Input` component which supports *value validation* using the standard link:holon-core.html#Validator[Holon Platform Validator API^].
 
-Value validation can be triggered each time the input value changes, using `setValidateOnValueChange` method.
+A `ValidatableInput` can be obtained in the following ways:
 
-A link:{apidir}/com/holonplatform/vaadin/components/ValidationStatusHandler.html[ValidationStatusHandler^] can be used to control how the validation errors are notified to the user, listening to validation status change events.
-
-By default, the standard Vaadin component error notification is used.
+*1. From an existing `Input` or `HasValue` component:* Using the `from` static method of the `ValidatableInput` API.
 
 [source, java]
 ----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=input5,indent=0]
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=validatable1,indent=0]
 ----
-<1> Create a `ValidatableInput` from a String input
-<2> Add a validator to check the input value is a valid e-mail address
-<3> Add a validator to check the input value is maximum 100 characters long
-<4> Set validation status handler which shows a notification when the input in invalid
-<5> Perform the input value validation
-<6> Triggers validation when input value changes
+<1> Create a `ValidatableInput` from a String Input
+<2> Create a `ValidatableInput` from a `TextField`
 
-A `ValidatableInput` can be obtained from an existing `Input` or `HasValue` component instance or by using the appropriate builder.
+*2. Using the `Input` builder:* Using the `validatable()` builder method, which returns a `ValidatableInputBuilder` API that can be used to configure the `ValidatableInput`, for example adding one or more `Validator`, before returning it.
 
 [source, java]
 ----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=input6,indent=0]
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=validatable2,indent=0]
 ----
-<1> Create a `ValidatableInput` from a String `Input`
-<2> Create a `ValidatableInput` from a String type `HasValue` component
-<3> Create a `ValidatableInput` using the input builder
-<4> Add a default _required_ (the input is not empty) validator using the provided error message
-<5> Add a standard validator
+<1> Get the builder API to obtain a `ValidatableInput`
+<2> Add a default _required_ (the input is not empty) validator using the provided error message
+<3> Add a `Validator
+
+==== Registering Validators and perform validation
+
+The `addValidator` method of the `ValidatableInput` API can be used to register value validators for the `Input` component.
+
+The `Validator` API can be used to obtain a set of builtin validators, allowing to specify the validation error message, even using a _localizable_ message code. See the link:holon-core.html#Validator[Holon Platform Validator API^] for details.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=validatable3,indent=0]
+----
+<1> Create a `String` type `ValidatableInput`
+<2> Add a builtin `Validator` to check the Input value is maximum 100 characters long, using the default validation error message
+<3> Add a builtin `Validator` to check the Input value is a valid e-mail address, providing a _localizable_ validation error message
+<4> Add a `Validator` to check the Input value is at least 3 characters long and provide the validation error message
+
+The actual value validation can be performed using the link:{apidir}/com/holonplatform/vaadin/components/Validatable.html[Validatable^] API, which provides the following methods:
+
+* `validate()`: Validate the current `Input` value using the registered `Validator` s. Throws a `ValidationException` if the value is not valid, which provides the validation error message/s. The `ValidationException` is `Localizable`, providing optional message code and arguments for validation message localization.
+
+* `isValid()`: Returns whether the current `Input` value is valid, swallowing any `ValidationException`.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=validatable4,indent=0]
+----
+<1> Validate the `Input` value. The `ValidationException` is thrown if the validation fails.
+<2> Checks whether the current `Input` value is valid, swallowing any `ValidationException`.
+
+==== Automatic validation at `Input` value change
+
+Value validation can be automatically triggered each time the `Input` value changes. 
+
+To enable this behaviour, either the `setValidateOnValueChange` method of the `ValidatableInput` API or the `validateOnValueChange` method of the `ValidatableInput` builder API can be used.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=validatable5,indent=0]
+----
+<1> Use the `ValidatableInput` builder API to enable the automatic value validation at `Input` value change
+<2> Use the `ValidatableInput` API to disable the the automatic value validation at `Input` value change
+
+==== Validation errors notification
+
+By default, the standard Vaadin *component error notification* is used to notify validation errors on `ValidatableInput` components. As per default behaviour, an invalid component is decorated with a proper CSS style class (for example to show a red border around the component itself) and the validation error is notified using a _tooltip_.
+
+To change this behavior and to control how the validation errors are notified to the user, the link:{apidir}/com/holonplatform/vaadin/components/ValidationStatusHandler.html[ValidationStatusHandler^] API can be used.
+
+A `ValidationStatusHandler` listens to validation status change events and the provided validation event can be used to:
+
+* Obtain the current component *validation status*: `UNRESOLVED` (no value validation has been made yet), `VALID` (validation passed), `INVALID` (validation failed).
+* Obtain the current *validation error messages* if the component is in the `INVALID` status. The error messages can be obtained as `Localizable` to support message localization.
+* Get the *source component* against whom the validation was performed.
+
+The `ValidationStatusHandler` can be configured either using the `setValidationStatusHandler` method of the `ValidatableInput` API or the `validationStatusHandler` method of the `ValidatableInput` builder API.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=validatable6,indent=0]
+----
+<1> Use the `ValidatableInput` builder API to configure a `ValidationStatusHandler` 
+<2> Use the `ValidatableInput` API to configure a `ValidationStatusHandler` 
+
+The `ValidationStatusHandler` also provides static methods to obtain a default validation status handler either using a `Label` component or a Vaadin `Notification` component.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=validatable7,indent=0]
+----
+<1> Create a `ValidationStatusHandler` using a `Label` to display validation errors.
+<2> Create a `ValidationStatusHandler` using a `Notification` to notify validation errors.
 
 [[SelectableInput]]
 === Selectable Input

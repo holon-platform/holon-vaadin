@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.components;
 
 import com.holonplatform.core.Validator.ValidationException;
+import com.holonplatform.core.i18n.Localizable;
 
 /**
  * Interface to provide value validation support for a component, using the current component value as the value to
@@ -26,7 +27,12 @@ import com.holonplatform.core.Validator.ValidationException;
 public interface Validatable {
 
 	/**
-	 * Validate the current value.
+	 * Checks the validity of the current component value against every registered validator, if any. If the value is
+	 * not valid, an {@link ValidationException} is thrown.
+	 * <p>
+	 * The {@link ValidationException} is {@link Localizable}, providing optional message code and arguments for
+	 * validation message localization.
+	 * </p>
 	 * @throws ValidationException If the value is not valid
 	 */
 	void validate() throws ValidationException;
@@ -34,6 +40,7 @@ public interface Validatable {
 	/**
 	 * Check if the current value is valid, swallowing any validation exception.
 	 * @return <code>true</code> if the current value is valid, <code>false</code> otherwise
+	 * @see #validate()
 	 */
 	default boolean isValid() {
 		try {
