@@ -15,6 +15,8 @@
  */
 package com.holonplatform.vaadin.examples;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -42,7 +44,7 @@ public class ExampleListing {
 	private final static PathProperty<String> DESCRIPTION = PathProperty.create("description", String.class);
 	private final static PropertySet<?> PROPERTIES = PropertySet.of(ID, DESCRIPTION);
 
-	// tag::beanListing[]
+	// tag::beanListing1[]
 	private class TestData {
 
 		private Long id;
@@ -50,6 +52,52 @@ public class ExampleListing {
 
 		// getters and setters omitted
 
+		// end::beanListing1[]
+
+		public TestData(int id, String description) {
+			super();
+			this.id = Long.valueOf(id);
+			this.description = description;
+		}
+
+	}
+
+	public void beanListing2() {
+		// tag::beanListing2[]
+		BeanListing<TestData> listing = Components.listing.items(TestData.class) // <1>
+				.build();
+		// end::beanListing2[]
+	}
+
+	public void beanListing3() {
+		// tag::beanListing3[]
+		final List<TestData> data = Arrays.asList(new TestData(1, "One"), new TestData(2, "Two"),
+				new TestData(3, "Three"));
+
+		BeanListing<TestData> listing = Components.listing.items(TestData.class) //
+				.dataSource(ItemDataProvider.create(cfg -> data.size(), // <1>
+						(cfg, offset, limit) -> data.stream().skip(offset).limit(limit)))
+				.build();
+		// end::beanListing3[]
+	}
+
+	public void beanListing4() {
+		// tag::beanListing4[]
+		final Datastore datastore = getDatastore();
+
+		BeanListing<TestData> listing = Components.listing.items(TestData.class) //
+				.dataSource(datastore, DataTarget.named("test")) // <1>
+				.build();
+		// end::beanListing4[]
+	}
+
+	public void beanListing5() {
+		// tag::beanListing5[]
+		BeanListing<TestData> listing = Components.listing.items(TestData.class) //
+				.dataSource(getDatastore(), DataTarget.named("test")).build();
+		
+		listing.refresh(); // <1>
+		// end::beanListing4[]
 	}
 
 	public void beanListing() {
@@ -60,7 +108,6 @@ public class ExampleListing {
 
 		listing.refresh(); // <4>
 	}
-	// end::beanListing[]
 
 	public void propertyListing() {
 		// tag::propertyListing[]

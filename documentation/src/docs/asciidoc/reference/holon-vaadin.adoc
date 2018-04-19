@@ -86,7 +86,7 @@ See link:index.html#obtain-the-platform-artifacts[Obtain the platform artifacts]
 
 * Full support of Vaadin version 8.3, including for example the Navigator `@PushStateNavigation` strategy support. See <<PushStateNavigation>>.
 
-* Better support for bean based data bound UI objects, with new builders and a Java API to create and configure the UI components just like the `Property` based one. See <<BeanItemListing>>.
+* Better support for bean based data bound UI objects, with new builders and a Java API to create and configure the UI components just like the `Property` based one. See <<BeanListing>>.
 
 * Support for components _drag and drop_ configuration at Java API level. See <<DragAndDrop>>.
 
