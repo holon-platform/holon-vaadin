@@ -90,6 +90,8 @@ See link:index.html#obtain-the-platform-artifacts[Obtain the platform artifacts]
 
 * Support for components _drag and drop_ configuration at Java API level. See <<DragAndDrop>>.
 
+* New component builder APIs for Vaadin `TabSheet` and `Accordion` components. See <<ComponentsAPI>>.
+
 [[MigratingFrom50x]]
 === Migrating from version 5.0.x
 

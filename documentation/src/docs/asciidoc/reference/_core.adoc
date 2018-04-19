@@ -10,6 +10,7 @@ _Maven coordinates_:
 <version>{revnumber}</version>
 ----
 
+[[ComponentsAPI]]
 == Component builders
 
 A complete set of _fluent_ builders is available to create and configure the most common Vaadin *components* and the additional components provided by the Holon platform Vaadin module.
@@ -43,6 +44,64 @@ TIP: For each UI displayed text of a component (for example, the component capti
 
 The Holon Platform Vaadin component builders make available a set of common features, partly related to standard Vaadin features configuration and partly dedicated to the integration with some core Holon Platform APIs.
 
+For each UI component which extends a standard Vaadin `Component` hierarchy, the builder APIs provide methods to configure all the component attributes and register the supported _listeners_. In addition to the common component configuration attributes, each component builder makes available methods to configure the component specific attributes and supported behaviors.
+
+.Label builder example
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleComponents.java[tag=builder1,indent=0]
+----
+<1> Obtain a `com.vaadin.ui.Label` component builder
+<2> Set the component width to `100%`
+<3> Set the component height to `50px`
+<4> Add two css style class names
+<5> Set the component icon
+<6> Set the _caption_
+<7> Set the caption to be rendered as HTML
+<8> Set the _description_ (tooltip)
+<9> Set a generic _data_ value bound to the component
+<10> Set the component as hidden (not visible)
+<11> Set the component as disabled
+<12> Set the component as responsive
+<13> Register a `AttachListener`
+<14> Register a `DetachListener`
+<15> Register a `ContextClickListener`
+<16> Set the component `ErrorHandler`
+<17> Set the Label content
+<18> Set the Label content mode as HTML
+
+For _component container_ component types (for example, Layout components), the builder APIs provides a set of methods to add components to the container to build, also providing layout configuration attributes such as alignment and expand ratio, when supported.
+
+.VerticalLayout builder example
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleComponents.java[tag=builder2,indent=0]
+----
+<1> Obtain a `com.vaadin.ui.VerticalLayout` component builder
+<2> Enable layout margins
+<3> Enable layout spacing 
+<4> Add components to the layout in given order
+<5> Add a component and set the component alignment
+<6> Add a component and set the component expand ratio
+<7> Add a component and set the component expand ratio to 1 (full)
+<8> Add a component and set the component alignment and expand ratio
+
+[[ComponentConfigurators]]
+=== Component configurators
+
+When a component instance is already available, the link:{apidir}/com/holonplatform/vaadin/components/Components.html[Components^] API makes available a set of _component configurator_ APIs, which can be used to configure a component instance, using the same API as the component _builders_.
+
+The `configure(AbstractComponent component)` method can be used to obtain a component configurator for a generic `com.vaadin.ui.AbstractComponent`, to setup common component configuration attributes.
+
+Other component confgurator APIs are provided to configure specific components, such a `Label` and `Button`, and the standard Vaadin layout components.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleComponents.java[tag=builder3,indent=0]
+----
+<1> Label component configurator
+<2> VerticalLayout component configurator
+
 [[MessagesLocalization]]
 === Messages localization support
 
@@ -63,6 +122,22 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleBuilders.java[ta
 <2> Set a _localizable_ Label content using a `Localizable`
 
 IMPORTANT: In order for the message localization to work, a valid `LocalizationContext` instance must be available as a *context resource* using the default `LocalizationContext` resource key (i.e. the `LocalizationContext` class name). See the link:holon-core.html#LocalizationContext[LocalizationContext documentation^] for details about the `LocalizationContext` API and the link:holon-core.html#Context[Context resources documentation^] for information about the Holon Platform _Context_ architecture.
+
+==== Defer localization
+
+By default, the component messages localization is performed immediately during the component building, when a localizable message is provided at component configuration time. 
+
+Since the Holon Platform localization APIs require that a `LocalizationContext` resource is available to perform messages localization, when this is not possible the messages localization will not work at component configuration time. The `LocalizationContext` resource must be also _localized_, i.e. the current `Locale` is configured and available, in order to ensure messages localization support.
+
+When the `LocalizationContext` resource configuration or localization availability is expected _after_ the component build time, the component builder APIs provide a method to _defer_ the component messages localization: `deferLocalization()`.
+
+This method instructs the builder to resolve any message localization (for example the component caption and description) only when the component is attached to a parent layout, and this means only when the parent layout too is attached to the application UI.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleComponents.java[tag=builder4,indent=0]
+----
+<1> Set to defer the component messages localization at UI display time
 
 [[DragAndDrop]]
 === Drag and Drop support
@@ -88,48 +163,127 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleBuilders.java[ta
 [[UIComponents]]
 == UI Components
 
-The Vaadin module provides a set of components which extend or decorates the standard components set. The available components are described below.
+The Vaadin module provides a set of additional UI components which can be used besides the standard Vaadin components.
 
 === Input
 
-The link:{apidir}/com/holonplatform/vaadin/components/Input.html[Input^] interface represents a component that has a user-editable value, which can be read and setted using the methods provided by the The link:{apidir}/com/holonplatform/vaadin/components/ValueHolder.html[ValueHolder^] super interface.
+The link:{apidir}/com/holonplatform/vaadin/components/Input.html[Input^] interface represents a component that provides a user-editable value, which can be read and setted using the methods provided by the The link:{apidir}/com/holonplatform/vaadin/components/ValueHolder.html[ValueHolder^] API.
 
-Input components support the _read-only_ (to prevent the user from changing the value) and _required_ (to show a suitable indicator along with the field) modes.
+The `Input` API is parametrized on the value type it manages and the value management is provided by the link:{apidir}/com/holonplatform/vaadin/components/ValueHolder.html[ValueHolder^] API, which provides methods to:
 
-Input components supports `ValueChangeListener` registration to listen to input value changes.
+* Set the Input value.
+* Read the input value.
+* Provide and _empty_ value representation.
+* Check whether a value is available.
+* Listen to value changes registering one or more link:{apidir}/com/holonplatform/vaadin/components/ValueHolder.ValueChangeListener.html[ValueChangeListener^].
 
-[source, java]
-----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=input1,indent=0]
-----
-<1> Create and configure a `String` value type `Input` field.
-<2> Set a value
-<3> Get the value
-<4> Add a `ValueChangeListener`
+Furthermore, the `Input` API supports two component *state* configuration options:
 
-The concrete Vaadin `Component`, which represents the UI input element, can be obtained through the `getComponent()` method.
+* *Read-only mode:* When an `Input` is in read-only mode, the user can't change the Input value.
+* *Required mode:* When an `Input` is in required mode, a _required indicator_ symbol is visible.
 
-[source, java]
-----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=input2,indent=0]
-----
-<1> Create and configure a `LocalDate` value type `Input` field.
-<2> Get the input `Component`, which can be used to display the input field in UI.
-
-An `Input` component can be obtained from a standard Vaadin `HasValue` component using the `from(...)` static method.
+The `Input` API is a general and abstract representation of an UI object which holds a value, the actual Vaadin `Component` representation can be obtained though the `getComponent()` method and used with the standard Vaadin APIs.
 
 [source, java]
 ----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=input3,indent=0]
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=component,indent=0]
 ----
+<1> Create a String type input
+<2> Get the actual Input `Component`
+<3> Add the Input `Component` to a vertical layout
 
-Another way to obtain a standard Vaadin `HasValue` component from an input component is to use the `asField()` input builder method.
+==== Create an `Input` component
+
+An `Input` component can be created using the link:{apidir}/com/holonplatform/vaadin/components/Components.html[Components^] API, through the *input* sub-interface methods.
+
+A _typed_ `Input` builder method is available for each available `Input` value type. Besides the base `Input` types, as set of methods are available to create *single and multi select* Input components. See <<SelectableInput>> for details.
 
 [source, java]
 ----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=input4,indent=0]
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=builder1,indent=0]
 ----
-<1> Create select field using `Locale` data type and obtain it as `Field`, i.e. as a standard `HasValue` component.
+<1> `String` type Input
+<2> `String` type Input represented as a _text area_
+<3> Numeric (`Integer` in this case) type Input
+<4> `Boolean` type Input
+<5> `Date` type Input with _resolution_ configuration
+<6> `LocalDate` type Input
+<7> `LocalDateTime` type Input
+<8> `Enum` type Input represented with a _single select_
+<9> `Enum` type Input represented with a _multi select_
+
+*Input component configuration:*
+
+The `Input` builder API provides methods both for the `Input` attributes al listeners configuration and for the associated Input `Component` configuration, including API methods for specific `Input` and `Component` types.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=builder2,indent=0]
+----
+<1> Input `Component` configur
+<2> Set the Input as read-only
+<3> Set the _tabulator index_
+<4> Set the Input initial value
+<5> Register a `ValueChangeListener`
+<6> Register a `FocusListener`
+<7> Set the Input _prompt_
+<8> Set the String Input max length (the maximum number of cahracters)
+<9> Set to treat _blank_ String values (with 0 length or whitespaces only) as `null` values. 
+<10> Set the mode how the Input triggers vaue change events
+
+See the next sections for details about the `Input` configuration attributes and features.
+
+==== Obtain an Input component from a `HasValue` Component
+
+An `Input` component can be obtained from a standard Vaadin `HasValue` Component using the `from` static method of the `Input` API.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=builder3,indent=0]
+----
+<1> Create a `String` type `Input` using a Vaadin `TextField` as concrete implementation
+
+A `com.vaadin.data.Converter` can also be provided to obtain an `Input` component with a different value type from the original field type, providing the presentation to model type value conversion logic and vice-versa.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=builder4,indent=0]
+----
+<1> Create a `Integer` type `Input` using a Vaadin `TextField` as concrete implementation and providing a `Converter` to convert `String` type presentation values into `Integer` type model values and vice-versa 
+
+==== Obtain a `HasValue` Component from Input builders
+
+The `Input` builder APIs can provide the `Input` instance also a standard Vaadin `HasValue` Component, which is represented by the convenience link:{apidir}/com/holonplatform/vaadin/components/Field.html[Field^] interface.
+
+To obtain a `Field` type Input component, the `Input` builder API `asField()` method can be used.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=builder5,indent=0]
+----
+<1> Obtain a `LocalDate` type `Input` builder
+<2> Get the `Input` component as a `LocalDate` type `Field`
+<3> The obtained `Field` is a `HasValue<LocalDate>` and a `Component`
+
+==== Listening to `Input` value changes
+
+The `Input` API supports link:{apidir}/com/holonplatform/vaadin/components/ValueHolder.ValueChangeListener.html[ValueChangeListener^] registration to listen to `Input` value changes.
+
+The value change event provide the current (changed) `Input` value, the previous (old) `Input` value, the value change source (i.e. the reference to the `Input` component which triggered the value change listeners) and whether the value change was originated by a user action or from server side code.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=valuechange,indent=0]
+----
+<1> Register a `ValueChangeListener` for the `String` type `Input`
+<2> Get the new value that triggered the value change event
+<3> Get the value of the `Input` before the value change event occurred
+<4> Get whether the event was triggered by user interaction, on the client side, or programmatically, on the server side
+<5> Get the source of the value change event, i.e. the `Input` component itself
+
+*Value change mode*
+
+TBD
 
 === Input with value converter
 
@@ -180,6 +334,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=i
 <4> Add a default _required_ (the input is not empty) validator using the provided error message
 <5> Add a standard validator
 
+[[SelectableInput]]
 === Selectable Input
 
 When the Input values must be selected from a specific set, a _selectable_ Input type can be used. Two _selectable_ Input types are available:
