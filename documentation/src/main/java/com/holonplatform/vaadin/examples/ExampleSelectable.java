@@ -40,8 +40,8 @@ public class ExampleSelectable {
 
 	public void selectable1() {
 		// tag::selectable1[]
-		SingleSelect<TestData> singleSelect = Components.input.singleSelect(TestData.class).caption("Single select")
-				.build(); // <1>
+		SingleSelect<TestData> singleSelect = Components.input.singleSelect(TestData.class) // <1>
+				.caption("Single select").build();
 
 		singleSelect.setValue(new TestData(1)); // <2>
 		singleSelect.select(new TestData(1)); // <3>
@@ -58,8 +58,8 @@ public class ExampleSelectable {
 
 	public void selectable2() {
 		// tag::selectable2[]
-		MultiSelect<TestData> multiSelect = Components.input.multiSelect(TestData.class).caption("Multi select")
-				.build(); // <1>
+		MultiSelect<TestData> multiSelect = Components.input.multiSelect(TestData.class) // <1>
+				.caption("Multi select").build();
 
 		Set<TestData> values = new HashSet<>();
 		values.add(new TestData(1));
@@ -82,24 +82,27 @@ public class ExampleSelectable {
 
 	public void selectable3() {
 		// tag::selectable3[]
-		SingleSelect<TestData> singleSelect = Components.input.singleSelect(TestData.class, RenderingMode.OPTIONS)
-				.build(); // <1>
+		SingleSelect<TestData> singleSelect = Components.input.singleSelect(TestData.class, RenderingMode.OPTIONS) // <1>
+				.build();
 
-		MultiSelect<TestData> multiSelect = Components.input.multiSelect(TestData.class, RenderingMode.SELECT).build(); // <2>
+		MultiSelect<TestData> multiSelect = Components.input.multiSelect(TestData.class, RenderingMode.SELECT) // <2>
+				.build();
 		// end::selectable3[]
 	}
 
 	public void selectable4() {
 		// tag::selectable4[]
 		SingleSelect<TestData> singleSelect = Components.input.singleSelect(TestData.class)
-				.items(new TestData(1), new TestData(2)).build(); // <1>
+				.items(new TestData(1), new TestData(2)) // <1>
+				.build();
 
 		singleSelect = Components.input.singleSelect(TestData.class)
-				.dataSource(ItemDataProvider.create(q -> 2, (q, o, l) -> Stream.of(new TestData(1), new TestData(2))))
-				.build(); // <2>
+				.dataSource(ItemDataProvider.create(q -> 2, (q, o, l) -> Stream.of(new TestData(1), new TestData(2)))) // <2>
+				.build();
 
 		singleSelect = Components.input.singleSelect(TestData.class)
-				.dataSource(DataProvider.ofItems(new TestData(1), new TestData(2))).build(); // <3>
+				.dataSource(DataProvider.ofItems(new TestData(1), new TestData(2))) // <3>
+				.build();
 		// end::selectable4[]
 	}
 

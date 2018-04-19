@@ -426,12 +426,16 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleInput.java[tag=v
 [[SelectableInput]]
 === Selectable Input
 
-When the Input values must be selected from a specific set, a _selectable_ Input type can be used. Two _selectable_ Input types are available:
+When the Input values must be selected from a specific set, a _selectable_ `Input` type can be used. Two _selectable_ Input types are available:
 
-* The link:{apidir}/com/holonplatform/vaadin/components/SingleSelect.html[SingleSelect^] Input, in which at most one item can be selected at a time;
-* The link:{apidir}/com/holonplatform/vaadin/components/SingleSelect.html[MultiSelect^] Input, in which multiple items can be selected at the same time.
+* The link:{apidir}/com/holonplatform/vaadin/components/SingleSelect.html[SingleSelect^] Input, in which *at most one item* can be selected at a time;
+* The link:{apidir}/com/holonplatform/vaadin/components/SingleSelect.html[MultiSelect^] Input, in which *multiple items* can be selected at the same time.
 
-Both _selectable_ Input types extends the link:{apidir}/com/holonplatform/vaadin/components/Selectable.html[Selectable^] interface, which provides methods to check if some item is selected, obtain the selected item/s and change the current selection. Furthermore, a `SelectionListener` can be registered to listen to selection changes.
+Both _selectable_ `Input` types extends the link:{apidir}/com/holonplatform/vaadin/components/Selectable.html[Selectable^] API, which provides methods to check if some item is selected, obtain the selected item/s and change the current selection. 
+
+A _selectable_ `Input` can be obtained using the link:{apidir}/com/holonplatform/vaadin/components/Components.html[Components^] API, through the `singleSelect` and `multiSelect` methods and their specializations.
+
+Furthermore, a link:{apidir}/com/holonplatform/vaadin/components/Selectable.SelectionListener.html[SelectionListener^] can be registered to listen to selection changes.
 
 .SingleSelect example
 [source, java]
@@ -486,15 +490,15 @@ NOTE: The default rendering modes are `SELECT` for `SingleSelect` inputs and `OP
 ----
 include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[tag=selectable3,indent=0]
 ----
-<1> Create a `SingleSelect` using the *OPTIONS* rendering mode: a CheckBox group UI component will be used
-<2> Create a `MultiSelect` using the *SELECT* rendering mode: a ListSelect UI component will be used
+<1> Create a `SingleSelect` using the *OPTIONS* rendering mode: a `CheckBox` group UI component will be used
+<2> Create a `MultiSelect` using the *SELECT* rendering mode: a `ListSelect` UI component will be used
 
 ==== Selection items data source
 
-The data source of the available items for a _selectable_ input can be configured in the following ways:
+The data source of the available items for a _selectable_ `Input` can be configured in the following ways:
 
-* Using a fixed set of items, which can be provided using the `addItem(...)` or `items(...)` methods of the select input builder;
-* Using a Holon platform `ItemDataProvider` data provider;
+* Using a fixed set of items, which can be provided using the `addItem(...)` or `items(...)` methods of the select input builder.
+* Using a Holon Platform link:{apidir}/com/holonplatform/vaadin/data/ItemDataProvider.html[ItemDataProvider^].
 * Using a standard Vaadin `DataProvider`.
 
 [source, java]
@@ -507,9 +511,9 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[
 
 ==== Item captions and icons
 
-The _selectable_ input builders allow to explicitly set the selection item *captions* and *icons*. As for the items caption, the Holon platform *localization* architecture is supported, and the builders provide methods to specify the caption using a `Localizable` or a _message code_.
+The _selectable_ input builders allow to explicitly set the selection item *captions* and *icons*. For the items caption configuration, the Holon Platform *localization* architecture is supported, and the builders provide methods to specify the captions using a `Localizable` object or a _message code_.
 
-TIP: In order for the localization to work, a `LocalizationContext` must be available as a context resource. See the link:holon-core.html#i18n[Internationalization] documentation for further information.
+See <<MessagesLocalization>> for details about messages localization.
 
 [source, java]
 ----
@@ -519,7 +523,9 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[
 <2> Set the localizable item caption for the `ONE` item, providing a default caption and a translation message code
 <3> Set the item icon for the `ONE` item
 
-Furthermore, the `ItemCaptionGenerator` and the `ItemIconGenerator` interfaces can be used to provide custom selection items *captions* and *icons*. By default, the item caption is obtained using the `toString()` method of the item class and no icon is displayed.
+Furthermore, the `ItemCaptionGenerator` and the `ItemIconGenerator` interfaces can be used to provide custom selection items *captions* and *icons*. 
+
+By default, the item caption is obtained using the `toString()` method of the item class and no icon is displayed.
 
 [source, java]
 ----
@@ -528,9 +534,9 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[
 <1> Set an item caption generator which provides the item description as item caption
 <2> Set an item icon generator
 
-==== SingleSelect caption filter
+==== `SingleSelect` caption filter
 
-For `SingleSelect` inputs using *SELECT* rendering mode, the UI component allows the user to type a _filtering_ text to search for a selection item, and such filter by default is referred to item captions.
+For the `SingleSelect` type Inputs which use the *SELECT* rendering mode, the UI component allows the user to type a _filtering_ text to search for a selection item, and such filter by default is referred to item captions.
 
 When using a *fixed item set*, the in-memory caption filter can be customized using the `filteringMode(...)` builder method.
 
@@ -546,15 +552,13 @@ When using a `ItemDataProvider` or a Vaadin `DataProvider`, an overloaded form o
 include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[tag=selectable8,indent=0]
 ----
 
-==== Using the `Property` model with selectable Inputs
+==== Using the `Property` model with _selectable_ Inputs
 
-The Holon platform `Property` model is fully supported by the selectable input builder, which allows to create selectable inputs using `PropertyBox` type items and a specific `Property` as selection property (typically, the property which acts as item id).
+The link:holon-core.html#Property[Holon platform Property model^] is fully supported by the selectable Input builders, which allows to create selectable Inputs using `PropertyBox` type items and a specific `Property` as selection property (typically, the property which acts as item id).
 
 The selection data type will be the same as the selection property type.
 
-The simplest way to configure a `Property` based selectable input, is by using a `Datastore`.
-
-TIP: See the link:holon-core.html#Property[Property] documentation for further information about the Holon platform `Property` model.
+The simplest way to configure a `Property` based selectable input, is by using a link:holon-core.html#Datastore[Datastore^].
 
 [source, java]
 ----
@@ -567,7 +571,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[
 <5> Get the selected value, which will be of type `Long`, consistent with the `ID` selection property
 <6> Refresh the selection items, querying the `Datastore`
 
-One or more `QueryConfigurationProvider` can be used to control the Datastore query configuration, providing additional filters and/or sorts.
+One or more `QueryConfigurationProvider` can be used to control the `Datastore` query configuration, providing additional query filters and/or sorts.
 
 [source, java]
 ----
@@ -577,9 +581,9 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[
 
 ===== Selection model converter
 
-When the Holon platform `Property` model is used for selectable Inputs and the selection value type is not a `PropertyBox`, i.e. the selection items are not of the same type of the Input value, a conversion function is required to obtain the `PropertyBox` item from a selection value when the value is setted in the Input component, either using `setValue(...)` or `select(...)`.
+When the Holon platform `Property` model is used for selectable Inputs and the selection value type is not a `PropertyBox`, i.e. the selection items are not of the same type of the `Input` value type, a conversion function is required to obtain the `PropertyBox` item from a selection value when the value is setted in the Input component, either using `setValue(...)` or `select(...)`.
 
-For example, if a `String` type `Property` is declared as selection property, the `Input` value will be the the value of selection property (of `String` type), while the selection items are `PropertyBox`.
+For example, if a `String` type `Property` is declared as selection property, the `Input` value will be the the value of the selection property (of `String` type), while the selection items are `PropertyBox`.
 
 When a `Datastore` is provided as the data source of the select, a default item converter is configured. The default item converter tries to obtain the `PropertyBox` item by performing a query on the `Datastore` and using a filter predicate to get the item for which the selection property value is equal to the value to select, assuming that the selection property acts as primary key.
 
@@ -592,7 +596,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleSelectable.java[
 <1> Set an `ItemConverter` providing the query to perform to obtain the item `PropertyBox` from the selection `ID` property value 
 
 [[PropertyInputGroup]]
-=== Grouping Inputs
+=== Input groups (Forms)
 
 The link:{apidir}/com/holonplatform/vaadin/components/PropertyInputGroup.html[PropertyInputGroup^] component allows to group and manage a set of `Input` fields, relying on the `Property` model and using  `PropertyBox` objects to collect, set and provide the Input values.
 
