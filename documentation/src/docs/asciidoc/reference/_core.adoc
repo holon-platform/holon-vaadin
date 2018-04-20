@@ -1041,6 +1041,18 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag
 
 NOTE: See the <<ItemListingConfiguration>> to learn about the item listing API operations and configuration options.
 
+==== Visible properties
+
+By default, all the properties of the listing _property set_ are rendered as listing columns, in the same order they are provided by the property set itself.
+
+To select which properties are to be rendered as listing columns and to declare the columns order, the `PropertyListing` builder API provides specialized version of the `build()` method, which accept an array or an Iterable of `Property` to declare the visible columns and their order.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=propertyListing2,indent=0]
+----
+<1> Set the listing visible columns: the `DESCRIPTION` property first and then the `ID` property
+
 [[PropertySetIdentifiers]]
 ==== Items type and identifiers
 
@@ -1102,6 +1114,30 @@ One or more `QueryConfigurationProvider` can be registered in the `PropertyListi
 include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing3,indent=0]
 ----
 <1> Add a `QueryConfigurationProvider` to the `PropertyListing`
+
+[[VirtualPropertyColumns]]
+==== Using `VirtualProperty` for `Component` type columns
+
+When a `Property` of the `PropertyListing` property set is declared as `com.vaadin.ui.Component` type, the listing configures by default a suitable _renderer_ to display the property value as a Vaadin Component, instead of a `String`.
+
+When a listing `Component` type column has to be *dinamically generated* when the listing is rendered, the link:holon-core.html#VirtualProperty[VirtualProperty^] property type can be used. 
+
+Since the `VirtualProperty` provides its value through a `PropertyValueProvider`, the provider is invoked when the listing column cells are rendered to obtain the `Component` to display, providing the current row values as `PropertyBox`, which can be used for component generation.
+
+NOTE: Of course, a `VirtualProperty` can be used in a listing component not only to provide a `Component` value, but any other supported type.
+
+The `VirtualProperty` can be declared in the listing property set as any other Property, but when it is only used for a specific item listing column to render a `Component` it can be only declared as *visible column*, in the `build(...)` method. This way, it will not be part of the listing property set (and it will not be included in the row `PropertyBox` properties) and will only be used as _generated column_.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=virtualproperty1,indent=0]
+----
+<1> Declare a `VirtualProperty` of `Component` type. The configured message will be used as column header.
+<2> The property _value provider_ returs a `Button` component
+<3> Since the row `PropertyBox` is provided at column cell generation time, we can use it to obtain a property value for the current row. In this example, the `ID` property value is obtained.
+<4> The listing property set do not includes the `EDIT` virtual property
+<5> The `EDIT` virtual property is declared as visible column, in the first position in this case
+<6> Another example in which the visible columns property set is composed joining the `PROPERTIES` set and the `EDIT` virtual property
 
 [[BeanListing]]
 === BeanListing
@@ -1169,6 +1205,25 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag
 ----
 <1> Refresh the items set
 
+==== Dynamically generated columns
+
+The `BeanListing` component supports _virtual_ columns definition to declare *generated* column types, which contents are generated when the listing is rendered, for example to provide `Component` type column contents.
+
+The `withVirtualColumn(String id, Class<V> type, ValueProvider<T, V> valueProvider)` method of the `BeanListing` builder API allows to declare a _virtual_ column, providing:
+
+* The virtual column *id* and *type*
+* A `ValueProvider` which will be used to generate the column cells, using the row item *bean instance*
+
+The declared virtual column id can later be used to include the virtual column in the visible column in the required position.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=virtualcolumn1,indent=0]
+----
+<1> Declare a virtual column of `Button` type and `delete` as column id
+<2> The bean instance of the current row can be used to obtain row values, for example the id attribute in this case
+<3> Declare the `delete` column as visible and render it as first column
+
 [[ItemListingConfiguration]]
 === Item listing API and configuration
 
@@ -1206,7 +1261,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag
 
 ==== Columns rendering
 
-By default, the cells of a column bound to a `Property` are _rendered_ using the Holon Platform property value _presenters_ available from the default registry, to provide the String representation of the cell value. 
+By default, the cells of a column bound to a `Property` are _rendered_ using the Holon Platform _presenters_ available from the default registry, to provide the `String` representation of the cell value. 
 
 NOTE: See the link:holon-core.html#StringValuePresenter[String value presenters^] documentation for details.
 
@@ -1459,6 +1514,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleRenderers.java[t
 <2> Register the renderer and bind it to a condition which checks the property is exactly the `TEXT` property
 <3> From now on, rendering the `TEXT` property as an `Input` field will generate a _text area_ input component
 
+[[VaadinSessionScope]]
 == Vaadin session scope
 
 A *Vaadin session* platform scope is automatically registered by the Holon Vaadin module.

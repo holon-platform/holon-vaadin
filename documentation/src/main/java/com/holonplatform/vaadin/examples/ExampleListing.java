@@ -29,6 +29,7 @@ import com.holonplatform.core.property.PathProperty;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.property.StringProperty;
+import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
@@ -38,10 +39,14 @@ import com.holonplatform.vaadin.components.ItemListing.ColumnAlignment;
 import com.holonplatform.vaadin.components.PropertyListing;
 import com.holonplatform.vaadin.components.Selectable.SelectionMode;
 import com.holonplatform.vaadin.data.ItemDataProvider;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.renderers.TextRenderer;
+import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("unused")
 public class ExampleListing {
@@ -63,6 +68,22 @@ public class ExampleListing {
 		public TestData(int id, String description) {
 			super();
 			this.id = Long.valueOf(id);
+			this.description = description;
+		}
+
+		public Long getId() {
+			return id;
+		}
+
+		public void setId(Long id) {
+			this.id = id;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public void setDescription(String description) {
 			this.description = description;
 		}
 
@@ -124,6 +145,13 @@ public class ExampleListing {
 
 		PropertyListing listing = Components.listing.properties(PROPERTIES).build(); // <1>
 		// end::propertyListing[]
+	}
+
+	public void propertyListing2() {
+		// tag::propertyListing2[]
+		PropertyListing listing = Components.listing.properties(PROPERTIES) //
+				.build(DESCRIPTION, ID); // <1>
+		// end::propertyListing2[]
 	}
 
 	public void identifiers() {
@@ -365,6 +393,35 @@ public class ExampleListing {
 				.required(ID) // <9>
 				.build();
 		// end::listing12[]
+	}
+
+	public void listingVirtual() {
+		// tag::virtualproperty1[]
+		final VirtualProperty<Component> EDIT = VirtualProperty.create(Component.class).message("Edit") // <1>
+				.valueProvider( // <2>
+						row -> Components.button().styleName(ValoTheme.BUTTON_ICON_ONLY).icon(VaadinIcons.EDIT)
+								.onClick(e -> {
+									Long rowId = row.getValue(ID); // <3>
+									// perform edit action ...
+								}).build());
+
+		PropertyListing listing = Components.listing.properties(PROPERTIES) // <4>
+				.build(EDIT, ID, DESCRIPTION); // <5>
+
+		listing = Components.listing.properties(PROPERTIES) //
+				.build(PropertySet.builder().add(PROPERTIES).add(EDIT).build()); // <6>
+		// end::virtualproperty1[]
+	}
+
+	public void beanListingVirtual() {
+		// tag::virtualcolumn1[]
+		BeanListing<TestData> listing = Components.listing.items(TestData.class)
+				.withVirtualColumn("delete", Button.class, bean -> { // <1>
+					return Components.button().icon(VaadinIcons.TRASH).onClick(e -> {
+						Long rowId = bean.getId(); // <2>
+					}).build();
+				}).build("delete", "id", "description"); // <3>
+		// end::virtualcolumn1[]
 	}
 
 	private static ItemDataProvider<PropertyBox> getDataProvider() {
