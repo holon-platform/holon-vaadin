@@ -123,6 +123,8 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleBuilders.java[ta
 
 IMPORTANT: In order for the message localization to work, a valid `LocalizationContext` instance must be available as a *context resource* using the default `LocalizationContext` resource key (i.e. the `LocalizationContext` class name). See the link:holon-core.html#LocalizationContext[LocalizationContext documentation^] for details about the `LocalizationContext` API and the link:holon-core.html#Context[Context resources documentation^] for information about the Holon Platform _Context_ architecture.
 
+TIP: This module makes available a <<VaadinSessionScope>> to use the Vaadin session as _context resources scope_.
+
 ==== Defer localization
 
 By default, the component messages localization is performed immediately during the component building, when a localizable message is provided at component configuration time. 
@@ -1488,7 +1490,11 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleRenderers.java[t
 
 === Property localization
 
-When a `LocalizationContext` is available as a Context resource, it is used to _localize_ any element to display which supports localization. Concerning to a `Property` related UI component, it is used to:
+When a `LocalizationContext` is available as a _context resource_, it is used to *localize* any element to display which supports localization. 
+
+TIP: See the link:holon-core.html#LocalizationContext[LocalizationContext documentation^] for details about the `LocalizationContext` API and the link:holon-core.html#Context[Context resources documentation^] for information about the Holon Platform _Context_ architecture.
+
+Concerning to a `Property` related UI component, the `LocalizationContext` is used to:
 
 * Localize the property *caption*, for example when it is used as a listing column header or as a input field caption
 * Obtain the *date and time format* to use to display a property value or to edit the property value through an  input field
