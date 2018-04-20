@@ -152,7 +152,7 @@ public interface Components {
 
 	/**
 	 * Get a {@link LabelConfigurator} to configure given label.
-	 * @param button Label to configure (not null)
+	 * @param label Label to configure (not null)
 	 * @return BaseLabelConfigurator
 	 */
 	static BaseLabelConfigurator configure(Label label) {

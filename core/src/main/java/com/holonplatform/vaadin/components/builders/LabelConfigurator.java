@@ -15,9 +15,7 @@
  */
 package com.holonplatform.vaadin.components.builders;
 
-import com.holonplatform.core.Context;
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
 
@@ -39,11 +37,6 @@ public interface LabelConfigurator<B extends LabelConfigurator<B>> extends Compo
 
 	/**
 	 * Sets the label content using a localizable <code>messageCode</code>.
-	 * <p>
-	 * For content localization, a {@link LocalizationContext} must be available and localized as {@link Context}
-	 * resource when component is built or when component is displayed if {@link #deferLocalization()} is
-	 * <code>true</code>.
-	 * </p>
 	 * @param defaultContent Default content if no translation is available for given <code>messageCode</code> for
 	 *        current Locale.
 	 * @param messageCode Content translation message key
@@ -54,11 +47,6 @@ public interface LabelConfigurator<B extends LabelConfigurator<B>> extends Compo
 
 	/**
 	 * Sets the label content using a {@link Localizable} message.
-	 * <p>
-	 * For content localization, a {@link LocalizationContext} must be available and localized as {@link Context}
-	 * resource when component is built or when component is displayed if {@link #deferLocalization()} is
-	 * <code>true</code>.
-	 * </p>
 	 * @param content Localizable content message
 	 * @return this
 	 */
