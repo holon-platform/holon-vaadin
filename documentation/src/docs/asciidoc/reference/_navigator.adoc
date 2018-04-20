@@ -1,13 +1,5 @@
+[[ViewNavigator]]
 == Navigator
-
-The `holon-vaadin-navigator` artifact makes available an extension of the default *view navigator*, represented by the link:{apidir}/com/holonplatform/vaadin/navigator/ViewNavigator.html[ViewNavigator^] interface, which provides additional features and configuration capabilities:
-
-* `View` navigation history tracking, allowing to navigate back to the previous view
-* `View` _parameters_ management, allowing to obtain the parameters values by injection in the `View` instance
-* Easy `View` lifecycle management, supporting `OnShow` and `OnLeave` annotated methods to be notified when the view is loaded and unloaded in the UI 
-* _Default_ view support, acting as the application's "home page" 
-* The possibility to show a view in a `Window`, instead of using the default view display component
-* Support for _context_ resources injection in `View` instances
 
 _Maven coordinates_:
 [source, xml, subs="attributes+"]
@@ -17,10 +9,19 @@ _Maven coordinates_:
 <version>{revnumber}</version>
 ----
 
-=== View configuration
+The `holon-vaadin-navigator` artifact makes available an extension of the default Vaadin *view navigator*, represented by the link:{apidir}/com/holonplatform/vaadin/navigator/ViewNavigator.html[ViewNavigator^] API.
+
+The `ViewNavigator` API, compared to the standard Vaadin Navigator one, provides additional features and configuration capabilities:
+
+* `View` navigation *history tracking*, allowing to navigate back to the previous view.
+* `View` *parameters management*, allowing to obtain the parameters values *by injection* in a `View` instance.
+* Easy `View` *lifecycle* management, supporting `@OnShow` and `@OnLeave` annotated methods to be notified when the view is loaded and unloaded in the UI.
+* *Default view* support, acting as the application's "home page".
+* The possibility to *show a view in a `Window`*, instead of using the default view display component.
+* Support for link:holon-core.html#Context[Context resources^] injection in `View` instances.
 
 [[ViewParameters]]
-==== Parameters injection
+=== View parameters injection
 
 The _navigation parameters_ can be injected in the `View` class fields using the link:{apidir}/com/holonplatform/vaadin/navigator/annotations/ViewParameter.html[ViewParameter^] annotation.
 
@@ -31,7 +32,7 @@ When a named parameter value is not available (not provided by the current navig
 The supported parameter value types are:
 
 * `String`
-* `Number` s (including primitive types)
+* `Number` (including primitive types)
 * `Boolean` (including primitive type)
 * `Enum` 
 * `Date`
@@ -51,7 +52,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleView.java[tag=vi
 <2> View parameter with a default value. The parameter name will be the `intParam` field name
 <3> A required view parameter declaration
 
-==== View lifecycle hooks
+=== View lifecycle management
 
 In addition to the standard `enter(...)` method of the `View` interface, two annotations can be used to intercept `View` lifecycle events using `public` View methods:
 
@@ -63,7 +64,7 @@ If more than one `OnShow` or `OnLeave` annotated method is present in the `View`
 * Methods will be called following the class hierarchy, starting from the top (the first superclass after `Object`)
 * For methods of the same class, no calling order is guaranteed
 
-The `OnShow` and `OnLeave` annotated method supports an optional parameter, which can be either of the standard `com.vaadin.navigator.ViewChangeEvent` type or of the extended `ViewNavigatorChangeEvent` type, to obtain informations about the current view navigator, the previous or next `View`, the `View` name and parameters and the optional `Window` in which the View is displayed.
+The `@OnShow` and `@OnLeave` annotated method supports an optional parameter, which can be either of the standard `com.vaadin.navigator.ViewChangeEvent` type or of the extended `ViewNavigatorChangeEvent` type, to obtain informations about the current view navigator, the previous or next `View`, the `View` name and parameters and the optional `Window` in which the View is displayed.
 
 The `OnShow` annotation provides an additional `onRefresh()` property which, if setted to `true`, instruct the navigator to invoke the `OnShow` annotated method also at browser page refresh.
 
@@ -83,7 +84,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleView.java[tag=sh
 <10> `onLeave` method with a `ViewNavigatorChangeEvent` parameter
 <11> Get the View being activated
 
-==== Providing the View contents
+=== Providing the View contents
 
 By default, the `View` is rendered as the UI component which is represented by the `View` class.
 
@@ -96,9 +97,9 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleView.java[tag=vi
 <1> Default `View` implementation extending a `Component` class (a `VerticalLayout`). The displayed `View` content will be the component itself
 <2> Provide the `View` content using the `getViewComponent()` method. In this example, a different UI component is provided according to the device type, checking if the user is running the application in a _mobile_ device
 
-=== Navigator Configuration
+=== ViewNavigator Configuration
 
-Just like the standard Vaadin navigator, the `ViewNavigator` requires two elements which must be configured in order to work properly:
+Just like the standard Vaadin navigator, the `ViewNavigator` implementation requires two elements which must be configured in order to work properly:
 
 * A `ViewProvider` to provide the `View` instances by view _name_
 * A `View` display component to show the view contents in the UI, which can be a `ComponentContainer` (replacing the contents of the container with the active `View` content), a `SingleComponentContainer` (using the `setContent(...)` method to set the active `View` content) or a `ViewDisplay` object to implement a custom `View` display logic.
@@ -169,9 +170,9 @@ The `Window` is automatically created by the `ViewNavigator`, and can be configu
 include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleView.java[tag=window,indent=0]
 ----
 
-=== View navigation operations
+=== ViewNavigation API operations
 
-The `ViewNavigator` API provides navigation methods to provide a set of *parameters* to the `View` being activated. 
+The `ViewNavigator` API makes available navigation methods to provide a set of *parameters* to the `View` being activated. 
 
 These parameters are serialized in the navigation state String, and are automatically bound to the any `View` class field annotated with the `@ViewParameter` annotation.
 
@@ -248,7 +249,7 @@ TIP: See the link:holon-core.html#Context[Context] documentation for further inf
 include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleNavigator.java[tag=ctx,indent=0]
 ----
 
-=== Obtain the ViewNavigator
+=== Obtain the current ViewNavigator
 
 The `ViewNavigator` interface provides methods to obtain the current navigator using the following strategy:
 
@@ -284,4 +285,3 @@ Each time the navigation to a protected `View` is requested, the `AuthContext` i
 1. An _implicit_ authentication attempt is performed, using the current `VaadinRequest` and the optional authentication schemes which can be specified using the `schemes()` attribute of the `Authenticate` annotation. This behaviour can be used, for example, to support authentication using the current HTTP request and schemes such the `Authorization` HTTP header.
 
 2. If the _implicit_ authentication is not successfull and a valid *redirect URI* is provided through the `redirectURI()` property of the `Authenticate` annotation, the navigation is redirected to that URI. If the redirect URI does not specify a scheme, or the scheme is equal to the special `view://` scheme, the navigation is redirected to the navigation state specified by the redirect URI (escluding the `view://` part, if present). This way, the redirect URI can be used to delegate to a `View` an _explicit_ authentication entry point (for example using conventional username and password credentials). 
-
