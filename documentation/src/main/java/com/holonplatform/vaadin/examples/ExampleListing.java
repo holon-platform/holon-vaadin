@@ -15,34 +15,47 @@
  */
 package com.holonplatform.vaadin.examples;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
+import com.holonplatform.core.property.NumericProperty;
 import com.holonplatform.core.property.PathProperty;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
+import com.holonplatform.core.property.StringProperty;
+import com.holonplatform.core.property.VirtualProperty;
+import com.holonplatform.core.query.QueryConfigurationProvider;
+import com.holonplatform.core.query.QueryFilter;
+import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.vaadin.components.BeanListing;
 import com.holonplatform.vaadin.components.Components;
 import com.holonplatform.vaadin.components.ItemListing.ColumnAlignment;
 import com.holonplatform.vaadin.components.PropertyListing;
 import com.holonplatform.vaadin.components.Selectable.SelectionMode;
 import com.holonplatform.vaadin.data.ItemDataProvider;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.renderers.TextRenderer;
+import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("unused")
 public class ExampleListing {
 
-	private final static PathProperty<Long> ID = PathProperty.create("id", Long.class);
-	private final static PathProperty<String> DESCRIPTION = PathProperty.create("description", String.class);
+	private final static NumericProperty<Long> ID = NumericProperty.longType("id");
+	private final static PathProperty<String> DESCRIPTION = StringProperty.create("description");
 	private final static PropertySet<?> PROPERTIES = PropertySet.of(ID, DESCRIPTION);
 
-	// tag::beanListing[]
+	// tag::beanListing1[]
 	private class TestData {
 
 		private Long id;
@@ -50,6 +63,68 @@ public class ExampleListing {
 
 		// getters and setters omitted
 
+		// end::beanListing1[]
+
+		public TestData(int id, String description) {
+			super();
+			this.id = Long.valueOf(id);
+			this.description = description;
+		}
+
+		public Long getId() {
+			return id;
+		}
+
+		public void setId(Long id) {
+			this.id = id;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public void setDescription(String description) {
+			this.description = description;
+		}
+
+	}
+
+	public void beanListing2() {
+		// tag::beanListing2[]
+		BeanListing<TestData> listing = Components.listing.items(TestData.class) // <1>
+				.build();
+		// end::beanListing2[]
+	}
+
+	public void beanListing3() {
+		// tag::beanListing3[]
+		final List<TestData> data = Arrays.asList(new TestData(1, "One"), new TestData(2, "Two"),
+				new TestData(3, "Three"));
+
+		BeanListing<TestData> listing = Components.listing.items(TestData.class) //
+				.dataSource(ItemDataProvider.create(cfg -> data.size(), // <1>
+						(cfg, offset, limit) -> data.stream().skip(offset).limit(limit)))
+				.build();
+		// end::beanListing3[]
+	}
+
+	public void beanListing4() {
+		// tag::beanListing4[]
+		final Datastore datastore = getDatastore();
+
+		BeanListing<TestData> listing = Components.listing.items(TestData.class) //
+				.dataSource(datastore, DataTarget.named("test")) // <1>
+				.build();
+		// end::beanListing4[]
+	}
+
+	public void beanListing5() {
+		// tag::beanListing5[]
+		BeanListing<TestData> listing = Components.listing.items(TestData.class) //
+				.dataSource(getDatastore(), DataTarget.named("test")).build();
+
+		listing.refresh(); // <1>
+		// end::beanListing5[]
 	}
 
 	public void beanListing() {
@@ -60,12 +135,11 @@ public class ExampleListing {
 
 		listing.refresh(); // <4>
 	}
-	// end::beanListing[]
 
 	public void propertyListing() {
 		// tag::propertyListing[]
-		final PathProperty<Long> ID = PathProperty.create("id", Long.class);
-		final PathProperty<String> DESCRIPTION = PathProperty.create("description", String.class);
+		final NumericProperty<Long> ID = NumericProperty.longType("id");
+		final StringProperty DESCRIPTION = StringProperty.create("description");
 
 		final PropertySet<?> PROPERTIES = PropertySet.of(ID, DESCRIPTION);
 
@@ -73,13 +147,43 @@ public class ExampleListing {
 		// end::propertyListing[]
 	}
 
+	public void propertyListing2() {
+		// tag::propertyListing2[]
+		PropertyListing listing = Components.listing.properties(PROPERTIES) //
+				.build(DESCRIPTION, ID); // <1>
+		// end::propertyListing2[]
+	}
+
+	public void identifiers() {
+		// tag::identifiers[]
+		final NumericProperty<Long> ID = NumericProperty.longType("id");
+		final StringProperty DESCRIPTION = StringProperty.create("description");
+
+		final PropertySet<?> PROPERTIES = PropertySet.builderOf(ID, DESCRIPTION).identifier(ID).build(); // <1>
+
+		PropertyListing listing = Components.listing.properties(PROPERTIES).build();
+		// end::identifiers[]
+	}
+
 	public void listing1() {
 		// tag::listing1[]
-		ItemDataProvider<PropertyBox> dataProvider = getDataProvider();
+		ItemDataProvider<PropertyBox> dataProvider = ItemDataProvider.create(cfg -> 0, // <1>
+				(cfg, offset, limit) -> Stream.empty()); // <2>
+
 		PropertyListing listing = Components.listing.properties(PROPERTIES) //
-				.dataSource(dataProvider) // <1>
+				.dataSource(dataProvider) // <3>
 				.build();
 		// end::listing1[]
+	}
+
+	public void listing1b() {
+		// tag::listing1b[]
+		Datastore datastore = getDatastore();
+
+		PropertyListing listing = Components.listing.properties(PROPERTIES) //
+				.dataSource(datastore, DataTarget.named("test")) // <1>
+				.build();
+		// end::listing1b[]
 	}
 
 	public void listing2() {
@@ -91,18 +195,28 @@ public class ExampleListing {
 				.build();
 
 		listing = Components.listing.properties(PROPERTIES) //
-				.dataSource(dataProvider, ID) // <2>
+				.dataSource(getDatastore(), DataTarget.named("test"), ID) // <2>
 				.build();
 		// end::listing2[]
 	}
 
 	public void listing3() {
 		// tag::listing3[]
-		Datastore datastore = getDatastore();
-
 		PropertyListing listing = Components.listing.properties(PROPERTIES) //
-				.dataSource(datastore, DataTarget.named("test"), ID) // <1>
-				.build();
+				.dataSource(getDatastore(), DataTarget.named("test")) //
+				.withQueryConfigurationProvider(new QueryConfigurationProvider() { // <1>
+
+					@Override
+					public QueryFilter getQueryFilter() {
+						return ID.gt(0L);
+					}
+
+					@Override
+					public QuerySort getQuerySort() {
+						return DESCRIPTION.asc();
+					}
+
+				}).build();
 		// end::listing3[]
 	}
 
@@ -279,6 +393,35 @@ public class ExampleListing {
 				.required(ID) // <9>
 				.build();
 		// end::listing12[]
+	}
+
+	public void listingVirtual() {
+		// tag::virtualproperty1[]
+		final VirtualProperty<Component> EDIT = VirtualProperty.create(Component.class).message("Edit") // <1>
+				.valueProvider( // <2>
+						row -> Components.button().styleName(ValoTheme.BUTTON_ICON_ONLY).icon(VaadinIcons.EDIT)
+								.onClick(e -> {
+									Long rowId = row.getValue(ID); // <3>
+									// perform edit action ...
+								}).build());
+
+		PropertyListing listing = Components.listing.properties(PROPERTIES) // <4>
+				.build(EDIT, ID, DESCRIPTION); // <5>
+
+		listing = Components.listing.properties(PROPERTIES) //
+				.build(PropertySet.builder().add(PROPERTIES).add(EDIT).build()); // <6>
+		// end::virtualproperty1[]
+	}
+
+	public void beanListingVirtual() {
+		// tag::virtualcolumn1[]
+		BeanListing<TestData> listing = Components.listing.items(TestData.class)
+				.withVirtualColumn("delete", Button.class, bean -> { // <1>
+					return Components.button().icon(VaadinIcons.TRASH).onClick(e -> {
+						Long rowId = bean.getId(); // <2>
+					}).build();
+				}).build("delete", "id", "description"); // <3>
+		// end::virtualcolumn1[]
 	}
 
 	private static ItemDataProvider<PropertyBox> getDataProvider() {

@@ -20,6 +20,9 @@ import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.core.property.PropertySet;
+import com.holonplatform.core.query.QueryConfigurationProvider;
+import com.holonplatform.vaadin.components.ItemListing;
 import com.holonplatform.vaadin.components.PropertyListing;
 import com.holonplatform.vaadin.data.ItemDataProvider;
 import com.holonplatform.vaadin.data.ItemDataSource.CommitHandler;
@@ -33,41 +36,88 @@ import com.vaadin.ui.renderers.Renderer;
 /**
  * An {@link ItemListingBuilder} using {@link Property} as item properties and {@link PropertyBox} as item data type.
  *
+ * @param <C> Actual listing type
  * @param <B> Concrete builder type
  * @param <X> Concrete backing component type
  *
  * @since 5.0.0
  */
 @SuppressWarnings("rawtypes")
-public interface PropertyListingBuilder<B extends PropertyListingBuilder<B, X>, X extends Component>
-		extends ItemListingBuilder<PropertyBox, Property, PropertyListing, B, X> {
+public interface PropertyListingBuilder<C extends ItemListing<PropertyBox, Property>, B extends PropertyListingBuilder<C, B, X>, X extends Component>
+		extends ItemListingBuilder<PropertyBox, Property, C, B, X> {
 
 	/**
 	 * Set the items data provider.
 	 * @param dataProvider Items data provider (not null)
 	 * @param identifierProperties Properties wich act as item identifier
 	 * @return this
+	 * @deprecated Use {@link #dataSource(ItemDataProvider, com.holonplatform.vaadin.data.ItemIdentifierProvider)} to
+	 *             provide a custom item identifier provider. By default, the identifier properties of the item listing
+	 *             property set will be used to identify each {@link PropertyBox} item.
 	 */
+	@Deprecated
 	B dataSource(ItemDataProvider<PropertyBox> dataProvider, Property... identifierProperties);
 
 	/**
-	 * Use given {@link Datastore} with given <code>dataTarget</code> as items data source.
+	 * Set given {@link Datastore} with the provided <code>dataTarget</code> as items data source. {@link PropertyBox}
+	 * items will be fetched from the persistence source using a properly configured Datastore query, with given
+	 * <code>dataTarget</code> representing the persistent entity to query.
+	 * <p>
+	 * This data source supports {@link QueryConfigurationProvider}s to provide additional query configuration. A
+	 * {@link QueryConfigurationProvider} can be added using
+	 * {@link #withQueryConfigurationProvider(QueryConfigurationProvider)}.
+	 * </p>
+	 * <p>
+	 * If the item listing was built on a {@link PropertySet} which provides <em>identifier</em> properties (see
+	 * {@link PropertySet#getIdentifiers()}), the identifier properties will be used as {@link PropertyBox} item
+	 * identifiers, i.e. the <code>equals</code> and <code>hashCode</code> logic of the items will be implemented
+	 * accordingly to the values of the identifier properties.
+	 * </p>
+	 * <p>
+	 * A {@link Datastore} based {@link CommitHandler} is also configured by default.
+	 * </p>
+	 * @param datastore The {@link Datastore} to use (not null)
+	 * @param dataTarget The {@link DataTarget} to use as query target (not null)
+	 * @return this
+	 * @see GridPropertyListingBuilder#dataSource(Datastore, DataTarget, Property...)
+	 */
+	B dataSource(Datastore datastore, DataTarget<?> dataTarget);
+
+	/**
+	 * Set given {@link Datastore} with the provided <code>dataTarget</code> as items data source, using given
+	 * <code>identifierProperties</code> as item identifiers. {@link PropertyBox} items will be fetched from the
+	 * persistence source using a properly configured Datastore query, with given <code>dataTarget</code> representing
+	 * the persistent entity to query.
+	 * <p>
+	 * The provided identifier properties will be used as {@link PropertyBox} item identifiers, i.e. the
+	 * <code>equals</code> and <code>hashCode</code> logic of the items will be implemented accordingly to the values of
+	 * the identifier properties.
+	 * </p>
+	 * <p>
+	 * This data source supports {@link QueryConfigurationProvider}s to provide additional query configuration. A
+	 * {@link QueryConfigurationProvider} can be added using
+	 * {@link #withQueryConfigurationProvider(QueryConfigurationProvider)}.
+	 * </p>
 	 * <p>
 	 * A {@link Datastore} based {@link CommitHandler} is also configured by default.
 	 * </p>
 	 * @param datastore Datastore to use (not null)
 	 * @param dataTarget Data target to use to load items (not null)
-	 * @param identifierProperties Properties wich act as item identifier
+	 * @param identifierProperties Properties to use as item identifiers
 	 * @return this
 	 */
 	B dataSource(Datastore datastore, DataTarget<?> dataTarget, Property... identifierProperties);
 
 	/**
-	 * Builder to create {@link PropertyListing} components using a {@link Grid} as backing component.
+	 * Builder to create {@link ItemListing} component with {@link Property} as property type, {@link PropertyBox} as
+	 * item type and using a {@link Grid} as backing component.
+	 * 
+	 * @param <C> Actual listing type
+	 * @param <B> Concrete builder type
 	 */
-	public interface GridPropertyListingBuilder
-			extends PropertyListingBuilder<GridPropertyListingBuilder, Grid<PropertyBox>>,
-			BaseGridItemListingBuilder<PropertyBox, Property, PropertyListing, GridPropertyListingBuilder> {
+	public interface BaseGridPropertyListingBuilder<C extends ItemListing<PropertyBox, Property>, B extends BaseGridPropertyListingBuilder<C, B>>
+			extends PropertyListingBuilder<C, B, Grid<PropertyBox>>,
+			BaseGridItemListingBuilder<PropertyBox, Property, C, B> {
 
 		/**
 		 * Set the field to use for given property in edit mode.
@@ -77,7 +127,7 @@ public interface PropertyListingBuilder<B extends PropertyListingBuilder<B, X>, 
 		 * @param editor Editor field (not null)
 		 * @return this
 		 */
-		<T, E extends HasValue<T> & Component> GridPropertyListingBuilder editor(Property<T> property, final E editor);
+		<T, E extends HasValue<T> & Component> B editor(Property<T> property, final E editor);
 
 		/**
 		 * Adds a {@link Validator} to the field bound to given <code>property</code> in the item listing editor.
@@ -86,7 +136,7 @@ public interface PropertyListingBuilder<B extends PropertyListingBuilder<B, X>, 
 		 * @param validator Validator to add (not null)
 		 * @return this
 		 */
-		default <T> GridPropertyListingBuilder withValidator(Property<T> property, Validator<T> validator) {
+		default <T> B withValidator(Property<T> property, Validator<T> validator) {
 			return withValidator(property, new ValidatorWrapper<>(validator));
 		}
 
@@ -98,7 +148,7 @@ public interface PropertyListingBuilder<B extends PropertyListingBuilder<B, X>, 
 		 * @param validator Validator to add (not null)
 		 * @return this
 		 */
-		<T> GridPropertyListingBuilder withValidator(Property<T> property, com.vaadin.data.Validator<T> validator);
+		<T> B withValidator(Property<T> property, com.vaadin.data.Validator<T> validator);
 
 		/**
 		 * Set a custom {@link Renderer} for given item property.
@@ -107,7 +157,7 @@ public interface PropertyListingBuilder<B extends PropertyListingBuilder<B, X>, 
 		 * @param renderer Renderer to use
 		 * @return this
 		 */
-		<T> GridPropertyListingBuilder render(Property<T> property, Renderer<? super T> renderer);
+		<T> B render(Property<T> property, Renderer<? super T> renderer);
 
 		/**
 		 * Set a custom {@link Renderer} and presentation provider for given item property.
@@ -118,8 +168,15 @@ public interface PropertyListingBuilder<B extends PropertyListingBuilder<B, X>, 
 		 * @param renderer Renderer to use
 		 * @return this
 		 */
-		<T, P> GridPropertyListingBuilder render(Property<T> property, ValueProvider<T, P> presentationProvider,
-				Renderer<? super P> renderer);
+		<T, P> B render(Property<T> property, ValueProvider<T, P> presentationProvider, Renderer<? super P> renderer);
+
+	}
+
+	/**
+	 * Builder to create a {@link PropertyListing} component using a {@link Grid} as backing component.
+	 */
+	public interface GridPropertyListingBuilder
+			extends BaseGridPropertyListingBuilder<PropertyListing, GridPropertyListingBuilder> {
 
 	}
 

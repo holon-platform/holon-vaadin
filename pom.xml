@@ -1,15 +1,16 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>com.holon-platform</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.0.9</version>
+		<version>1.0.11</version>
 	</parent>
 
 	<groupId>com.holon-platform.vaadin</groupId>
 	<artifactId>holon-vaadin-root</artifactId>
-	<version>5.0.6-SNAPSHOT</version>
+	<version>5.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>${project.groupId}:${project.artifactId}</name>
@@ -48,8 +49,8 @@
 		<connection>scm:git:https://github.com/holon-platform/holon-vaadin.git</connection>
 		<url>https://github.com/holon-platform/holon-vaadin</url>
 		<developerConnection>scm:git:https://github.com/holon-platform/holon-vaadin.git</developerConnection>
-	  <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -58,15 +59,11 @@
 		<bintray.package>holon-vaadin</bintray.package>
 
 		<!-- Holon core -->
-		<holon.core.version>5.0.6</holon.core.version>
+		<holon.core.version>5.1.0-SNAPSHOT</holon.core.version>
 
 		<!-- Vaadin -->
-		<vaadin.version>8.2.0</vaadin.version>
+		<vaadin.version>8.3.3</vaadin.version>
 
-		<!-- Vaadin Spring -->
-		<vaadin.spring.version>2.0.1</vaadin.spring.version>
-		<vaadin.spring.boot.version>2.0.1</vaadin.spring.boot.version>
-		
 		<!-- Spring Security -->
 		<spring.security.version>4.2.3.RELEASE</spring.security.version>
 
@@ -74,9 +71,22 @@
 		<servlet.version>3.1.0</servlet.version>
 
 		<!-- Test datastores -->
-		<holon.jdbc.version>5.0.4</holon.jdbc.version>
+		<holon.jdbc.version>5.1.0-SNAPSHOT</holon.jdbc.version>
 
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<!-- Vaadin BOM -->
+			<dependency>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-bom</artifactId>
+				<version>${vaadin.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<modules>
 		<module>core</module>

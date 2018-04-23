@@ -30,6 +30,9 @@ public class PropertyItemIdentifier<ID> implements ItemIdentifierProvider<Proper
 
 	private static final long serialVersionUID = -1930051385936109313L;
 
+	/**
+	 * The identifier property
+	 */
 	private final Property<ID> identifierProperty;
 
 	/**

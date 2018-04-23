@@ -27,8 +27,8 @@ import com.vaadin.ui.Component;
  * Adapter class to build a {@link Input} of a different value type from another {@link Input}, using a suitable
  * {@link Converter}.
  * 
- * @param <T> Model value type
- * @param <V> Presentation value type
+ * @param <T> Presentation value type
+ * @param <V> Model value type
  *
  * @since 5.0.5
  */
@@ -37,14 +37,14 @@ public class InputConverterAdapter<T, V> implements Input<V> {
 	private static final long serialVersionUID = -2429215257047725962L;
 
 	private final Input<T> input;
-	private final Converter<V, T> converter;
+	private final Converter<T, V> converter;
 
 	/**
 	 * Constructor.
 	 * @param input The actual Input (not null)
 	 * @param converter The value converter (not null)
 	 */
-	public InputConverterAdapter(Input<T> input, Converter<V, T> converter) {
+	public InputConverterAdapter(Input<T> input, Converter<T, V> converter) {
 		super();
 		ObjectUtils.argumentNotNull(input, "Input must be not null");
 		ObjectUtils.argumentNotNull(converter, "Converter must be not null");
@@ -58,7 +58,7 @@ public class InputConverterAdapter<T, V> implements Input<V> {
 	 */
 	@Override
 	public void setValue(V value) {
-		input.setValue(convertToModel(value));
+		input.setValue(convertToPresentation(value));
 	}
 
 	/*
@@ -67,7 +67,7 @@ public class InputConverterAdapter<T, V> implements Input<V> {
 	 */
 	@Override
 	public V getValue() {
-		return convertToPresentation(input.getValue());
+		return convertToModel(input.getValue());
 	}
 
 	/*
@@ -80,7 +80,7 @@ public class InputConverterAdapter<T, V> implements Input<V> {
 			com.holonplatform.vaadin.components.ValueHolder.ValueChangeListener<V> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 		return input.addValueChangeListener(e -> listener.valueChange(new DefaultValueChangeEvent<>(this,
-				convertToPresentation(e.getOldValue()), convertToPresentation(e.getValue()), e.isUserOriginated())));
+				convertToModel(e.getOldValue()), convertToModel(e.getValue()), e.isUserOriginated())));
 	}
 
 	/*
@@ -143,7 +143,7 @@ public class InputConverterAdapter<T, V> implements Input<V> {
 	 */
 	@Override
 	public V getEmptyValue() {
-		return convertToPresentation(input.getEmptyValue());
+		return convertToModel(input.getEmptyValue());
 	}
 
 	/*
@@ -214,7 +214,7 @@ public class InputConverterAdapter<T, V> implements Input<V> {
 	 * @param value Value to convert
 	 * @return Converted value
 	 */
-	private T convertToModel(V value) {
+	private V convertToModel(T value) {
 		return converter.convertToModel(value, _valueContext()).getOrThrow(error -> new RuntimeException(error));
 	}
 
@@ -223,7 +223,7 @@ public class InputConverterAdapter<T, V> implements Input<V> {
 	 * @param value Value to convert
 	 * @return Converted value
 	 */
-	private V convertToPresentation(T value) {
+	private T convertToPresentation(V value) {
 		return converter.convertToPresentation(value, _valueContext());
 	}
 

@@ -15,10 +15,6 @@
  */
 package com.holonplatform.vaadin.components.builders;
 
-import com.holonplatform.core.Context;
-import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
-import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
 
 /**
@@ -31,53 +27,6 @@ import com.vaadin.ui.Label;
  * 
  * @since 5.0.0
  */
-public interface LabelBuilder extends ComponentBuilder<Label, LabelBuilder> {
-
-	/**
-	 * Sets the label content
-	 * @param content The content to set
-	 * @return this
-	 */
-	LabelBuilder content(String content);
-
-	/**
-	 * Sets the label content using a localizable <code>messageCode</code>.
-	 * <p>
-	 * For content localization, a {@link LocalizationContext} must be available and localized as {@link Context}
-	 * resource when component is built or when component is displayed if {@link #deferLocalization()} is
-	 * <code>true</code>.
-	 * </p>
-	 * @param defaultContent Default content if no translation is available for given <code>messageCode</code> for
-	 *        current Locale.
-	 * @param messageCode Content translation message key
-	 * @param arguments Optional translation arguments
-	 * @return this
-	 */
-	LabelBuilder content(String defaultContent, String messageCode, Object... arguments);
-
-	/**
-	 * Sets the label content using a {@link Localizable} message.
-	 * <p>
-	 * For content localization, a {@link LocalizationContext} must be available and localized as {@link Context}
-	 * resource when component is built or when component is displayed if {@link #deferLocalization()} is
-	 * <code>true</code>.
-	 * </p>
-	 * @param content Localizable content message
-	 * @return this
-	 */
-	LabelBuilder content(Localizable content);
-
-	/**
-	 * Sets the content mode of the Label.
-	 * @param contentMode The content mode to set
-	 * @return this
-	 */
-	LabelBuilder contentMode(ContentMode contentMode);
-
-	/**
-	 * A shortcut to set the content mode to {@link ContentMode#HTML}
-	 * @return this
-	 */
-	LabelBuilder html();
+public interface LabelBuilder extends LabelConfigurator<LabelBuilder>, ComponentBuilder<Label, LabelBuilder> {
 
 }

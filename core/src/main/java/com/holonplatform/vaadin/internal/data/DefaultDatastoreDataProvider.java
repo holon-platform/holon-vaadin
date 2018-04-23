@@ -77,18 +77,21 @@ public class DefaultDatastoreDataProvider extends AbstractBackEndDataProvider<Pr
 	/**
 	 * Default constructor.
 	 */
-	public DefaultDatastoreDataProvider() {
+	protected DefaultDatastoreDataProvider() {
 		super();
 	}
 
 	/**
 	 * Constructor.
-	 * @param datastore Datastore
-	 * @param target Query target
-	 * @param propertySet Projection
+	 * @param datastore Datastore (not null)
+	 * @param target Data target (not null)
+	 * @param propertySet Projection (not null)
 	 */
 	public DefaultDatastoreDataProvider(Datastore datastore, DataTarget<?> target, PropertySet<?> propertySet) {
 		super();
+		ObjectUtils.argumentNotNull(datastore, "Datastore must be not null");
+		ObjectUtils.argumentNotNull(target, "DataTarget must be not null");
+		ObjectUtils.argumentNotNull(propertySet, "PropertySet must be not null");
 		this.datastore = datastore;
 		this.target = target;
 		this.propertySet = propertySet;
@@ -99,6 +102,9 @@ public class DefaultDatastoreDataProvider extends AbstractBackEndDataProvider<Pr
 	 * @return the datastore
 	 */
 	protected Datastore getDatastore() {
+		if (datastore == null) {
+			throw new IllegalStateException("Missing Datastore in DatastoreDataProvider");
+		}
 		return datastore;
 	}
 
@@ -107,6 +113,9 @@ public class DefaultDatastoreDataProvider extends AbstractBackEndDataProvider<Pr
 	 * @return the data target
 	 */
 	protected DataTarget<?> getTarget() {
+		if (datastore == null) {
+			throw new IllegalStateException("Missing DataTarget in DatastoreDataProvider");
+		}
 		return target;
 	}
 
@@ -123,6 +132,9 @@ public class DefaultDatastoreDataProvider extends AbstractBackEndDataProvider<Pr
 	 * @return the query projection property set
 	 */
 	protected PropertySet<?> getPropertySet() {
+		if (propertySet == null) {
+			throw new IllegalStateException("Missing PropertySet in DatastoreDataProvider");
+		}
 		return propertySet;
 	}
 
@@ -195,11 +207,7 @@ public class DefaultDatastoreDataProvider extends AbstractBackEndDataProvider<Pr
 	 */
 	@Override
 	protected Stream<PropertyBox> fetchFromBackEnd(Query<PropertyBox, QueryFilter> query) {
-		Stream<PropertyBox> results = buildQuery(query, true).stream(propertySet);
-		if (getItemIdentifier().isPresent()) {
-			return results.map(pb -> new IdentifiablePropertyBox(pb, getItemIdentifier().get()));
-		}
-		return results;
+		return buildQuery(query, true).stream(getPropertySet());
 	}
 
 	/*
@@ -229,7 +237,9 @@ public class DefaultDatastoreDataProvider extends AbstractBackEndDataProvider<Pr
 
 		// filters
 		final List<QueryFilter> filters = new LinkedList<>();
+
 		query.getFilter().ifPresent(f -> filters.add(f));
+
 		queryConfigurationProviders.forEach(p -> {
 			QueryFilter qf = p.getQueryFilter();
 			if (qf != null) {
@@ -280,24 +290,13 @@ public class DefaultDatastoreDataProvider extends AbstractBackEndDataProvider<Pr
 		return q;
 	}
 
-	protected void checkConfiguration() throws IllegalStateException {
-		if (getDatastore() == null) {
-			throw new IllegalStateException("Missing Datastore");
-		}
-		if (getTarget() == null) {
-			throw new IllegalStateException("Missing DataTarget");
-		}
-		if (getPropertySet() == null) {
-			throw new IllegalStateException("Missing PropertySet");
-		}
-	}
-
 	private static QuerySort fromOrder(PropertySet<?> set, QuerySortOrder order) {
 		Path<?> path = getPathByName(set, order.getSorted()).orElseThrow(() -> new IllegalArgumentException(
 				"No property of the set matches with sort name: " + order.getSorted()));
 		SortDirection direction = (order.getDirection() != null
 				&& order.getDirection() == com.vaadin.shared.data.sort.SortDirection.DESCENDING)
-						? SortDirection.DESCENDING : SortDirection.ASCENDING;
+						? SortDirection.DESCENDING
+						: SortDirection.ASCENDING;
 		return QuerySort.of(path, direction);
 	}
 
@@ -310,6 +309,9 @@ public class DefaultDatastoreDataProvider extends AbstractBackEndDataProvider<Pr
 		return Optional.empty();
 	}
 
+	/**
+	 * Default {@link Builder} implementation.
+	 */
 	public static class DefaultBuilder implements Builder {
 
 		private final DefaultDatastoreDataProvider instance = new DefaultDatastoreDataProvider();
@@ -323,6 +325,7 @@ public class DefaultDatastoreDataProvider extends AbstractBackEndDataProvider<Pr
 		 */
 		@Override
 		public Builder datastore(Datastore datastore) {
+			ObjectUtils.argumentNotNull(datastore, "Datastore must be not null");
 			instance.setDatastore(datastore);
 			return this;
 		}
@@ -334,7 +337,21 @@ public class DefaultDatastoreDataProvider extends AbstractBackEndDataProvider<Pr
 		 */
 		@Override
 		public Builder target(DataTarget<?> target) {
+			ObjectUtils.argumentNotNull(target, "DataTarget must be not null");
 			instance.setTarget(target);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.data.DatastoreDataProvider.Builder#itemIdentifier(com.holonplatform.core.property.
+		 * Property)
+		 */
+		@Override
+		public Builder itemIdentifier(Property<?> identifierProperty) {
+			ObjectUtils.argumentNotNull(identifierProperty, "Identifier property must be not null");
+			instance.setItemIdentifier(new PropertyItemIdentifier<>(identifierProperty));
 			return this;
 		}
 
@@ -370,6 +387,7 @@ public class DefaultDatastoreDataProvider extends AbstractBackEndDataProvider<Pr
 		 */
 		@Override
 		public Builder withQueryConfigurationProvider(QueryConfigurationProvider queryConfigurationProvider) {
+			ObjectUtils.argumentNotNull(queryConfigurationProvider, "QueryConfigurationProvider must be not null");
 			instance.addQueryConfigurationProvider(queryConfigurationProvider);
 			return this;
 		}
@@ -381,7 +399,6 @@ public class DefaultDatastoreDataProvider extends AbstractBackEndDataProvider<Pr
 		@Override
 		public DatastoreDataProvider build() {
 			instance.setPropertySet(PropertySet.of(this.properties));
-			instance.checkConfiguration();
 			return instance;
 		}
 

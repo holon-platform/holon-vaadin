@@ -17,9 +17,13 @@ package com.holonplatform.vaadin.internal.components.builders;
 
 import java.util.List;
 
+import com.holonplatform.core.datastore.DataTarget;
+import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.components.BeanListing;
-import com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridItemListingBuilder;
+import com.holonplatform.vaadin.components.builders.BeanListingBuilder;
+import com.holonplatform.vaadin.data.ItemDataProvider;
+import com.holonplatform.vaadin.data.ItemDataSource.CommitHandler;
 import com.holonplatform.vaadin.internal.components.DefaultBeanListing;
 import com.vaadin.data.BeanPropertySet;
 import com.vaadin.data.HasValue;
@@ -35,17 +39,54 @@ import com.vaadin.ui.renderers.Renderer;
  *
  * @since 5.0.0
  */
-public class DefaultGridItemListingBuilder<T> extends
-		AbstractGridItemListingBuilder<T, String, BeanListing<T>, DefaultBeanListing<T>, GridItemListingBuilder<T>>
-		implements GridItemListingBuilder<T> {
+public class DefaultBeanListingBuilder<T>
+		extends AbstractGridItemListingBuilder<T, String, BeanListing<T>, DefaultBeanListing<T>, BeanListingBuilder<T>>
+		implements BeanListingBuilder<T> {
 
-	public DefaultGridItemListingBuilder(Class<T> beanType) {
+	/**
+	 * Bean type
+	 */
+	protected final Class<T> beanType;
+
+	/**
+	 * Constructor.
+	 * @param beanType Bean type (not null)
+	 */
+	public DefaultBeanListingBuilder(Class<T> beanType) {
 		super(new DefaultBeanListing<>(beanType), String.class);
+		this.beanType = beanType;
 		// read bean property names
-		PropertySet<T> propertySet = BeanPropertySet.get(beanType);
-		propertySet.getProperties().forEach(pd -> {
-			dataSourceBuilder.withReadOnlyProperty(pd.getName(), pd.getType());
+		getInstance().getPropertyDefinitions().forEach(p -> {
+			dataSourceBuilder.withProperty(p.getName(), p.getType(), false);
+
+			dataSourceBuilder.propertyId(p.getName(), p.getName());
+
+			if (p.isReadOnly()) {
+				dataSourceBuilder.readOnly(p.getName(), true);
+			}
+			if (p.getBeanProperty().isPresent()) {
+				dataSourceBuilder.sortable(p.getName(), true);
+			}
 		});
+		PropertySet<T> propertySet = BeanPropertySet.get(beanType);
+		propertySet.getProperties().forEach(p -> {
+			dataSourceBuilder.withProperty(p.getName(), p.getType());
+		});
+	}
+
+	@Override
+	public <V> BeanListingBuilder<T> withVirtualColumn(String id, Class<V> type, ValueProvider<T, V> valueProvider) {
+		getInstance().addVirtualColumn(id, type, valueProvider);
+		return builder();
+	}
+
+	@Override
+	public BeanListingBuilder<T> dataSource(Datastore datastore, DataTarget<?> target) {
+		// set data source
+		dataSource(ItemDataProvider.create(datastore, target, beanType));
+		// set commit handler
+		commitHandler(CommitHandler.datastore(beanType, datastore, target));
+		return builder();
 	}
 
 	/*
@@ -55,7 +96,7 @@ public class DefaultGridItemListingBuilder<T> extends
 	 * com.vaadin.data.HasValue)
 	 */
 	@Override
-	public <E extends HasValue<?> & Component> GridItemListingBuilder<T> editor(String property, E editor) {
+	public <E extends HasValue<?> & Component> BeanListingBuilder<T> editor(String property, E editor) {
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		ObjectUtils.argumentNotNull(editor, "Editor field must be not null");
 		getInstance().getPropertyColumn(property).setEditor(editor);
@@ -69,7 +110,7 @@ public class DefaultGridItemListingBuilder<T> extends
 	 * vaadin.data.Validator)
 	 */
 	@Override
-	public GridItemListingBuilder<T> withValidator(com.vaadin.data.Validator<T> validator) {
+	public BeanListingBuilder<T> withValidator(com.vaadin.data.Validator<T> validator) {
 		ObjectUtils.argumentNotNull(validator, "Validator must be not null");
 		getInstance().addValidator(validator);
 		return builder();
@@ -82,7 +123,7 @@ public class DefaultGridItemListingBuilder<T> extends
 	 * String, com.vaadin.data.Validator)
 	 */
 	@Override
-	public GridItemListingBuilder<T> withValidator(String property, com.vaadin.data.Validator<?> validator) {
+	public BeanListingBuilder<T> withValidator(String property, com.vaadin.data.Validator<?> validator) {
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		ObjectUtils.argumentNotNull(validator, "Validator must be not null");
 		getInstance().getPropertyColumn(property).addValidator(validator);
@@ -96,7 +137,7 @@ public class DefaultGridItemListingBuilder<T> extends
 	 * com.vaadin.ui.renderers.Renderer)
 	 */
 	@Override
-	public GridItemListingBuilder<T> render(String property, Renderer<?> renderer) {
+	public BeanListingBuilder<T> render(String property, Renderer<?> renderer) {
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		getInstance().getPropertyColumn(property).setRenderer(renderer);
 		return builder();
@@ -109,7 +150,7 @@ public class DefaultGridItemListingBuilder<T> extends
 	 * com.vaadin.data.ValueProvider, com.vaadin.ui.renderers.Renderer)
 	 */
 	@Override
-	public <V, P> GridItemListingBuilder<T> render(String property, ValueProvider<V, P> presentationProvider,
+	public <V, P> BeanListingBuilder<T> render(String property, ValueProvider<V, P> presentationProvider,
 			Renderer<? super P> renderer) {
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		getInstance().getPropertyColumn(property).setPresentationProvider(presentationProvider);
@@ -123,11 +164,10 @@ public class DefaultGridItemListingBuilder<T> extends
 	 * holonplatform.vaadin.internal.components.DefaultItemListing, java.util.List)
 	 */
 	@Override
-	protected Iterable<String> configureColumns(DefaultBeanListing<T> instance, List<String> visibleColumns) {
-		if (visibleColumns.isEmpty() && instance.getDataSource().isPresent()) {
-			return instance.getDataSource().get().getConfiguration().getProperties();
-		}
-		return visibleColumns;
+	protected Iterable<? extends String> configureColumns(DefaultBeanListing<T> instance,
+			List<? extends String> visibleColumns) {
+		// return visible columns or default column ids if none
+		return !visibleColumns.isEmpty() ? visibleColumns : instance.getDefaultColumnIds();
 	}
 
 	/*
@@ -145,7 +185,7 @@ public class DefaultGridItemListingBuilder<T> extends
 	 * @see com.holonplatform.vaadin.internal.components.builders.AbstractComponentConfigurator#builder()
 	 */
 	@Override
-	protected GridItemListingBuilder<T> builder() {
+	protected BeanListingBuilder<T> builder() {
 		return this;
 	}
 

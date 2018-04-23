@@ -35,13 +35,15 @@ import com.holonplatform.vaadin.test.data.TestEnum1;
 import com.vaadin.data.Converter;
 import com.vaadin.data.Result;
 import com.vaadin.data.ValueContext;
+import com.vaadin.data.converter.StringToIntegerConverter;
+import com.vaadin.data.converter.StringToLongConverter;
 import com.vaadin.ui.TextField;
 
 public class TestInput {
 
 	@Test
 	public void testEmptyInput() {
-		
+
 		StringField sf = new StringField();
 		assertTrue(sf.isEmpty());
 
@@ -135,20 +137,20 @@ public class TestInput {
 
 	@SuppressWarnings("serial")
 	@Test
-	public void testInputConveter() {
+	public void testInputConverter() {
 
 		Input<Integer> ii = Components.input.number(Integer.class).build();
 
-		Input<Boolean> bi = Input.from(ii, new Converter<Boolean, Integer>() {
+		Input<Boolean> bi = Input.from(ii, new Converter<Integer, Boolean>() {
 
 			@Override
-			public Result<Integer> convertToModel(Boolean value, ValueContext context) {
-				return Result.ok((value == null) ? null : (value ? 1 : 0));
+			public Result<Boolean> convertToModel(Integer value, ValueContext context) {
+				return Result.ok((value == null) ? Boolean.FALSE : (value.intValue() > 0));
 			}
 
 			@Override
-			public Boolean convertToPresentation(Integer value, ValueContext context) {
-				return (value == null) ? Boolean.FALSE : (value.intValue() > 0);
+			public Integer convertToPresentation(Boolean value, ValueContext context) {
+				return (value == null) ? null : (value ? 1 : 0);
 			}
 		});
 
@@ -171,24 +173,26 @@ public class TestInput {
 		bi.setValue(false);
 		assertFalse(bi.getValue());
 
-		Input<Long> li = Input.from(new TextField(), new Converter<Long, String>() {
-
-			@Override
-			public Result<String> convertToModel(Long value, ValueContext context) {
-				return Result.ok((value == null) ? null : value.toString());
-			}
-
-			@Override
-			public Long convertToPresentation(String value, ValueContext context) {
-				return (value == null || value.trim().isEmpty()) ? null : Long.parseLong(value);
-			}
-
-		});
+		Input<Long> li = Input.from(new TextField(), new StringToLongConverter("error"));
 
 		assertNull(li.getValue());
 		li.setValue(1L);
 		assertEquals(Long.valueOf(1), li.getValue());
 
+	}
+	
+	@Test
+	public void testFieldConverter() {
+		TextField tf = new TextField();
+		
+		Input<Integer> i = Input.from(tf, new StringToIntegerConverter("error"));
+		
+		i.setValue(1);
+		assertEquals("1", tf.getValue());
+		
+		tf.setValue("2");
+		assertEquals(Integer.valueOf(2), i.getValue());
+		
 	}
 
 }

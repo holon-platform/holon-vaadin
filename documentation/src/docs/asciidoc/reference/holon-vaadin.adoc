@@ -1,4 +1,6 @@
-= Holon Vaadin UI
+= Holon Platform Vaadin UI Module - Reference manual
+:description: Holon platform Vaadin module reference documentation. \
+The Holon Vaadin module represents the platform support for the Vaadin web applications UI framework, focusing on the user interface components and data binding features.
 :revnumber: {project-version}
 :apidir: ../api/holon-vaadin
 :linkattrs:
@@ -7,7 +9,7 @@
 :toc: left
 :toclevels: 3
 
-Copyright © 2016-2017
+Copyright © 2016-2018
 
 _Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically._
 
@@ -15,11 +17,28 @@ _Copies of this document may be made for your own use and for distribution to ot
 
 The Holon *Vaadin* module represents the platform support for the https://vaadin.com[Vaadin] web applications framework, focusing on the user interface components and data binding features.
 
-This module provides integration with the platform foundation architecture, such as the `Property` model and the `Datastore` API, the authentication, authorization and localization support.
+This module provides integration with the platform foundation architecture, such as;
 
-The _view navigation_ system allows to create web applications focusing on the application functions, which can be represented by _virtual pages_, relying on a robust navigation architecture, with parameters and view lifecycle hooks support.
+* The link:holon-core.html#Property[Property model^] and the link:holon-core.html#Datastore[Datastore API^].
+* The Holon Platform link:holon-core.html#Auth[authentication and authentication^] architecture.
+* The Holon Platform link:holon-core.html#i18n[internationalization] support.
 
-Furthermore, a complete set of _fluent_ builders is available, to build web application UIs quickly and easily.
+This module provides a _view navigation_ system which allows to create web applications focusing on the application functions, which can be represented by _virtual pages_, relying on a robust navigation architecture, with parameters and view lifecycle hooks support.
+
+Furthermore, a complete set of _fluent_ builders is available, to build web application UI components quickly and easily.
+
+A complete integration with the *Spring framework* and *Spring Boot* is also available.
+
+=== Sources and contributions
+
+The Holon Platform *Vaadin* module source code is available from the GitHub repository link:https://github.com/holon-platform/holon-vaadin[https://github.com/holon-platform/holon-vaadin^].
+
+See the repository `README` file for information about:
+
+* The source code structure.
+* How to build the module artifacts from sources.
+* Where to find the code examples.
+* How to contribute to the module development.
 
 == Obtaining the artifacts
 
@@ -59,6 +78,65 @@ The BOM can be imported in a Maven project in the following way:
 The Holon Platform provides an *overall Maven BOM (Bill of Materials)* to easily obtain all the available platform artifacts.
 
 See link:index.html#obtain-the-platform-artifacts[Obtain the platform artifacts] for details.
+
+[[WhatsNew51x]]
+== What's new in version 5.1.x
+
+* Support for the the `PropertySet` *identifier properties* to make more easy and quick to setup data bound UI objects. See <<PropertySetIdentifiers>>.
+
+* Full support of Vaadin version 8.3, including for example the Navigator `@PushStateNavigation` strategy support. See <<PushStateNavigation>>.
+
+* Better support for bean based data bound UI objects, with new builders and a Java API to create and configure the UI components just like the `Property` based one. See <<BeanListing>>.
+
+* Support for components _drag and drop_ configuration at Java API level. See <<DragAndDrop>>.
+
+* New component builder APIs for Vaadin `TabSheet` and `Accordion` components. See <<ComponentsAPI>>.
+
+[[MigratingFrom50x]]
+=== Migrating from version 5.0.x
+
+==== Deprecations
+
+* *PropertyListing builder API*: link:{apidir}/com/holonplatform/vaadin/components/builders/PropertyListingBuilder.html#dataSource-com.holonplatform.vaadin.data.ItemDataProvider-com.holonplatform.core.property.Property...-[dataSource(ItemDataProvider dataProvider, Property... identifierProperties)^]. Since the `PropertySet` identifier properties support is used by default by the `PropertyListing` builder to obtain the item identifier properties, this method is no longer useful. To customize the item identifiers strategy, the more general `dataSource(ItemDataProvider dataProvider, ItemIdentifierProvider itemIdentifierProvider)` builder method can be used.
+
+==== Item identifiers in `Property` based Item listings
+
+The `Property` based Item listing components now supports the link:holon-core.html#IdentifierProperties[PropertySet identifier properties^] configuration and use them as the default strategy to identify a `PropertyBox` type item. 
+
+So, when the `PropertySet` used with an item listing component declares one ore more _identifier properties_, there is no longer the need to declare the item identifier properties, for example, when configuring a `Datastore` based item data source. The _identifier properties_ of the `PropertySet` will be used by default to provide the item identifier values.
+
+For example, given the following Property model definition:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListingMigration.java[tag=listing1,indent=0]
+----
+
+A `PropertyListing` component, prior to version 5.1.0, had to be built this way, for example using a `Datastore` as item data source:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListingMigration.java[tag=listing2,indent=0]
+----
+<1> Provide the item listing `PropertySet`
+<2> Configure a `Datastore` as item data source, providing the `ID` property as item identifier property
+
+From version 5.1.x, the Property model definition can include the `PropertySet` _identifier properties_ like this:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListingMigration2.java[tag=listing1,indent=0]
+----
+<1> Set the `ID` property as property set identifier property
+
+And so the item identifier properties to use are no longer required during the `PropertyListing` component data source configuration, since the `PropertySet` _identifier properties_ are used by default:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListingMigration2.java[tag=listing2,indent=0]
+----
+<1> The item listing `PropertySet` provides the property set identifier properties
+<2> There is no longer the need to declare the `ID` property as item identifier property at data source configuration time, since the configured `PropertySet` _identifier properties_ will be used by default
 
 // Inclusions
 

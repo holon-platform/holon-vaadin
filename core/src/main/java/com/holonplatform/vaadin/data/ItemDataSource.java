@@ -20,11 +20,17 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import com.holonplatform.core.ParameterSet;
+import com.holonplatform.core.datastore.DataTarget;
+import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.exceptions.DataAccessException;
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
+import com.holonplatform.vaadin.internal.data.DatastoreBeanCommitHandler;
+import com.holonplatform.vaadin.internal.data.DatastoreCommitHandler;
 import com.holonplatform.vaadin.internal.data.DefaultItemDataSource;
 import com.holonplatform.vaadin.internal.data.DefaultItemSort;
 import com.vaadin.data.provider.Query;
@@ -47,7 +53,7 @@ import com.vaadin.data.provider.Query;
  * 
  * @see ItemDataProvider
  */
-public interface ItemDataSource<ITEM, PROPERTY> extends Serializable {
+public interface ItemDataSource<ITEM, PROPERTY> extends QueryConfigurationProviderSupport, Serializable {
 
 	/**
 	 * Default batch (page) size for items loading using {@link ItemDataProvider}
@@ -198,9 +204,13 @@ public interface ItemDataSource<ITEM, PROPERTY> extends Serializable {
 
 	}
 
-	// Data source configuration
-
-	public interface Configuration<ITEM, PROPERTY> extends QueryConfigurationProvider, Serializable {
+	/**
+	 * Item data source configuration.
+	 * 
+	 * @param <ITEM> Item type
+	 * @param <PROPERTY> Item property type
+	 */
+	public interface Configuration<ITEM, PROPERTY> extends Serializable {
 
 		/**
 		 * Get the property representation type.
@@ -238,6 +248,20 @@ public interface ItemDataSource<ITEM, PROPERTY> extends Serializable {
 		 * @return Property data type
 		 */
 		Class<?> getPropertyType(PROPERTY property);
+
+		/**
+		 * Get the String id associated to given property, if available.
+		 * @param property Property (not null)
+		 * @return Optional property id
+		 */
+		Optional<String> getPropertyId(PROPERTY property);
+
+		/**
+		 * Get the property which corresponds to given id, if available.
+		 * @param propertyId Property id
+		 * @return Optional property which corresponds to given id
+		 */
+		Optional<PROPERTY> getPropertyById(String propertyId);
 
 		/**
 		 * Get whether the given property is read only.
@@ -286,10 +310,33 @@ public interface ItemDataSource<ITEM, PROPERTY> extends Serializable {
 		 */
 		List<ItemSort<PROPERTY>> getItemSorts();
 
+		/**
+		 * Get the {@link QuerySort} according to this configuration, taking into account the item sorts, default and
+		 * fixed sorts and the query sorts from any registered {@link QueryConfigurationProvider}.
+		 * @param currentSorts Optional corrent query sorts
+		 * @return The {@link QuerySort}, if available
+		 */
+		Optional<QuerySort> getQuerySort(Collection<QuerySort> currentSorts);
+
+		/**
+		 * Get the {@link QueryFilter} according to this configuration, taking into account the fixed filters and the
+		 * query filters from any registered {@link QueryConfigurationProvider}.
+		 * @return The {@link QueryFilter}, if available
+		 */
+		Optional<QueryFilter> getQueryFilter();
+
+		/**
+		 * Get the query parameters according to this configuration, taking into account the query parameters from any
+		 * registered {@link QueryConfigurationProvider}.
+		 * @return The query parameters set, empty if no parameters available
+		 */
+		ParameterSet getQueryParameters();
+
 	}
 
 	/**
-	 * An item sort directive.
+	 * Item sort directive.
+	 * 
 	 * @param <PROPERTY> Item property type
 	 */
 	public interface ItemSort<PROPERTY> extends Serializable {
@@ -372,6 +419,30 @@ public interface ItemDataSource<ITEM, PROPERTY> extends Serializable {
 		 */
 		void commit(Collection<ITEM> addedItems, Collection<ITEM> modifiedItems, Collection<ITEM> removedItems);
 
+		/**
+		 * Construct a new {@link CommitHandler} for {@link PropertyBox} type items using a {@link Datastore} to perform
+		 * persistence operations.
+		 * @param datastore The datastore to use (not null)
+		 * @param target The data target to use (not null)
+		 * @return The {@link CommitHandler} instance
+		 */
+		static CommitHandler<PropertyBox> datastore(Datastore datastore, DataTarget<?> target) {
+			return new DatastoreCommitHandler(datastore, target);
+		}
+
+		/**
+		 * Construct a new {@link CommitHandler} for bean type items using a {@link Datastore} to perform persistence
+		 * operations.
+		 * @param <T> Bean type
+		 * @param beanClass Bean class (not null)
+		 * @param datastore The datastore to use (not null)
+		 * @param target The data target to use (not null)
+		 * @return The {@link CommitHandler} instance
+		 */
+		static <T> CommitHandler<T> datastore(Class<? extends T> beanClass, Datastore datastore, DataTarget<?> target) {
+			return new DatastoreBeanCommitHandler<>(beanClass, datastore, target);
+		}
+
 	}
 
 	// Builders
@@ -410,36 +481,55 @@ public interface ItemDataSource<ITEM, PROPERTY> extends Serializable {
 		<ID> Builder<ITEM, PROPERTY> itemIdentifier(ItemIdentifierProvider<ITEM, ID> itemIdentifierProvider);
 
 		/**
-		 * Add an Item property to this container
-		 * @param propertyId Property id
-		 * @param type Property value type
+		 * Add an Item property to this data source.
+		 * @param property Property to add (not null)
+		 * @param type Property value type (not null)
+		 * @param generatePropertyId Whether to auto generate a property id as String
 		 * @return this
 		 */
-		Builder<ITEM, PROPERTY> withProperty(PROPERTY propertyId, Class<?> type);
+		Builder<ITEM, PROPERTY> withProperty(PROPERTY property, Class<?> type, boolean generatePropertyId);
 
 		/**
-		 * Add an Item property to this container and declares it as sortable
-		 * @param propertyId Property id
-		 * @param type Property value type
+		 * Add an Item property to this data source.
+		 * @param property Property to add (not null)
+		 * @param type Property value type (not null)
 		 * @return this
 		 */
-		Builder<ITEM, PROPERTY> withSortableProperty(PROPERTY propertyId, Class<?> type);
+		default Builder<ITEM, PROPERTY> withProperty(PROPERTY property, Class<?> type) {
+			return withProperty(property, type, true);
+		}
 
 		/**
-		 * Add an Item property to this container and declares it as read-only
-		 * @param propertyId Property id
-		 * @param type Property value type
+		 * Add an Item property to this data source and declares it as sortable.
+		 * @param property Property to add (not null)
+		 * @param type Property value type (not null)
 		 * @return this
 		 */
-		Builder<ITEM, PROPERTY> withReadOnlyProperty(PROPERTY propertyId, Class<?> type);
+		Builder<ITEM, PROPERTY> withSortableProperty(PROPERTY property, Class<?> type);
 
 		/**
-		 * Add an Item property to this container and declares it as read-only and sortable
-		 * @param propertyId Property id
-		 * @param type Property value type
+		 * Add an Item property to this data source and declares it as read-only.
+		 * @param property Property to add (not null)
+		 * @param type Property value type (not null)
 		 * @return this
 		 */
-		Builder<ITEM, PROPERTY> withReadOnlySortableProperty(PROPERTY propertyId, Class<?> type);
+		Builder<ITEM, PROPERTY> withReadOnlyProperty(PROPERTY property, Class<?> type);
+
+		/**
+		 * Add an Item property to this data source and declares it as read-only and sortable.
+		 * @param property Property to add (not null)
+		 * @param type Property value type (not null)
+		 * @return this
+		 */
+		Builder<ITEM, PROPERTY> withReadOnlySortableProperty(PROPERTY property, Class<?> type);
+
+		/**
+		 * Set the property String id of given <code>property</code>.
+		 * @param property Property (not null)
+		 * @param propertyId Property id
+		 * @return this
+		 */
+		Builder<ITEM, PROPERTY> propertyId(PROPERTY property, String propertyId);
 
 		/**
 		 * Set if auto-refresh is enabled for this container, i.e. items are loaded when one of the Container method
@@ -470,6 +560,16 @@ public interface ItemDataSource<ITEM, PROPERTY> extends Serializable {
 		 * @return this
 		 */
 		Builder<ITEM, PROPERTY> maxCacheSize(int maxCacheSize);
+
+		/**
+		 * Set whether all the properties are sortable.
+		 * <p>
+		 * NOTE: It only applies to already added properties.
+		 * </p>
+		 * @param sortable Whether all the properties are sortable
+		 * @return this
+		 */
+		Builder<ITEM, PROPERTY> sortable(boolean sortable);
 
 		/**
 		 * Set whether given property id is sortable.

@@ -441,6 +441,28 @@ public class NumberField<T extends Number> extends AbstractCustomField<T, String
 
 		/*
 		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.components.builders.ValueChangeModeConfigurator#valueChangeMode(com.vaadin.shared.ui
+		 * .ValueChangeMode)
+		 */
+		@Override
+		public NumberInputBuilder<T> valueChangeMode(ValueChangeMode valueChangeMode) {
+			getInstance().setValueChangeMode(valueChangeMode);
+			return builder();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.components.builders.ValueChangeModeConfigurator#valueChangeTimeout(int)
+		 */
+		@Override
+		public NumberInputBuilder<T> valueChangeTimeout(int valueChangeTimeout) {
+			getInstance().setValueChangeTimeout(valueChangeTimeout);
+			return builder();
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.components.builders.NumberFieldBuilder#numberFormat(java.text.NumberFormat)
 		 */
 		@Override

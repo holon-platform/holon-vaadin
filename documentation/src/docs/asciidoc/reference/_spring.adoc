@@ -1,3 +1,4 @@
+[[VaadinSpring]]
 == Spring integration
 
 The `holon-vaadin-spring` artifact provides support and integration with the https://spring.io[Spring^] framework.
@@ -10,7 +11,7 @@ _Maven coordinates_:
 <version>{revnumber}</version>
 ----
 
-This artifact provides a `ViewNavigator` extension with Spring support, represented by the link:{apidir}/com/holonplatform/vaadin/spring/SpringViewNavigator.html[SpringViewNavigator^] interface.
+This artifact provides a `ViewNavigator` extension with Spring support, represented by the link:{apidir}/com/holonplatform/vaadin/spring/SpringViewNavigator.html[SpringViewNavigator^] API.
 
 The `SpringViewNavigator` implementation relies upon the standard Vaadin Spring integration add-on, and supports all its functionalities and configuration features.
 
@@ -93,6 +94,7 @@ This access control strategy relies on the Spring Security `SecurityContext` to 
 
 NOTE: The Spring Security artifacts must be explicitly included as a project dependency.
 
+[[VaadinSpringBoot]]
 == Spring Boot integration
 
 The `holon-vaadin-spring-boot` artifact provides integration with https://projects.spring.io/spring-boot[Spring Boot^] for Vaadin application and view navigator auto configuration.
@@ -109,9 +111,9 @@ _Maven coordinates_:
 
 The Spring Boot auto-configuration includes the default Spring Boot Vaadin add-on auto configuration features, with the following additional behaviour:
 
-* The configured view navigator will be a Spring `ViewNavigator`
-* The `View` authorization support using the `javax.annotation.security.*` annotations is enabled by default
-* If Spring Security is available and configured, the `@Secured` annotation based `View` access control is enabled
+* The configured view navigator will be a Spring `ViewNavigator`.
+* The `View` authorization support using the `javax.annotation.security.*` annotations is enabled by default.
+* If Spring Security is available and configured, the `@Secured` annotation based `View` access control is enabled.
 
 To disable this auto-configuration feature the `HolonVaadinAutoConfiguration` class can be excluded:
 
@@ -120,18 +122,18 @@ To disable this auto-configuration feature the `HolonVaadinAutoConfiguration` cl
 @EnableAutoConfiguration(exclude={HolonVaadinAutoConfiguration.class})
 ----
 
-To disable the Spring Security `@Secured` access control the `HolonVaadinSpringSecurityAutoConfiguration` class can be excluded:
+To disable the Spring Security `@Secured` access control support the `HolonVaadinSpringSecurityAutoConfiguration` class can be excluded:
 
 [source, java]
 ----
 @EnableAutoConfiguration(exclude={HolonVaadinSpringSecurityAutoConfiguration.class})
 ----
 
-=== Holon VaadinServlet
+=== Vaadin servlet configuration
 
 By default, a Holon extension of the Vaadin servlet is auto-configured. 
 
-This servlet allows automatic `com.vaadin.server.SessionInitListener` and `com.vaadin.server.SessionDestroyListener` registration if they are defined as Spring beans and made available in Spring context.
+This servlet allows automatic `com.vaadin.server.SessionInitListener` and `com.vaadin.server.SessionDestroyListener` registration if they are defined as Spring beans and made available in the Spring context.
 
 To disable this auto-configuration feature, the `HolonVaadinServletAutoConfiguration` class can be excluded:
 
@@ -144,7 +146,13 @@ To disable this auto-configuration feature, the `HolonVaadinServletAutoConfigura
 
 The following _starter_ artifacts are available to provide a quick project configuration setup using Maven dependency system:
 
-*1.* The *Holon Vaadin application starter* provides the dependencies to the Holon Vaadin Spring Boot integration artifact, in addition to default Holon _core_ Spring Boot starters, the default `spring-boot-starter-web` starter and the `spring-boot-starter-tomcat` to use Tomcat as the embedded servlet container:
+*1.* The *Vaadin application starter* provides the dependencies to the Holon Platform Vaadin Spring Boot integration artifact `holon-vaadin-spring-boot`, in addition to:
+
+* The link:holon-core.html#SpringBoot[Holon Platform Core Module Spring Boot integration^] base starter (`holon-starter`).
+* The Spring Boot `spring-boot-starter-web` starter.
+* The Spring Boot `spring-boot-starter-tomcat` to use Tomcat as the embedded servlet container.
+
+See the link:https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter[Spring Boot starters documentation^] for details on Spring Boot _starters_.
 
 _Maven coordinates_:
 [source, xml, subs="attributes+"]
@@ -154,7 +162,7 @@ _Maven coordinates_:
 <version>{revnumber}</version>
 ----
 
-*2.* The *Holon Vaadin application starter using Undertow*, to use Undertow instead of Tomcat as embedded servlet container:
+*2.* The *Vaadin application starter using Undertow* provides the same dependencies as the default Vaadin application starter, but using _Undertow_ instead of Tomcat as embedded servlet container.
 
 _Maven coordinates_:
 [source, xml, subs="attributes+"]

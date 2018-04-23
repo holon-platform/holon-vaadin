@@ -41,6 +41,7 @@ import com.holonplatform.vaadin.components.builders.BaseSelectModeSingleProperty
 import com.holonplatform.vaadin.components.builders.BaseSelectModeSingleSelectInputBuilder.NativeModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.components.builders.BaseSelectModeSingleSelectInputBuilder.OptionsModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.components.builders.BaseSelectModeSingleSelectInputBuilder.SelectModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.components.builders.BeanListingBuilder;
 import com.holonplatform.vaadin.components.builders.BooleanInputBuilder;
 import com.holonplatform.vaadin.components.builders.ButtonBuilder;
 import com.holonplatform.vaadin.components.builders.ButtonConfigurator;
@@ -57,8 +58,9 @@ import com.holonplatform.vaadin.components.builders.GridLayoutBuilder;
 import com.holonplatform.vaadin.components.builders.HorizontalLayoutBuilder;
 import com.holonplatform.vaadin.components.builders.InputConfigurator;
 import com.holonplatform.vaadin.components.builders.InputConfigurator.BaseFieldConfigurator;
-import com.holonplatform.vaadin.components.builders.ItemListingBuilder.GridItemListingBuilder;
 import com.holonplatform.vaadin.components.builders.LabelBuilder;
+import com.holonplatform.vaadin.components.builders.LabelConfigurator;
+import com.holonplatform.vaadin.components.builders.LabelConfigurator.BaseLabelConfigurator;
 import com.holonplatform.vaadin.components.builders.LayoutConfigurator;
 import com.holonplatform.vaadin.components.builders.LayoutConfigurator.BaseLayoutConfigurator;
 import com.holonplatform.vaadin.components.builders.MultiPropertySelectInputBuilder.GenericMultiPropertySelectInputBuilder;
@@ -99,6 +101,7 @@ import com.holonplatform.vaadin.internal.components.builders.DefaultFormLayoutBu
 import com.holonplatform.vaadin.internal.components.builders.DefaultGridLayoutBuilder;
 import com.holonplatform.vaadin.internal.components.builders.DefaultHorizontalLayoutBuilder;
 import com.holonplatform.vaadin.internal.components.builders.DefaultLabelBuilder;
+import com.holonplatform.vaadin.internal.components.builders.DefaultLabelConfigurator;
 import com.holonplatform.vaadin.internal.components.builders.DefaultLayoutConfigurator;
 import com.holonplatform.vaadin.internal.components.builders.DefaultOrderedLayoutConfigurator;
 import com.holonplatform.vaadin.internal.components.builders.DefaultPanelBuilder;
@@ -145,6 +148,15 @@ public interface Components {
 	 */
 	static BaseComponentConfigurator configure(AbstractComponent component) {
 		return new DefaultComponentConfigurator(component);
+	}
+
+	/**
+	 * Get a {@link LabelConfigurator} to configure given label.
+	 * @param label Label to configure (not null)
+	 * @return BaseLabelConfigurator
+	 */
+	static BaseLabelConfigurator configure(Label label) {
+		return new DefaultLabelConfigurator(label);
 	}
 
 	/**
@@ -827,7 +839,7 @@ public interface Components {
 		 * @param itemType Item bean type
 		 * @return Grid {@link ItemListing} builder
 		 */
-		static <T> GridItemListingBuilder<T> items(Class<T> itemType) {
+		static <T> BeanListingBuilder<T> items(Class<T> itemType) {
 			return BeanListing.builder(itemType);
 		}
 
@@ -865,7 +877,7 @@ public interface Components {
 				P... additionalProperties) {
 			ObjectUtils.argumentNotNull(properties, "Properties must be not null");
 			if (additionalProperties != null && additionalProperties.length > 0) {
-				PropertySet.Builder<Property> builder = PropertySet.builder().add(properties);
+				PropertySet.Builder<Property<?>> builder = PropertySet.builder().add(properties);
 				for (P property : additionalProperties) {
 					builder.add(property);
 				}

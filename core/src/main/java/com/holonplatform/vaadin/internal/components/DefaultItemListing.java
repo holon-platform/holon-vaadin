@@ -32,7 +32,6 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.components.ItemListing;
 import com.holonplatform.vaadin.components.Selectable;
-import com.holonplatform.vaadin.data.ItemDataProvider;
 import com.holonplatform.vaadin.data.ItemDataSource;
 import com.holonplatform.vaadin.data.ItemDataSource.ItemSort;
 import com.holonplatform.vaadin.internal.data.ItemDataProviderAdapter;
@@ -673,7 +672,7 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	 * Configure and set the listing columns according to given visible property set.
 	 * @param columns Columns property set
 	 */
-	public void setPropertyColumns(Iterable<P> columns) {
+	public void setPropertyColumns(Iterable<? extends P> columns) {
 		setupVisibileColumns(columns);
 	}
 
@@ -681,7 +680,7 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	 * Set given properties as listing visibile columns.
 	 * @param visibleColumns Visible columns properties (not null)
 	 */
-	protected void setupVisibileColumns(Iterable<P> visibleColumns) {
+	protected void setupVisibileColumns(Iterable<? extends P> visibleColumns) {
 		ObjectUtils.argumentNotNull(visibleColumns, "Visible columns must be not null");
 		List<String> ids = new LinkedList<>();
 
@@ -1186,12 +1185,7 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 			if (isBuffered()) {
 				getGrid().setDataProvider(new ItemDataSourceAdapter<>(this.dataSource));
 			} else {
-				ItemDataProvider<T> dataProvider = this.dataSource.getConfiguration().getDataProvider()
-						.orElseThrow(() -> new IllegalStateException(
-								"The datasource [" + this.dataSource + "] has not a configured ItemDataProvider"));
-				getGrid().setDataProvider(new ItemDataProviderAdapter<>(dataProvider,
-						this.dataSource.getConfiguration().getItemIdentifierProvider().orElse(null),
-						this.dataSource.getConfiguration()));
+				getGrid().setDataProvider(new ItemDataProviderAdapter<>(this.dataSource.getConfiguration()));
 			}
 		}
 	}
@@ -1304,8 +1298,6 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 
 		if (isBuffered()) {
 			requireDataSource().refresh(item);
-		} else {
-			requireDataSource().getConfiguration().getDataProvider().ifPresent(dp -> dp.refresh(item));
 		}
 
 		getGrid().getDataProvider().refreshItem(item);

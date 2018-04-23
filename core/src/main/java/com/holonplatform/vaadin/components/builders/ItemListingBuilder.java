@@ -19,14 +19,16 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
+import java.util.function.Function;
 
 import com.holonplatform.core.Path;
 import com.holonplatform.core.Validator;
+import com.holonplatform.core.datastore.DataTarget;
+import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.query.QuerySort;
-import com.holonplatform.vaadin.components.BeanListing;
 import com.holonplatform.vaadin.components.Input;
 import com.holonplatform.vaadin.components.ItemListing;
 import com.holonplatform.vaadin.components.ItemListing.CellStyleGenerator;
@@ -40,6 +42,7 @@ import com.holonplatform.vaadin.components.ItemListing.RowStyleGenerator;
 import com.holonplatform.vaadin.components.ItemSet.ItemDescriptionGenerator;
 import com.holonplatform.vaadin.components.Selectable.SelectionListener;
 import com.holonplatform.vaadin.components.Selectable.SelectionMode;
+import com.holonplatform.vaadin.data.ItemDataProvider;
 import com.holonplatform.vaadin.data.ItemDataSource.CommitHandler;
 import com.holonplatform.vaadin.data.ItemDataSource.PropertySortGenerator;
 import com.holonplatform.vaadin.internal.components.ValidatorWrapper;
@@ -68,6 +71,13 @@ import com.vaadin.ui.renderers.Renderer;
  */
 public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends ItemListingBuilder<T, P, C, B, X>, X extends Component>
 		extends ItemDataSourceComponentBuilder<T, C, B>, ComponentPostProcessorSupport<X, B> {
+
+	/**
+	 * Set whether all the item listing properties are sortable.
+	 * @param sortable Whether all the item listing properties are sortable
+	 * @return this
+	 */
+	B sortable(boolean sortable);
 
 	/**
 	 * Set whether given property is sortable.
@@ -387,7 +397,7 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 	 * @param visibleColumns Visible column properties (not null)
 	 * @return {@link ItemListing} component
 	 */
-	C build(Iterable<P> visibleColumns);
+	C build(Iterable<? extends P> visibleColumns);
 
 	// Using Grid
 
@@ -709,10 +719,34 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 
 	/**
 	 * Builder to create an {@link ItemListing} with a {@link Grid} as backing component.
+	 * 
 	 * @param <T> Item data type
+	 * @param <C> Listing component type
+	 * @param <B> Concrete builder type
 	 */
-	public interface GridItemListingBuilder<T>
-			extends BaseGridItemListingBuilder<T, String, BeanListing<T>, GridItemListingBuilder<T>> {
+	public interface GridItemListingBuilder<T, C extends ItemListing<T, String>, B extends GridItemListingBuilder<T, C, B>>
+			extends BaseGridItemListingBuilder<T, String, C, B> {
+
+		/**
+		 * Set given {@link Datastore} as data source, using given data target to perform queries and obtain the listing
+		 * items as beans of the required type.
+		 * @param datastore The Datastore to use (not null)
+		 * @param target The data target to use (not null)
+		 * @return this
+		 */
+		B dataSource(Datastore datastore, DataTarget<?> target);
+
+		/**
+		 * Set the item listing data source using an {@link ItemDataProvider} and function to convert data source items
+		 * into required item type.
+		 * @param <ITEM> Item type
+		 * @param dataProvider Item data provider (not null)
+		 * @param converter Item converter (not null)
+		 * @return this
+		 */
+		default <ITEM> B dataSource(ItemDataProvider<ITEM> dataProvider, Function<ITEM, T> converter) {
+			return dataSource(ItemDataProvider.convert(dataProvider, converter));
+		}
 
 		/**
 		 * Set the field to use for given property in edit mode.
@@ -721,7 +755,7 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		 * @param editor Editor field (not null)
 		 * @return this
 		 */
-		<E extends HasValue<?> & Component> GridItemListingBuilder<T> editor(String property, E editor);
+		<E extends HasValue<?> & Component> B editor(String property, E editor);
 
 		/**
 		 * Adds a {@link Validator} to the field bound to given <code>property</code> in the item listing editor.
@@ -729,7 +763,7 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		 * @param validator Validator to add (not null)
 		 * @return this
 		 */
-		default GridItemListingBuilder<T> withValidator(String property, Validator<?> validator) {
+		default B withValidator(String property, Validator<?> validator) {
 			return withValidator(property, new ValidatorWrapper<>(validator));
 		}
 
@@ -740,7 +774,7 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		 * @param validator Validator to add (not null)
 		 * @return this
 		 */
-		GridItemListingBuilder<T> withValidator(String property, com.vaadin.data.Validator<?> validator);
+		B withValidator(String property, com.vaadin.data.Validator<?> validator);
 
 		/**
 		 * Set a custom {@link Renderer} for given item property.
@@ -748,7 +782,7 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		 * @param renderer Renderer to use
 		 * @return this
 		 */
-		GridItemListingBuilder<T> render(String property, Renderer<?> renderer);
+		B render(String property, Renderer<?> renderer);
 
 		/**
 		 * Set a custom {@link Renderer} and presentation provider for given item property.
@@ -759,8 +793,7 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		 * @param renderer Renderer to use
 		 * @return this
 		 */
-		<V, P> GridItemListingBuilder<T> render(String property, ValueProvider<V, P> presentationProvider,
-				Renderer<? super P> renderer);
+		<V, P> B render(String property, ValueProvider<V, P> presentationProvider, Renderer<? super P> renderer);
 
 	}
 

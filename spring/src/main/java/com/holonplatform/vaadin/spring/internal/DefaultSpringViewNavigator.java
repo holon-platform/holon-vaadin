@@ -153,7 +153,7 @@ public class DefaultSpringViewNavigator extends SpringNavigator implements ViewN
 	 */
 	@Override
 	public void init(UI ui, ComponentContainer container) {
-		init(ui, new UriFragmentManager(ui.getPage()), new ComponentContainerViewDisplay(container));
+		init(ui, null, new ComponentContainerViewDisplay(container));
 	}
 
 	/*
@@ -162,7 +162,7 @@ public class DefaultSpringViewNavigator extends SpringNavigator implements ViewN
 	 */
 	@Override
 	public void init(UI ui, SingleComponentContainer container) {
-		init(ui, new UriFragmentManager(ui.getPage()), new SingleComponentContainerViewDisplay(container));
+		init(ui, null, new SingleComponentContainerViewDisplay(container));
 	}
 
 	/*
@@ -171,7 +171,7 @@ public class DefaultSpringViewNavigator extends SpringNavigator implements ViewN
 	 */
 	@Override
 	public void init(UI ui, ViewDisplay display) {
-		init(ui, new UriFragmentManager(ui.getPage()), display);
+		init(ui, null, display);
 	}
 
 	/*

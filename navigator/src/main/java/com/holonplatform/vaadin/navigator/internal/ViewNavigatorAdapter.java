@@ -44,7 +44,7 @@ public interface ViewNavigatorAdapter extends ViewNavigator, ViewConfigurationPr
 	void navigateToView(View view, String viewName, String parameters);
 
 	/**
-	 * Init navigator
+	 * Init navigator.
 	 * @param ui UI
 	 * @param stateManager NavigationStateManager
 	 * @param display View display

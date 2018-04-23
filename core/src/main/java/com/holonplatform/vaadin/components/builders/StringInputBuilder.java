@@ -22,7 +22,8 @@ import com.holonplatform.vaadin.components.Input;
  * 
  * @since 5.0.0
  */
-public interface StringInputBuilder extends TextInputBuilder<String, Input<String>, StringInputBuilder> {
+public interface StringInputBuilder extends TextInputBuilder<String, Input<String>, StringInputBuilder>,
+		ValueChangeModeConfigurator<StringInputBuilder> {
 
 	/**
 	 * If field is rendered as a text area in UI, set the number of rows of the text area

@@ -90,6 +90,7 @@ public interface PropertyInputBinder extends PropertySetBound {
 	 * For read-only properties such as {@link VirtualProperty}s, this has the effect to recalculate the virtual value
 	 * according to the values currently set in all the binder inputs.
 	 * </p>
+	 * @param <T> Property type
 	 * @param property The property for which to refresh the bound {@link Input}
 	 */
 	<T> void refresh(Property<T> property);

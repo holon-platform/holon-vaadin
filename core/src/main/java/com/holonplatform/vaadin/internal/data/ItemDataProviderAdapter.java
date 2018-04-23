@@ -15,14 +15,15 @@
  */
 package com.holonplatform.vaadin.internal.data;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.holonplatform.core.Path;
 import com.holonplatform.core.internal.utils.ObjectUtils;
-import com.holonplatform.core.property.Property;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
@@ -31,7 +32,6 @@ import com.holonplatform.vaadin.data.ItemDataProvider;
 import com.holonplatform.vaadin.data.ItemDataSource.Configuration;
 import com.holonplatform.vaadin.data.ItemDataSource.PropertySortGenerator;
 import com.holonplatform.vaadin.data.ItemIdentifierProvider;
-import com.holonplatform.vaadin.internal.utils.PropertyUtils;
 import com.vaadin.data.provider.AbstractBackEndDataProvider;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.Query;
@@ -40,39 +40,88 @@ import com.vaadin.data.provider.QuerySortOrder;
 /**
  * A {@link DataProvider} using an {@link ItemDataProvider} as data source.
  * 
+ * @param <ITEM> Item type
+ * 
  * @since 5.0.0
  */
 public class ItemDataProviderAdapter<ITEM> extends AbstractBackEndDataProvider<ITEM, QueryFilter> {
 
 	private static final long serialVersionUID = -5011712229278252796L;
 
+	/**
+	 * Actual item data provider
+	 */
 	private final ItemDataProvider<ITEM> dataProvider;
 
+	/**
+	 * Item identifier provider
+	 */
 	private final ItemIdentifierProvider<ITEM, ?> itemIdentifier;
 
+	/**
+	 * Configuration
+	 */
 	private final Configuration<ITEM, ?> configuration;
 
+	/**
+	 * Constructor.
+	 * @param dataProvider Actual item data provider (not null)
+	 */
 	public ItemDataProviderAdapter(ItemDataProvider<ITEM> dataProvider) {
-		this(dataProvider, null, null);
+		super();
+		ObjectUtils.argumentNotNull(dataProvider, "ItemDataProvider must be not null");
+		this.dataProvider = dataProvider;
+		this.itemIdentifier = null;
+		this.configuration = null;
 	}
 
-	public ItemDataProviderAdapter(ItemDataProvider<ITEM> dataProvider, ItemIdentifierProvider<ITEM, ?> itemIdentifier,
-			Configuration<ITEM, ?> configuration) {
+	/**
+	 * Constructor.
+	 * @param dataProvider Actual item data provider (not null)
+	 * @param itemIdentifier Item identifier provider
+	 */
+	public ItemDataProviderAdapter(ItemDataProvider<ITEM> dataProvider,
+			ItemIdentifierProvider<ITEM, ?> itemIdentifier) {
 		super();
 		ObjectUtils.argumentNotNull(dataProvider, "ItemDataProvider must be not null");
 		this.dataProvider = dataProvider;
 		this.itemIdentifier = itemIdentifier;
+		this.configuration = null;
+	}
+
+	/**
+	 * Constructor using an item data source configuration.
+	 * @param configuration Configuration (not null)
+	 */
+	public ItemDataProviderAdapter(Configuration<ITEM, ?> configuration) {
+		super();
+		ObjectUtils.argumentNotNull(configuration, "Configuration must be not null");
 		this.configuration = configuration;
+		this.dataProvider = null;
+		this.itemIdentifier = null;
 	}
 
+	/**
+	 * Get the item data provider.
+	 * @return the item data provider
+	 */
 	protected ItemDataProvider<ITEM> getDataProvider() {
-		return dataProvider;
+		return getConfiguration().map(c -> c.getDataProvider()).orElse(Optional.ofNullable(dataProvider))
+				.orElseThrow(() -> new IllegalStateException("No ItemDataProvider available"));
 	}
 
+	/**
+	 * Ge the item identifier provider, if available.
+	 * @return Optional item identifier provider
+	 */
 	protected Optional<ItemIdentifierProvider<ITEM, ?>> getItemIdentifier() {
-		return Optional.ofNullable(itemIdentifier);
+		return getConfiguration().map(c -> c.getItemIdentifierProvider()).orElse(Optional.ofNullable(itemIdentifier));
 	}
 
+	/**
+	 * Get the configuration, if available.
+	 * @return Optional configuration
+	 */
 	protected Optional<Configuration<ITEM, ?>> getConfiguration() {
 		return Optional.ofNullable(configuration);
 	}
@@ -83,7 +132,7 @@ public class ItemDataProviderAdapter<ITEM> extends AbstractBackEndDataProvider<I
 	 */
 	@Override
 	protected Stream<ITEM> fetchFromBackEnd(Query<ITEM, QueryFilter> query) {
-		return dataProvider.load(getConfiguration(query), query.getOffset(), query.getLimit());
+		return getDataProvider().load(getConfiguration(query), query.getOffset(), query.getLimit());
 	}
 
 	/*
@@ -92,7 +141,7 @@ public class ItemDataProviderAdapter<ITEM> extends AbstractBackEndDataProvider<I
 	 */
 	@Override
 	protected int sizeInBackEnd(Query<ITEM, QueryFilter> query) {
-		return Long.valueOf(dataProvider.size(getConfiguration(query))).intValue();
+		return Long.valueOf(getDataProvider().size(getConfiguration(query))).intValue();
 	}
 
 	/*
@@ -107,92 +156,81 @@ public class ItemDataProviderAdapter<ITEM> extends AbstractBackEndDataProvider<I
 		return super.getId(item);
 	}
 
+	/**
+	 * Get the query configuration form given data provider {@link Query}.
+	 * @param query Data provider query (not null)
+	 * @return Query configuration
+	 */
 	protected QueryConfigurationProvider getConfiguration(final Query<ITEM, QueryFilter> query) {
-		final QueryFilter filter = query.getFilter().orElse(null);
+		ObjectUtils.argumentNotNull(query, "Query must be not null");
 
+		// filters
+		final List<QueryFilter> filters = new LinkedList<>();
+		// from data source configuration
+		getConfiguration().flatMap(c -> c.getQueryFilter()).ifPresent(f -> filters.add(f));
+		// from query definition
+		query.getFilter().ifPresent(f -> filters.add(f));
+
+		// sorts
 		final List<QuerySort> sorts = new LinkedList<>();
-		List<QuerySortOrder> orders = query.getSortOrders();
-		if (orders != null && !orders.isEmpty()) {
-			orders.forEach(o -> sorts.add(fromOrder(o)));
-		}
-		final QuerySort sort = getSort(sorts);
+		// from query definition
+		sorts.addAll((query.getSortOrders() == null) ? Collections.emptyList()
+				: query.getSortOrders().stream().map(o -> sortFromOrder(o))
+						.flatMap(o -> o.isPresent() ? Stream.of(o.get()) : Stream.empty())
+						.collect(Collectors.toList()));
+		// from data source configuration
+		getConfiguration().flatMap(c -> c.getQuerySort(sorts)).ifPresent(s -> sorts.add(s));
 
 		return new QueryConfigurationProvider() {
 
 			@Override
 			public QueryFilter getQueryFilter() {
-				return filter;
+				return QueryFilter.allOf(filters).orElse(null);
 			}
 
 			@Override
 			public QuerySort getQuerySort() {
-				return sort;
+				return sorts.isEmpty() ? null : QuerySort.of(sorts);
 			}
 
 		};
 	}
 
-	private QuerySort fromOrder(QuerySortOrder order) {
+	/**
+	 * Get a {@link QuerySort} form given {@link QuerySortOrder}, if a {@link Path} property which corresponds to the
+	 * ordered property id if available.
+	 * <p>
+	 * If a {@link PropertySortGenerator} is bound to the property to sort, it will be used to provide the query sort.
+	 * </p>
+	 * @param order Sort order
+	 * @return Optional sort
+	 */
+	@SuppressWarnings("unchecked")
+	protected Optional<QuerySort> sortFromOrder(QuerySortOrder order) {
+		QuerySort sort = null;
+
 		final SortDirection direction = (order.getDirection() != null
 				&& order.getDirection() == com.vaadin.shared.data.sort.SortDirection.DESCENDING)
-						? SortDirection.DESCENDING : SortDirection.ASCENDING;
+						? SortDirection.DESCENDING
+						: SortDirection.ASCENDING;
 
-		return getConfiguration().flatMap(cfg -> getSortUsingConfiguration(order.getSorted(), direction, cfg))
-				.orElse(getSortFromOrder(order, direction));
-	}
-
-	private static QuerySort getSortFromOrder(QuerySortOrder order, SortDirection direction) {
-		return QuerySort.of(Path.of(order.getSorted(), Object.class), direction);
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private Optional<QuerySort> getSortUsingConfiguration(String sortId, SortDirection direction,
-			Configuration<ITEM, ?> configuration) {
-		if (String.class.isAssignableFrom(configuration.getPropertyType())) {
-			Optional<PropertySortGenerator<String>> generator = ((Configuration<ITEM, String>) configuration)
-					.getPropertySortGenerator(sortId);
-			if (generator.isPresent()) {
-				return Optional.ofNullable(generator.get().getQuerySort(sortId, SortDirection.ASCENDING == direction));
-			}
-			return Optional.of(QuerySort.of(Path.of(sortId, Object.class), SortDirection.ASCENDING == direction));
-		} else if (Property.class.isAssignableFrom(configuration.getPropertyType())) {
-			Property<?> property = getPropertyById(sortId, (Configuration<ITEM, Property>) configuration);
-			if (property != null) {
-				Optional<PropertySortGenerator<Property>> generator = ((Configuration<ITEM, Property>) configuration)
-						.getPropertySortGenerator(property);
-				if (generator.isPresent()) {
-					return Optional
-							.ofNullable(generator.get().getQuerySort(property, SortDirection.ASCENDING == direction));
-				}
-				if (Path.class.isAssignableFrom(property.getClass())) {
-					return Optional.of(QuerySort.of((Path<?>) property, SortDirection.ASCENDING == direction));
-				}
+		// check property
+		Optional<?> p = getConfiguration().flatMap(c -> c.getPropertyById(order.getSorted()));
+		if (p.isPresent()) {
+			final Object property = p.get();
+			sort = getConfiguration().map(c -> (Configuration<ITEM, Object>) c)
+					.flatMap(c -> c.getPropertySortGenerator(property))
+					.map(g -> g.getQuerySort(property, direction == SortDirection.ASCENDING)).orElse(null);
+			if (sort == null && Path.class.isAssignableFrom(property.getClass())) {
+				sort = QuerySort.of((Path<?>) property, direction);
 			}
 		}
-		return Optional.empty();
-	}
-
-	@SuppressWarnings("rawtypes")
-	private static Property<?> getPropertyById(String propertyId, Configuration<?, Property> configuration) {
-		if (propertyId != null && configuration.getProperties() != null) {
-			for (Property<?> property : configuration.getProperties()) {
-				if (propertyId.equals(PropertyUtils.generatePropertyId(property))) {
-					return property;
-				}
-			}
+		if (sort == null) {
+			// use a default path
+			sort = QuerySort.of(Path.of(order.getSorted(), Object.class), direction);
 		}
-		return null;
-	}
 
-	private static QuerySort getSort(List<QuerySort> sorts) {
-		if (!sorts.isEmpty()) {
-			if (sorts.size() == 1) {
-				return sorts.get(0);
-			} else {
-				return QuerySort.of(sorts);
-			}
-		}
-		return null;
+		return Optional.ofNullable(sort);
 	}
 
 }

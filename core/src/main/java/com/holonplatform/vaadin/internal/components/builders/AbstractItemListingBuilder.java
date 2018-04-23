@@ -45,7 +45,6 @@ import com.holonplatform.vaadin.data.ItemDataSource.CommitHandler;
 import com.holonplatform.vaadin.data.ItemDataSource.PropertySortGenerator;
 import com.holonplatform.vaadin.data.ItemIdentifierProvider;
 import com.holonplatform.vaadin.internal.components.DefaultItemListing;
-import com.holonplatform.vaadin.internal.data.DatastoreItemDataProvider;
 import com.vaadin.ui.Component;
 
 /**
@@ -104,6 +103,16 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 		ObjectUtils.argumentNotNull(itemIdentifierProvider, "Item identifier provider must be not null");
 		dataSourceBuilder.dataSource(dataProvider);
 		dataSourceBuilder.itemIdentifier(itemIdentifierProvider);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder#sortable(boolean)
+	 */
+	@Override
+	public B sortable(boolean sortable) {
+		dataSourceBuilder.sortable(sortable);
 		return builder();
 	}
 
@@ -520,7 +529,7 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder#build(java.lang.Iterable)
 	 */
 	@Override
-	public C build(Iterable<P> visibleColumns) {
+	public C build(Iterable<? extends P> visibleColumns) {
 		return buildAndConfigure(visibleColumns);
 	}
 
@@ -539,7 +548,7 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 	 *        visibile columns.
 	 * @return Listing component
 	 */
-	protected C buildAndConfigure(Iterable<P> visibleColumns) {
+	protected C buildAndConfigure(Iterable<? extends P> visibleColumns) {
 		// build
 		final I listing = getInstance();
 		localize(listing);
@@ -548,7 +557,7 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 		setupDataSource(listing);
 
 		// columns
-		Iterable<P> columns = configureColumns(listing,
+		Iterable<? extends P> columns = configureColumns(listing,
 				(visibleColumns != null) ? ConversionUtils.iterableAsList(visibleColumns) : Collections.emptyList());
 
 		// visible columns
@@ -577,14 +586,7 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 	 * @param listing Listing instance
 	 */
 	protected void setupDataSource(I listing) {
-		ItemDataSource<T, P> dataSource = dataSourceBuilder.build();
-
-		dataSource.getConfiguration().getDataProvider().ifPresent(dp -> {
-			if (dp instanceof DatastoreItemDataProvider) {
-				((DatastoreItemDataProvider) dp).addQueryConfigurationProvider(dataSource.getConfiguration());
-			}
-		});
-
+		final ItemDataSource<T, P> dataSource = dataSourceBuilder.build();
 		listing.setDataSource(dataSource);
 	}
 
@@ -594,7 +596,7 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 	 * @param visibleColumns Visible columns
 	 * @return the actual listing visible columns
 	 */
-	protected abstract Iterable<P> configureColumns(I instance, List<P> visibleColumns);
+	protected abstract Iterable<? extends P> configureColumns(I instance, List<? extends P> visibleColumns);
 
 	/**
 	 * Additional listing configuration
