@@ -424,6 +424,7 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 
 	/**
 	 * Register a property in this {@link ItemDataSource}.
+	 * @param <T> Property value type
 	 * @param property The property to add (not null)
 	 * @param type The property type (not null)
 	 * @param readOnly Whether to set the property as read-only

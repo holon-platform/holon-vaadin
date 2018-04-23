@@ -31,6 +31,7 @@ public class DefaultGridPropertyListingBuilder
 
 	/**
 	 * Constructor.
+	 * @param <P> Property type
 	 * @param properties Listing property set
 	 */
 	public <P extends Property<?>> DefaultGridPropertyListingBuilder(Iterable<P> properties) {

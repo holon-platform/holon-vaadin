@@ -57,6 +57,7 @@ public abstract class AbstractGridPropertyListingBuilder<C extends ItemListing<P
 
 	/**
 	 * Constructor.
+	 * @param <P> Property type
 	 * @param instance The instance to build (not null)
 	 * @param properties The listing property set (not null)
 	 */

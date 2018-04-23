@@ -38,6 +38,7 @@ public final class ValueChangeListenerUtils implements Serializable {
 	/**
 	 * Adapt a {@link ValueChangeListener} to be handled as a standard Vaadin
 	 * {@link com.vaadin.data.HasValue.ValueChangeListener}.
+	 * @param <V> Field type
 	 * @param field Source field
 	 * @param valueHolder Value holder
 	 * @param listener Value change listener

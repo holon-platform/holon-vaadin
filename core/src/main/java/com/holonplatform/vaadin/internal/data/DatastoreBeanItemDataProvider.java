@@ -56,7 +56,7 @@ public class DatastoreBeanItemDataProvider<T> extends AbstractDatastoreItemDataP
 	 * Constructor.
 	 * @param datastore Datastore to use (not null)
 	 * @param target Data target (not null)
-	 * @param beanPropertySet Bean property set (not null)
+	 * @param beanClass Bean class (not null)
 	 */
 	public DatastoreBeanItemDataProvider(Datastore datastore, DataTarget<?> target, Class<T> beanClass) {
 		super(datastore, target);

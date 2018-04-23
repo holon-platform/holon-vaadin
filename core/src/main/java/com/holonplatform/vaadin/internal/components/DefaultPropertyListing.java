@@ -70,6 +70,7 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 
 	/**
 	 * Constructor.
+	 * @param <P> Property type
 	 * @param properties Listing property set (not null)
 	 */
 	public <P extends Property<?>> DefaultPropertyListing(Iterable<P> properties) {
@@ -116,6 +117,7 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 
 	/**
 	 * Adds a column definition which uses given {@link VirtualProperty} value provider to provide the column contents.
+	 * @param <T> Property type
 	 * @param property Column property
 	 * @return if the property was not already present in listing property set and it was added to the set, return the
 	 *         column name, <code>null</code> otherwise
