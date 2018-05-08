@@ -838,6 +838,7 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	 * @param columnHidingAllowed <code>true</code> if column hiding is allowed
 	 */
 	public void setColumnHidingAllowed(boolean columnHidingAllowed) {
+		this.columnHidingAllowed = columnHidingAllowed;
 		propertyColumnDefinitions.values().forEach(c -> c.setHidable(false));
 	}
 
