@@ -76,15 +76,31 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, Component {
 	void setItemDetailsVisible(T item, boolean visible) throws UnsupportedOperationException;
 
 	/**
+	 * Scrolls listing viewport to show the given item, if present.
+	 * <p>
+	 * This operation is available only in <em>buffered</em> mode.
+	 * </p>
+	 * @param item Item to scroll to (not null)
+	 * @throws NotBufferedException If the listing is not in buffered mode
+	 * @see #isBuffered()
+	 */
+	void scrollToItem(T item);
+
+	/**
+	 * Scrolls listing viewport to show the item at given index, if present.
+	 * @param index zero based index of the item to scroll to in the current viewport.
+	 */
+	void scrollToIndex(int index);
+
+	/**
 	 * Scrolls listing rows to top (i.e. to the first row, if any)
 	 */
 	void scrollToTop();
 
 	/**
-	 * Scrolls listing viewport to show the given item , if present.
-	 * @param item Item to scroll to (not null)
+	 * Scrolls to the end of the last data row.
 	 */
-	void scrollToItem(T item);
+	void scrollToEnd();
 
 	/**
 	 * Sort the listing using given {@link ItemSort} directives.

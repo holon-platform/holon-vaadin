@@ -994,6 +994,30 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.ItemListing#scrollToItem(java.lang.Object)
+	 */
+	@Override
+	public void scrollToItem(T item) {
+		if (!isBuffered()) {
+			throw new NotBufferedException("The item listing is not in buffered mode");
+		}
+		int index = requireDataSource().indexOfItem(item);
+		if (index > -1) {
+			getGrid().scrollTo(index);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.ItemListing#scrollToIndex(int)
+	 */
+	@Override
+	public void scrollToIndex(int index) {
+		getGrid().scrollTo(index);
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.ItemListing#scrollToTop()
 	 */
 	@Override
@@ -1003,16 +1027,11 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.ItemListing#scrollToItem(java.lang.Object)
+	 * @see com.holonplatform.vaadin.components.ItemListing#scrollToEnd()
 	 */
 	@Override
-	public void scrollToItem(T item) {
-		if (isBuffered()) {
-			int index = requireDataSource().indexOfItem(item);
-			if (index > -1) {
-				getGrid().scrollTo(index);
-			}
-		}
+	public void scrollToEnd() {
+		getGrid().scrollToEnd();
 	}
 
 	/*
