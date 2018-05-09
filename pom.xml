@@ -61,7 +61,7 @@
 		<holon.core.version>5.2.0-SNAPSHOT</holon.core.version>
 
 		<!-- Vaadin -->
-		<vaadin.version>8.3.3</vaadin.version>
+		<vaadin.version>8.4.0</vaadin.version>
 
 		<!-- Spring Security -->
 		<spring.security.version>4.2.4.RELEASE</spring.security.version>
