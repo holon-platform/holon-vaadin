@@ -693,6 +693,8 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 			super(selectProperty.getType(), renderingMode);
 			this.selectProperty = selectProperty;
 			itemIdentifier = new PropertyItemIdentifier(selectProperty);
+			// use the selection property as item caption by default
+			getInstance().setItemCaptionGenerator(value -> String.valueOf(value.getValue(selectProperty)));
 		}
 
 		/*
