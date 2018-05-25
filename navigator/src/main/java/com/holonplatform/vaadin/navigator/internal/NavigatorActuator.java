@@ -40,6 +40,7 @@ import com.holonplatform.vaadin.navigator.SubViewContainer;
 import com.holonplatform.vaadin.navigator.ViewNavigator;
 import com.holonplatform.vaadin.navigator.ViewNavigator.ViewNavigationException;
 import com.holonplatform.vaadin.navigator.ViewWindowConfigurator;
+import com.holonplatform.vaadin.navigator.internal.ViewConfiguration.ViewConfigurationException;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -588,17 +589,17 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 		// Get view configuration
 		final ViewConfiguration viewConfiguration = getViewConfiguration(view.getClass());
 
-		Window window = buildViewWindow(navigationState, view, viewName, viewConfiguration, windowConfiguration);
-		viewWindows.put(navigationState, new WeakReference<>(window));
-		showInWindow = window;
-
 		try {
+			Window window = buildViewWindow(navigationState, view, viewName, viewConfiguration, windowConfiguration);
+			viewWindows.put(navigationState, new WeakReference<>(window));
+			showInWindow = window;
+
 			navigateTo(navigationState);
+
+			return window;
 		} catch (Exception e) {
 			throw new ViewNavigationException(viewName, e);
 		}
-
-		return window;
 
 	}
 
@@ -1030,6 +1031,18 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 			defaultViewWindowConfigurator.accept(configurator);
 		}
 
+		// methods
+		if (viewConfiguration != null) {
+			viewConfiguration.getViewWindowConfigurationMethods().forEach(method -> {
+				try {
+					method.invoke(view, new Object[] { configurator });
+				} catch (Exception e) {
+					throw new ViewConfigurationException("Failed to fire ViewWindowConfiguration method "
+							+ method.getName() + " on view class " + view.getClass().getName(), e);
+				}
+			});
+		}
+
 		// provided
 		if (windowConfigurator != null) {
 			windowConfigurator.accept(configurator);
@@ -1158,7 +1171,8 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 			throws ViewNavigationException {
 		if (!suspendAuthenticationCheck) {
 			Authenticate authc = (viewConfiguration != null)
-					? viewConfiguration.getAuthentication().orElse(uiAuthenticate) : uiAuthenticate;
+					? viewConfiguration.getAuthentication().orElse(uiAuthenticate)
+					: uiAuthenticate;
 			if (authc != null) {
 
 				// check auth context

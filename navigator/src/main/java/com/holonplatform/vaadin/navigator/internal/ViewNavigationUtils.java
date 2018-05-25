@@ -63,11 +63,13 @@ import com.holonplatform.vaadin.internal.VaadinLogger;
 import com.holonplatform.vaadin.navigator.SubViewContainer;
 import com.holonplatform.vaadin.navigator.ViewNavigator;
 import com.holonplatform.vaadin.navigator.ViewNavigator.ViewNavigatorChangeEvent;
+import com.holonplatform.vaadin.navigator.ViewWindowConfigurator;
 import com.holonplatform.vaadin.navigator.annotations.OnLeave;
 import com.holonplatform.vaadin.navigator.annotations.OnShow;
 import com.holonplatform.vaadin.navigator.annotations.SubViewOf;
 import com.holonplatform.vaadin.navigator.annotations.ViewContext;
 import com.holonplatform.vaadin.navigator.annotations.ViewParameter;
+import com.holonplatform.vaadin.navigator.annotations.ViewWindowConfiguration;
 import com.holonplatform.vaadin.navigator.annotations.VolatileView;
 import com.holonplatform.vaadin.navigator.annotations.WindowView;
 import com.holonplatform.vaadin.navigator.internal.ViewConfiguration.ViewConfigurationException;
@@ -643,6 +645,8 @@ public final class ViewNavigationUtils implements Serializable {
 			cfg.setWindowConfiguration(wv);
 		}
 
+		cfg.setViewWindowConfigurationMethods(getViewWindowConfigurationMethods(viewClass));
+
 		Caption cpt = viewClass.getAnnotation(Caption.class);
 		if (cpt != null) {
 			cfg.setCaption(cpt.value());
@@ -698,6 +702,26 @@ public final class ViewNavigationUtils implements Serializable {
 	}
 
 	/**
+	 * Get valid {@link ViewWindowConfiguration} methods in given <code>viewClass</code>
+	 * @param viewClass View class
+	 * @return List of methods ordered according to class hierarchy
+	 * @throws ViewConfigurationException Error parsing methods or invalid method signature
+	 */
+	public static List<Method> getViewWindowConfigurationMethods(Class<?> viewClass) throws ViewConfigurationException {
+		List<Method> methods = getPublicAnnotatedMethods(viewClass, ViewWindowConfiguration.class);
+		if (methods != null) {
+			// check signature
+			for (Method method : methods) {
+				checkViewWindowConfigurationMethod(viewClass, method, "ViewWindowConfiguration");
+			}
+			// reverse and return
+			Collections.reverse(methods);
+			return methods;
+		}
+		return Collections.emptyList();
+	}
+
+	/**
 	 * Check given method has a valid signature for {@link OnShow} or {@link OnLeave} view method
 	 * @param viewClass View class
 	 * @param method Method to check
@@ -722,6 +746,33 @@ public final class ViewNavigationUtils implements Serializable {
 				throw new ViewConfigurationException(
 						"Invalid " + message + " method in view class " + viewClass.getName()
 								+ ": method must have no parameters or only one parameter of type ViewChangeEvent");
+			}
+		}
+	}
+
+	/**
+	 * Check given method has a valid signature for {@link ViewWindowConfiguration} method.
+	 * @param viewClass View class
+	 * @param method Method to check
+	 * @param message Error message annotation description
+	 * @throws ViewConfigurationException Method is not valid
+	 */
+	private static void checkViewWindowConfigurationMethod(Class<?> viewClass, Method method, String message)
+			throws ViewConfigurationException {
+		if (method.getReturnType() != Void.class && method.getReturnType() != Void.TYPE) {
+			throw new ViewConfigurationException("Invalid " + message + " method in view class " + viewClass.getName()
+					+ ": method must be a void return method");
+		}
+		int params = method.getParameterCount();
+		if (params != 1) {
+			throw new ViewConfigurationException("Invalid " + message + " method in view class " + viewClass.getName()
+					+ ": method must have a single parameter of type ViewWindowConfigurator");
+		}
+		if (params == 1) {
+			Parameter param = method.getParameters()[0];
+			if (param.isVarArgs() || !(ViewWindowConfigurator.class.isAssignableFrom(param.getType()))) {
+				throw new ViewConfigurationException("Invalid " + message + " method in view class "
+						+ viewClass.getName() + ": method must have a single parameter of type ViewWindowConfigurator");
 			}
 		}
 	}

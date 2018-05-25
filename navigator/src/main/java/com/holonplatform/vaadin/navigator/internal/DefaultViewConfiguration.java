@@ -29,6 +29,7 @@ import com.holonplatform.vaadin.navigator.ViewWindowConfigurator;
 import com.holonplatform.vaadin.navigator.annotations.OnLeave;
 import com.holonplatform.vaadin.navigator.annotations.OnShow;
 import com.holonplatform.vaadin.navigator.annotations.ViewContext;
+import com.holonplatform.vaadin.navigator.annotations.ViewWindowConfiguration;
 import com.holonplatform.vaadin.navigator.annotations.WindowView;
 
 /**
@@ -50,6 +51,7 @@ public class DefaultViewConfiguration implements ViewConfiguration {
 	private List<Method> onShowMethods;
 	private List<Method> onLeaveMethods;
 	private WindowView windowConfiguration;
+	private List<Method> viewWindowConfigurationMethods;
 	private List<Method> fireOnRefreshMethods;
 	private Collection<ViewContextField> contextInjectionFields;
 	private Authenticate authentication;
@@ -150,6 +152,26 @@ public class DefaultViewConfiguration implements ViewConfiguration {
 	 */
 	public void setWindowConfiguration(WindowView windowConfiguration) {
 		this.windowConfiguration = windowConfiguration;
+	}
+
+	/**
+	 * Set view {@link ViewWindowConfiguration} methods
+	 * @param viewWindowConfigurationMethods View ViewWindowConfiguration methods
+	 */
+	public void setViewWindowConfigurationMethods(List<Method> viewWindowConfigurationMethods) {
+		this.viewWindowConfigurationMethods = viewWindowConfigurationMethods;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.navigator.internal.ViewConfiguration#getViewWindowConfigurationMethods()
+	 */
+	@Override
+	public List<Method> getViewWindowConfigurationMethods() {
+		if (viewWindowConfigurationMethods != null) {
+			return viewWindowConfigurationMethods;
+		}
+		return Collections.emptyList();
 	}
 
 	/**

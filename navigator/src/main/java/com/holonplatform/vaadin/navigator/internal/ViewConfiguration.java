@@ -30,6 +30,7 @@ import com.holonplatform.vaadin.navigator.ViewWindowConfigurator;
 import com.holonplatform.vaadin.navigator.annotations.OnLeave;
 import com.holonplatform.vaadin.navigator.annotations.OnShow;
 import com.holonplatform.vaadin.navigator.annotations.ViewContext;
+import com.holonplatform.vaadin.navigator.annotations.ViewWindowConfiguration;
 import com.holonplatform.vaadin.navigator.annotations.VolatileView;
 import com.holonplatform.vaadin.navigator.annotations.WindowView;
 import com.vaadin.navigator.View;
@@ -115,6 +116,12 @@ public interface ViewConfiguration extends Consumer<ViewWindowConfigurator>, Ser
 	 * @return OnLeave methods in call order, or an empty list if none
 	 */
 	List<Method> getOnLeaveMethods();
+
+	/**
+	 * Get view {@link ViewWindowConfiguration} methods.
+	 * @return ViewWindowConfiguration methods in call order, or an empty list if none
+	 */
+	List<Method> getViewWindowConfigurationMethods();
 
 	/**
 	 * View class fields which declare {@link ViewContext} data injection
