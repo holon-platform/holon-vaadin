@@ -68,28 +68,21 @@ public interface DeviceInfo extends UserAgentInspector {
 	 * @return The {@link DeviceInfo}
 	 */
 	static DeviceInfo create(String userAgentHeader, String httpAcceptHeader) {
-		UserAgentInspector uai = UserAgentInspector.create(userAgentHeader, httpAcceptHeader);
-		if (uai == null) {
-			throw new IllegalStateException("Failed to create a UserAgentInspector");
-		}
-		return new DefaultDeviceInfo(uai);
+		return new DefaultDeviceInfo(UserAgentInspector.create(userAgentHeader, httpAcceptHeader));
 	}
 
 	/**
 	 * Build a DeviceInfo instance using a {@link VaadinRequest}
-	 * @param request Vaadin request
+	 * @param request Vaadin request (not null)
 	 * @return The {@link DeviceInfo}
 	 */
 	static DeviceInfo create(VaadinRequest request) {
-		UserAgentInspector uai = UserAgentInspector.create(request);
-		if (uai == null) {
-			throw new IllegalStateException("Failed to create a UserAgentInspector");
-		}
-		return new DefaultDeviceInfo(uai);
+		ObjectUtils.argumentNotNull(request, "VaadinRequest must be not null");
+		return new DefaultDeviceInfo(UserAgentInspector.create(request));
 	}
 
 	/**
-	 * Get current DeviceInfo, if available.
+	 * Get the current DeviceInfo instance, if available.
 	 * <p>
 	 * DeviceInfo is created using current {@link VaadinRequest}, if available. It is cached into {@link VaadinSession}
 	 * for further requests.
@@ -100,24 +93,38 @@ public interface DeviceInfo extends UserAgentInspector {
 	static Optional<DeviceInfo> get() {
 		final VaadinSession session = VaadinSession.getCurrent();
 		if (session != null) {
-			ensureInited(session);
-			return Optional.ofNullable((DeviceInfo) session.getAttribute(SESSION_ATTRIBUTE_NAME));
+			return ensureInited(session);
 		}
 		return Optional.empty();
+	}
+
+	/**
+	 * Get the current DeviceInfo instance, or throw an {@link IllegalStateException} if not available.
+	 * @return The current DeviceInfo instance
+	 * @see #get()
+	 */
+	static DeviceInfo require() {
+		return get().orElseThrow(() -> new IllegalStateException("DeviceInfo is not available fro current session"));
 	}
 
 	/**
 	 * Ensure that a {@link DeviceInfo} is available from given Vaadin <code>session</code>. For successful
 	 * initialization, a {@link VaadinService#getCurrentRequest()} must be available.
 	 * @param session Vaadin session (not null)
+	 * @param The session scoped {@link DeviceInfo} instance, if a request is available
 	 */
-	static void ensureInited(VaadinSession session) {
+	static Optional<DeviceInfo> ensureInited(VaadinSession session) {
 		ObjectUtils.argumentNotNull(session, "VaadinSession must be not null");
-		synchronized (session) {
-			if (session.getAttribute(SESSION_ATTRIBUTE_NAME) == null && VaadinService.getCurrentRequest() != null) {
-				session.setAttribute(SESSION_ATTRIBUTE_NAME, create(VaadinService.getCurrentRequest()));
+		DeviceInfo deviceInfo = (DeviceInfo) session.getAttribute(SESSION_ATTRIBUTE_NAME);
+		if (deviceInfo == null) {
+			final VaadinRequest request = VaadinService.getCurrentRequest();
+			if (request != null) {
+				synchronized (session) {
+					session.setAttribute(SESSION_ATTRIBUTE_NAME, deviceInfo = create(request));
+				}
 			}
 		}
+		return Optional.ofNullable(deviceInfo);
 	}
 
 }
