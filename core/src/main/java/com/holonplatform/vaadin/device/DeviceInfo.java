@@ -111,7 +111,7 @@ public interface DeviceInfo extends UserAgentInspector {
 	 * Ensure that a {@link DeviceInfo} is available from given Vaadin <code>session</code>. For successful
 	 * initialization, a {@link VaadinService#getCurrentRequest()} must be available.
 	 * @param session Vaadin session (not null)
-	 * @param The session scoped {@link DeviceInfo} instance, if a request is available
+	 * @return The session scoped {@link DeviceInfo} instance, if a request is available
 	 */
 	static Optional<DeviceInfo> ensureInited(VaadinSession session) {
 		ObjectUtils.argumentNotNull(session, "VaadinSession must be not null");
