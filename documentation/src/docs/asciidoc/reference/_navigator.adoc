@@ -157,20 +157,60 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleView.java[tag=vo
 
 === Opening Views in a `Window`
 
-The `ViewNavigator` supports displaying a `View` content in a application `Window`. The view navigation is tracked in navigator history just like any other navigation operation.
+The `ViewNavigator` API supports displaying a `View` content in an application `Window`. Instead of using the configured _view display_ component, the `View` contents will be displayed in a _popup dialog_, using the `com.vaadin.ui.Window` component.
 
-To open a `View` in a `Window`, the `navigateInWindow(...)` view navigator methods can be used (see the next section), or a `View` class can be forced to be always opened in a window using the link:{apidir}/com/holonplatform/vaadin/navigator/annotations/WindowView.html[WindowView^] annotation. 
+The view navigation state is tracked in the navigator history just like any other navigation operation.
 
-If the `@WindowView` annotation is found on a view class, such view will be always opened in a window, regardless of the navigation operation that is used.
-
-The `Window` is automatically created by the `ViewNavigator`, and can be configured using either a `ViewWindowConfigurator`, when the navigator method is used, or the `@WindowView` annotation attributes.
+To open a `View` in a `Window`, the `navigateInWindow(...)` view navigator methods can be used.
 
 [source, java]
 ----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleView.java[tag=window,indent=0]
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleView.java[tag=window1,indent=0]
 ----
+<1> Opens the View named `myView` in a `Window`
 
-=== ViewNavigation API operations
+==== `@WindowView` annotation
+
+The link:{apidir}/com/holonplatform/vaadin/navigator/annotations/WindowView.html[WindowView^] annotation can be used to declare that a `View` should always be displayed in a `Window` by the `ViewNavigator`.
+
+When the `@WindowView` annotation is found on a `View` class, such `View` will be always opened in a `Window, regardless of the navigation operation that is used.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleView.java[tag=window2,indent=0]
+----
+<1> Configure the `View` class to be always displayed in a `Window`
+<2> Supposing that the `MyWindowView1` class is bound to the `myView` name, the `ViewNavigator` will display such `View` in a `Window` since the `@WindowView` annotation is found on the view class
+
+==== View `Window` configuration
+
+When a `View` is displayed in a `Window`, the `Window` component which contains the `View` can be configured in the following ways:
+
+*1. Using the provided `ViewWindowConfigurator`:* The `ViewNavigator` API provides a  `navigateInWindow(...)` method version which provides a link:{apidir}/com/holonplatform/vaadin/navigator/ViewWindowConfigurator.html[ViewWindowConfigurator^] API to configure the `Window` component into which the `View` will be displayed.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleView.java[tag=window3,indent=0]
+----
+<1> Use the `ViewWindowConfigurator` API to configure the `Window` component
+
+*2. Using the `@WindowView` annotation attributes:* When a `View` is configured to be displayed in a `Window` using the `@WindowView` annotation, the available annotation attributes can be used to configure some basic `Window` component features.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleView.java[tag=window4,indent=0]
+----
+<1> Use the `@WindowView` annotation attributes to configure the view `Window`
+
+*3. Using a `@ViewWindowConfiguration` annotated View method:* If a `View` class `public` method is annotated with the `@ViewWindowConfiguration` annotation and accepts a _single parameter_ of link:{apidir}/com/holonplatform/vaadin/navigator/ViewWindowConfigurator.html[ViewWindowConfigurator^] type, the method is called by the `ViewNavigator`, providing the `ViewWindowConfigurator` instance which can be used to configure the view `Window` component.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleView.java[tag=window5,indent=0]
+----
+<1> This method will be called by the `ViewNavigator` before displaying the View, allowing to configure the view `Window` component using the provided `ViewWindowConfigurator`
+
+=== `ViewNavigator` API operations
 
 The `ViewNavigator` API makes available navigation methods to provide a set of *parameters* to the `View` being activated. 
 
