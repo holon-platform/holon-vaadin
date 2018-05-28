@@ -15,11 +15,13 @@
  */
 package com.holonplatform.vaadin.navigator.internal;
 
+import com.holonplatform.vaadin.navigator.ViewClassProvider;
 import com.holonplatform.vaadin.navigator.ViewNavigator;
 import com.holonplatform.vaadin.navigator.internal.ViewConfiguration.ViewConfigurationProvider;
 import com.vaadin.navigator.NavigationStateManager;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewDisplay;
+import com.vaadin.navigator.ViewProvider;
 import com.vaadin.ui.UI;
 
 /**
@@ -50,6 +52,13 @@ public interface ViewNavigatorAdapter extends ViewNavigator, ViewConfigurationPr
 	 * @param display View display
 	 */
 	void setup(UI ui, NavigationStateManager stateManager, ViewDisplay display);
+
+	/**
+	 * Set the {@link ViewClassProvider} bound to given {@link ViewProvider}.
+	 * @param provider View provider (not null)
+	 * @param viewClassProvider View class provider
+	 */
+	void setViewClassProvider(ViewProvider provider, ViewClassProvider viewClassProvider);
 
 	/**
 	 * Get the NavigatorActuator associated to this adapter

@@ -452,6 +452,14 @@ public interface ViewNavigator extends Serializable {
 		B addProvider(ViewProvider provider);
 
 		/**
+		 * Associate given {@link ViewClassProvider} to given {@link ViewProvider}.
+		 * @param provider View provider (not null)
+		 * @param viewClassProvider View class provider bound to the given View provider
+		 * @return this
+		 */
+		B viewClassProvider(ViewProvider provider, ViewClassProvider viewClassProvider);
+
+		/**
 		 * Set the default view name. If a {@link View} with given <code>defaultViewName</code> is valid and provided by
 		 * registered ViewProviders, it is used as target of {@link ViewNavigator#navigateToDefault()} method and as a
 		 * fallback by {@link ViewNavigator#navigateBack()} method if no other View is available in history.
