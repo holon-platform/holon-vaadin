@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Stack;
 import java.util.function.Consumer;
@@ -354,7 +355,7 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 			final ViewConfiguration viewConfiguration, final Window window) {
 		if (navigateBackOnWindowClose) {
 			// navigate back
-			navigateBack();
+			navigateBack(navigationState, viewConfiguration);
 		}
 	}
 
@@ -392,7 +393,7 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 			}
 
 			// track navigation state in history if current View is not volatile
-			if (navigator.getCurrentView() != null && !isVolatile(navigator.getCurrentView(), navigationState)) {
+			if (navigator.getCurrentView() != null && !isVolatile(navigator.getCurrentView())) {
 				trackInHistory(navigationState);
 			}
 
@@ -480,13 +481,33 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 	 * @throws ViewNavigationException Navigation error
 	 */
 	public boolean navigateBack() throws ViewNavigationException {
+		return navigateBack(null, null);
+	}
+
+	/**
+	 * Navigate to previous View, if available
+	 * @return true if back navigation succeded
+	 * @throws ViewNavigationException Navigation error
+	 */
+	protected boolean navigateBack(String currentState, ViewConfiguration currentViewConfiguration)
+			throws ViewNavigationException {
 
 		// check current View is displayed in Window
 		closeCurrentViewWindow();
 
-		// pop current if page not excluded from history
-		if (!getNavigationHistory().isEmpty() && !isVolatile(navigator.getCurrentView(), null)) {
-			getNavigationHistory().pop();
+		final boolean volatileView = (currentViewConfiguration != null) ? currentViewConfiguration.isVolatile()
+				: isVolatile(navigator.getCurrentView());
+
+		// pop current if view is not excluded from history
+		if (!getNavigationHistory().isEmpty()) {
+			if (!volatileView) {
+				getNavigationHistory().pop();
+			} else {
+				// check dirty state
+				if (Objects.equals(currentState, getNavigationHistory().peek())) {
+					getNavigationHistory().pop();
+				}
+			}
 		}
 
 		// peek previous
@@ -679,7 +700,7 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 			navigator.navigateToState(navigationState);
 		} else {
 			// track view in history to allow backward navigation
-			if (!isVolatile(viewConfiguration, navigationState)) {
+			if (!isVolatile(viewConfiguration)) {
 				trackInHistory(navigationState);
 			}
 		}
@@ -706,7 +727,7 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 			navigator.navigateToView(view, viewName, parameters);
 		} else {
 			// track view in history to allow backward navigation
-			if (!isVolatile(cfg, navigationState)) {
+			if (!isVolatile(cfg)) {
 				trackInHistory(navigationState);
 			}
 		}
@@ -801,12 +822,11 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 	/**
 	 * Check if given <code>view</code> is volatile, i.e. not to be tracked in navigation history
 	 * @param view View to check
-	 * @param navigationState Navigation state bound to View
 	 * @return <code>true</code> if given <code>view</code> is volatile
 	 */
-	protected boolean isVolatile(View view, String navigationState) {
+	protected boolean isVolatile(View view) {
 		if (view != null) {
-			return isVolatile(getViewConfiguration(view.getClass()), navigationState);
+			return isVolatile(getViewConfiguration(view.getClass()));
 		}
 		return false;
 	}
@@ -815,15 +835,9 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 	 * Check if the view bound to given <code>viewConfiguration</code> is volatile, i.e. not to be tracked in navigation
 	 * history
 	 * @param viewConfiguration ViewConfiguration to check
-	 * @param navigationState Navigation state
 	 * @return <code>true</code> if volatile
 	 */
-	protected boolean isVolatile(ViewConfiguration viewConfiguration, String navigationState) {
-
-		/*
-		 * if (navigationState != null && viewWindows.containsKey(navigationState)) { return false; }
-		 */
-
+	protected boolean isVolatile(ViewConfiguration viewConfiguration) {
 		if (viewConfiguration != null) {
 			return viewConfiguration.isVolatile();
 		}
