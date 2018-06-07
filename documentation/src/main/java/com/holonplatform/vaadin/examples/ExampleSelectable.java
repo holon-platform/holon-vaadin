@@ -20,11 +20,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.holonplatform.core.ConstantConverterExpression;
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.property.PathProperty;
 import com.holonplatform.core.property.PropertySet;
-import com.holonplatform.core.query.ConstantExpression;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.vaadin.components.Components;
 import com.holonplatform.vaadin.components.MultiSelect;
@@ -146,7 +146,7 @@ public class ExampleSelectable {
 
 		SingleSelect<TestData> singleSelect = Components.input.singleSelect(TestData.class).dataSource(
 				ItemDataProvider.create(q -> 2, (q, o, l) -> Stream.of(ONE, TWO)),
-				filterText -> QueryFilter.startsWith(ConstantExpression.create("description"), filterText, true))
+				filterText -> QueryFilter.startsWith(ConstantConverterExpression.create("description"), filterText, true))
 				.build();
 		// end::selectable8[]
 	}
