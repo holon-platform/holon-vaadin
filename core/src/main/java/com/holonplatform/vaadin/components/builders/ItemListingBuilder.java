@@ -259,7 +259,7 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 	B hidable(P property, boolean hidable);
 
 	/**
-	 * Sets whether this column which corresponds to given property is hidden.
+	 * Sets whether the column which corresponds to given property is hidden.
 	 * @param property Item property to set hidden or not (not null)
 	 * @param hidden <code>true</code> if column is hidden
 	 * @return this

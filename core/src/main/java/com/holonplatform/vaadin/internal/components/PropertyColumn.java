@@ -24,6 +24,7 @@ import com.holonplatform.vaadin.components.ItemListing;
 import com.holonplatform.vaadin.components.ItemListing.CellStyleGenerator;
 import com.holonplatform.vaadin.components.ItemListing.ColumnAlignment;
 import com.holonplatform.vaadin.components.builders.ItemListingBuilder.ColumnHeaderMode;
+import com.holonplatform.vaadin.data.ItemDataSource.PropertySortGenerator;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.Validator;
 import com.vaadin.data.ValueProvider;
@@ -40,6 +41,50 @@ import com.vaadin.ui.renderers.Renderer;
  * @since 5.0.0
  */
 public interface PropertyColumn<T, P> extends Serializable {
+
+	/**
+	 * Get whether this column definition is bound to a <em>virtual</em> column.
+	 * @return Whether this column definition is bound to a <em>virtual</em> column
+	 */
+	boolean isVirtual();
+
+	/**
+	 * Get the default column display position.
+	 * @return the display position
+	 */
+	DisplayPosition getDisplayPosition();
+
+	/**
+	 * Set the default column display position.
+	 * @param displayPosition display position to set
+	 */
+	void setDisplayPosition(DisplayPosition displayPosition);
+
+	/**
+	 * When the column display position is {@link DisplayPosition#RELATIVE_BEFORE} or
+	 * {@link DisplayPosition#RELATIVE_AFTER}, return the property to which the position is relative.
+	 * @return Optional property to which the position is relative to
+	 */
+	Optional<P> getDisplayRelativeTo();
+
+	/**
+	 * Set the property to which the {@link DisplayPosition} is relative.
+	 * @param property The property to set
+	 */
+	void setDisplayRelativeTo(P property);
+
+	/**
+	 * When the column display position is {@link DisplayPosition#RELATIVE_BEFORE} or
+	 * {@link DisplayPosition#RELATIVE_AFTER}, return the column id to which the position is relative.
+	 * @return Optional column id to which the position is relative to
+	 */
+	Optional<String> getDisplayRelativeToColumnId();
+
+	/**
+	 * Set the column id to which the {@link DisplayPosition} is relative.
+	 * @param columnId The column id to set
+	 */
+	void setDisplayRelativeToColumnId(String columnId);
 
 	/**
 	 * Gets column caption (header)
@@ -125,8 +170,17 @@ public interface PropertyColumn<T, P> extends Serializable {
 	 */
 	void setExpandRatio(int gridExpandRatio);
 
+	/**
+	 * Gets whether the column minimum width has to be calculated using the column content width.
+	 * @return Whether the column minimum width has to be calculated using the column content width
+	 */
 	boolean isMinimumWidthFromContent();
 
+	/**
+	 * Sets whether the column minimum width has to be calculated using the column content width.
+	 * @param minimumWidthFromContent Whether the column minimum width has to be calculated using the column content
+	 *        width
+	 */
 	void setMinimumWidthFromContent(boolean minimumWidthFromContent);
 
 	/**
@@ -287,5 +341,34 @@ public interface PropertyColumn<T, P> extends Serializable {
 	 * @param renderer The {@link Renderer} to use to display column value
 	 */
 	void setRenderer(Renderer<?> renderer);
+
+	/**
+	 * Get the {@link PropertySortGenerator} to be used to implement the sort logic for this column, if available.
+	 * @return Optional column sort generator
+	 */
+	Optional<PropertySortGenerator<P>> getPropertySortGenerator();
+
+	/**
+	 * Set the {@link PropertySortGenerator} to be used to implement the sort logic for this column.
+	 * @param propertySortGenerator The column sort generator
+	 */
+	void setPropertySortGenerator(PropertySortGenerator<P> propertySortGenerator);
+
+	/**
+	 * Column display position.
+	 */
+	public enum DisplayPosition {
+
+		DEFAULT,
+
+		HEAD,
+
+		TAIL,
+
+		RELATIVE_BEFORE,
+
+		RELATIVE_AFTER
+
+	}
 
 }

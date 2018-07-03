@@ -16,7 +16,6 @@
 package com.holonplatform.vaadin.internal.components.builders;
 
 import java.util.Arrays;
-import java.util.List;
 
 import com.holonplatform.core.Path;
 import com.holonplatform.core.datastore.DataTarget;
@@ -25,11 +24,14 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
+import com.holonplatform.core.property.PropertyValueProvider;
+import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.components.ItemListing;
 import com.holonplatform.vaadin.components.builders.PropertyListingBuilder.BaseGridPropertyListingBuilder;
+import com.holonplatform.vaadin.components.builders.VirtualPropertyColumnBuilder;
 import com.holonplatform.vaadin.data.ItemDataProvider;
 import com.holonplatform.vaadin.data.ItemDataSource.CommitHandler;
-import com.holonplatform.vaadin.internal.components.DefaultItemListing;
+import com.holonplatform.vaadin.internal.components.DefaultPropertyListing;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.Validator;
 import com.vaadin.data.ValueProvider;
@@ -46,7 +48,7 @@ import com.vaadin.ui.renderers.Renderer;
  * @since 5.1.0
  */
 @SuppressWarnings("rawtypes")
-public abstract class AbstractGridPropertyListingBuilder<C extends ItemListing<PropertyBox, Property>, I extends DefaultItemListing<PropertyBox, Property>, B extends BaseGridPropertyListingBuilder<C, B>>
+public abstract class AbstractGridPropertyListingBuilder<C extends ItemListing<PropertyBox, Property>, I extends DefaultPropertyListing, B extends BaseGridPropertyListingBuilder<C, B>>
 		extends AbstractGridItemListingBuilder<PropertyBox, Property, C, I, B>
 		implements BaseGridPropertyListingBuilder<C, B> {
 
@@ -213,13 +215,37 @@ public abstract class AbstractGridPropertyListingBuilder<C extends ItemListing<P
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.internal.components.builders.AbstractItemListingBuilder#configureColumns(com.
-	 * holonplatform.vaadin.internal.components.DefaultItemListing, java.util.List)
+	 * @see com.holonplatform.vaadin.components.builders.PropertyListingBuilder.BaseGridPropertyListingBuilder#
+	 * withVirtualProperty(com.holonplatform.core.property.VirtualProperty)
 	 */
 	@Override
-	protected Iterable<? extends Property> configureColumns(I instance, List<? extends Property> visibleColumns) {
-		// return visible columns or full property set if none
-		return !visibleColumns.isEmpty() ? visibleColumns : properties;
+	public <T> VirtualPropertyColumnBuilder<T, PropertyBox, Property, C, B> withVirtualProperty(
+			VirtualProperty<T> property) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		getInstance().addColumn(property);
+		return new DefaultVirtualPropertyColumnBuilder<>(builder(), getInstance(), property);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.PropertyListingBuilder.BaseGridPropertyListingBuilder#
+	 * withVirtualProperty(java.lang.Class, com.holonplatform.core.property.PropertyValueProvider)
+	 */
+	@Override
+	public <T> VirtualPropertyColumnBuilder<T, PropertyBox, Property, C, B> withVirtualProperty(Class<T> type,
+			PropertyValueProvider<T> valueProvider) {
+		return withVirtualProperty(VirtualProperty.create(type, valueProvider));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.PropertyListingBuilder.BaseGridPropertyListingBuilder#
+	 * withVirtualProperty(java.lang.Class, java.lang.String, com.holonplatform.core.property.PropertyValueProvider)
+	 */
+	@Override
+	public <T> VirtualPropertyColumnBuilder<T, PropertyBox, Property, C, B> withVirtualProperty(Class<T> type,
+			String name, PropertyValueProvider<T> valueProvider) {
+		return withVirtualProperty(VirtualProperty.create(type, valueProvider).name(name));
 	}
 
 }

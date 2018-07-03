@@ -25,6 +25,7 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.components.ItemListing.CellStyleGenerator;
 import com.holonplatform.vaadin.components.ItemListing.ColumnAlignment;
 import com.holonplatform.vaadin.components.builders.ItemListingBuilder.ColumnHeaderMode;
+import com.holonplatform.vaadin.data.ItemDataSource.PropertySortGenerator;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.Validator;
 import com.vaadin.data.ValueProvider;
@@ -43,6 +44,26 @@ import com.vaadin.ui.renderers.Renderer;
 public class DefaultPropertyColumn<T, P> implements PropertyColumn<T, P> {
 
 	private static final long serialVersionUID = -4394599534028523259L;
+
+	/**
+	 * Virtual
+	 */
+	private final boolean virtual;
+
+	/**
+	 * Display position
+	 */
+	private DisplayPosition displayPosition;
+
+	/**
+	 * Display position relative property
+	 */
+	private P displayRelativeTo;
+
+	/**
+	 * Display position relative column id
+	 */
+	private String displayRelativeToColumnId;
 
 	/**
 	 * Caption (header)
@@ -92,6 +113,9 @@ public class DefaultPropertyColumn<T, P> implements PropertyColumn<T, P> {
 	 */
 	private boolean required = false;
 
+	/**
+	 * Required validation message
+	 */
 	private Localizable requiredMessage;
 
 	/**
@@ -139,12 +163,23 @@ public class DefaultPropertyColumn<T, P> implements PropertyColumn<T, P> {
 	private ValueProvider<?, ?> presentationProvider;
 
 	/**
+	 * Sort generator
+	 */
+	private PropertySortGenerator<P> propertySortGenerator;
+
+	/**
 	 * Renderer
 	 */
 	private Renderer<?> renderer;
 
-	public DefaultPropertyColumn(P property) {
+	/**
+	 * Constructor.
+	 * @param property Property
+	 * @param virtual Whether the property is virtual
+	 */
+	public DefaultPropertyColumn(P property, boolean virtual) {
 		super();
+		this.virtual = virtual;
 		if (property != null) {
 			if (Localizable.class.isAssignableFrom(property.getClass())) {
 				this.caption = (Localizable) property;
@@ -154,6 +189,71 @@ public class DefaultPropertyColumn<T, P> implements PropertyColumn<T, P> {
 				this.caption = Localizable.builder().message(((Path<?>) property).getName()).build();
 			}
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.internal.components.PropertyColumn#isVirtual()
+	 */
+	@Override
+	public boolean isVirtual() {
+		return virtual;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.internal.components.PropertyColumn#getDisplayPosition()
+	 */
+	@Override
+	public DisplayPosition getDisplayPosition() {
+		return (displayPosition == null) ? DisplayPosition.DEFAULT : displayPosition;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.internal.components.PropertyColumn#setDisplayPosition(com.holonplatform.vaadin.internal.
+	 * components.PropertyColumn.DisplayPosition)
+	 */
+	@Override
+	public void setDisplayPosition(DisplayPosition displayPosition) {
+		this.displayPosition = displayPosition;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.internal.components.PropertyColumn#getDisplayRelativeTo()
+	 */
+	@Override
+	public Optional<P> getDisplayRelativeTo() {
+		return Optional.ofNullable(displayRelativeTo);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.internal.components.PropertyColumn#setDisplayRelativeTo(java.lang.Object)
+	 */
+	@Override
+	public void setDisplayRelativeTo(P property) {
+		this.displayRelativeTo = property;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.internal.components.PropertyColumn#getDisplayRelativeToColumnId()
+	 */
+	@Override
+	public Optional<String> getDisplayRelativeToColumnId() {
+		return Optional.ofNullable(displayRelativeToColumnId);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.internal.components.PropertyColumn#setDisplayRelativeToColumnId(java.lang.String)
+	 */
+	@Override
+	public void setDisplayRelativeToColumnId(String columnId) {
+		this.displayRelativeToColumnId = columnId;
 	}
 
 	/*
@@ -517,6 +617,26 @@ public class DefaultPropertyColumn<T, P> implements PropertyColumn<T, P> {
 	@Override
 	public void setRenderer(Renderer<?> renderer) {
 		this.renderer = renderer;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.internal.components.PropertyColumn#getPropertySortGenerator()
+	 */
+	@Override
+	public Optional<PropertySortGenerator<P>> getPropertySortGenerator() {
+		return Optional.ofNullable(propertySortGenerator);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.internal.components.PropertyColumn#setPropertySortGenerator(com.holonplatform.vaadin.
+	 * data.ItemDataSource.PropertySortGenerator)
+	 */
+	@Override
+	public void setPropertySortGenerator(PropertySortGenerator<P> propertySortGenerator) {
+		this.propertySortGenerator = propertySortGenerator;
 	}
 
 }

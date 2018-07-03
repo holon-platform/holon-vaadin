@@ -15,7 +15,6 @@
  */
 package com.holonplatform.vaadin.internal.components.builders;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -157,10 +156,7 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 	 */
 	@Override
 	public B sortUsing(P property, final Path<?> sortPath) {
-		ObjectUtils.argumentNotNull(property, "Property must be not null");
-		dataSourceBuilder.sortable(property, true);
-		dataSourceBuilder.withPropertySortGenerator(property, (p, asc) -> QuerySort.of(sortPath, asc));
-		return builder();
+		return sortGenerator(property, (p, asc) -> QuerySort.of(sortPath, asc));
 	}
 
 	/*
@@ -172,8 +168,7 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 	public B sortGenerator(P property, PropertySortGenerator<P> generator) {
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		ObjectUtils.argumentNotNull(generator, "Sort generator must be not null");
-		dataSourceBuilder.sortable(property, true);
-		dataSourceBuilder.withPropertySortGenerator(property, generator);
+		getInstance().getPropertyColumn(property).setPropertySortGenerator(generator);
 		return builder();
 	}
 
@@ -551,17 +546,23 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 	protected C buildAndConfigure(Iterable<? extends P> visibleColumns) {
 		// build
 		final I listing = getInstance();
+
+		// localize
 		localize(listing);
+
+		// setup datasource properties
+		listing.getColumnDefinitions().entrySet().forEach(e -> {
+			e.getValue().getPropertySortGenerator().ifPresent(sg -> {
+				dataSourceBuilder.sortable(e.getKey(), true);
+				dataSourceBuilder.withPropertySortGenerator(e.getKey(), sg);
+			});
+		});
 
 		// data source
 		setupDataSource(listing);
 
-		// columns
-		Iterable<? extends P> columns = configureColumns(listing,
-				(visibleColumns != null) ? ConversionUtils.iterableAsList(visibleColumns) : Collections.emptyList());
-
 		// visible columns
-		listing.setPropertyColumns(columns);
+		listing.setPropertyColumns(ConversionUtils.iterableAsList(visibleColumns));
 
 		// additional configuration
 		configure(listing);
@@ -589,14 +590,6 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 		final ItemDataSource<T, P> dataSource = dataSourceBuilder.build();
 		listing.setDataSource(dataSource);
 	}
-
-	/**
-	 * Configure the listing columns before setting the visible columns list.
-	 * @param instance Listing instance
-	 * @param visibleColumns Visible columns
-	 * @return the actual listing visible columns
-	 */
-	protected abstract Iterable<? extends P> configureColumns(I instance, List<? extends P> visibleColumns);
 
 	/**
 	 * Additional listing configuration

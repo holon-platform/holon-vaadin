@@ -15,8 +15,6 @@
  */
 package com.holonplatform.vaadin.internal.components.builders;
 
-import java.util.List;
-
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.internal.utils.ObjectUtils;
@@ -156,18 +154,6 @@ public class DefaultBeanListingBuilder<T>
 		getInstance().getPropertyColumn(property).setPresentationProvider(presentationProvider);
 		getInstance().getPropertyColumn(property).setRenderer(renderer);
 		return builder();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.internal.components.builders.AbstractItemListingBuilder#configureColumns(com.
-	 * holonplatform.vaadin.internal.components.DefaultItemListing, java.util.List)
-	 */
-	@Override
-	protected Iterable<? extends String> configureColumns(DefaultBeanListing<T> instance,
-			List<? extends String> visibleColumns) {
-		// return visible columns or default column ids if none
-		return !visibleColumns.isEmpty() ? visibleColumns : instance.getDefaultColumnIds();
 	}
 
 	/*

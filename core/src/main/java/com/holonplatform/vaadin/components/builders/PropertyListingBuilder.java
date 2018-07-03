@@ -21,6 +21,8 @@ import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
+import com.holonplatform.core.property.PropertyValueProvider;
+import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.vaadin.components.ItemListing;
 import com.holonplatform.vaadin.components.PropertyListing;
@@ -169,6 +171,64 @@ public interface PropertyListingBuilder<C extends ItemListing<PropertyBox, Prope
 		 * @return this
 		 */
 		<T, P> B render(Property<T> property, ValueProvider<T, P> presentationProvider, Renderer<? super P> renderer);
+
+		/**
+		 * Add a virtual property to the listing. The returned {@link VirtualPropertyColumnBuilder} allows to configure
+		 * the column bound to the property and to add/append the column to listing columns.
+		 * <p>
+		 * To add the virtual property as listing column and return back to the parent listing builder, the
+		 * {@link VirtualPropertyColumnBuilder#add()}, {@link VirtualPropertyColumnBuilder#addBefore(Property)},
+		 * {@link VirtualPropertyColumnBuilder#addAfter(Property)} or {@link VirtualPropertyColumnBuilder#append()}
+		 * methods should be used.
+		 * </p>
+		 * @param <T> Property type
+		 * @param property The {@link VirtualProperty} to use to provide the property value (not null)
+		 * @return The {@link VirtualPropertyColumnBuilder} for this virtual property
+		 * @since 5.1.4
+		 */
+		<T> VirtualPropertyColumnBuilder<T, PropertyBox, Property, C, B> withVirtualProperty(
+				VirtualProperty<T> property);
+
+		/**
+		 * Add a virtual property to the listing, providing the virtual property type and the
+		 * {@link PropertyValueProvider} to provide the virtual property value for each {@link PropertyBox} listing
+		 * item. The returned {@link VirtualPropertyColumnBuilder} allows to configure the column bound to the property
+		 * and to add/append the column to listing columns.
+		 * <p>
+		 * To add the virtual property as listing column and return back to the parent listing builder, the
+		 * {@link VirtualPropertyColumnBuilder#add()}, {@link VirtualPropertyColumnBuilder#addBefore(Property)},
+		 * {@link VirtualPropertyColumnBuilder#addAfter(Property)} or {@link VirtualPropertyColumnBuilder#append()}
+		 * methods should be used.
+		 * </p>
+		 * @param <T> Property type
+		 * @param type Virtual property type (not null)
+		 * @param valueProvider Property value provider (not null)
+		 * @return The {@link VirtualPropertyColumnBuilder} for this virtual property
+		 * @since 5.1.4
+		 */
+		<T> VirtualPropertyColumnBuilder<T, PropertyBox, Property, C, B> withVirtualProperty(Class<T> type,
+				PropertyValueProvider<T> valueProvider);
+
+		/**
+		 * Add a virtual property to the listing, providing the virtual property type, the virtual property name and the
+		 * {@link PropertyValueProvider} to provide the virtual property value for each {@link PropertyBox} listing
+		 * item. The returned {@link VirtualPropertyColumnBuilder} allows to configure the column bound to the property
+		 * and to add/append the column to listing columns.
+		 * <p>
+		 * To add the virtual property as listing column and return back to the parent listing builder, the
+		 * {@link VirtualPropertyColumnBuilder#add()}, {@link VirtualPropertyColumnBuilder#addBefore(Property)},
+		 * {@link VirtualPropertyColumnBuilder#addAfter(Property)} or {@link VirtualPropertyColumnBuilder#append()}
+		 * methods should be used.
+		 * </p>
+		 * @param <T> Property type
+		 * @param type Virtual property type (not null)
+		 * @param name Virtual property name, which will be used as column id (not null)
+		 * @param valueProvider Property value provider (not null)
+		 * @return The {@link VirtualPropertyColumnBuilder} for this virtual property
+		 * @since 5.1.4
+		 */
+		<T> VirtualPropertyColumnBuilder<T, PropertyBox, Property, C, B> withVirtualProperty(Class<T> type, String name,
+				PropertyValueProvider<T> valueProvider);
 
 	}
 
