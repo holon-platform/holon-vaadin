@@ -224,6 +224,32 @@ public abstract class AbstractGridItemListingBuilder<T, P, C extends ItemListing
 	/*
 	 * (non-Javadoc)
 	 * @see
+	 * com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder#headerMode(java.lang.
+	 * Object, com.holonplatform.vaadin.components.builders.ItemListingBuilder.ColumnHeaderMode)
+	 */
+	@Override
+	public B headerMode(P property, ColumnHeaderMode headerMode) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		getInstance().getPropertyColumn(property).setColumnHeaderMode(headerMode);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder#headerHTML(java.lang.
+	 * Object, com.holonplatform.core.i18n.Localizable)
+	 */
+	@Override
+	public B headerHTML(P property, Localizable header) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		getInstance().getPropertyColumn(property).setColumnHeaderMode(ColumnHeaderMode.HTML);
+		return header(property, header);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
 	 * com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder#resizable(java.lang.
 	 * Object, boolean)
 	 */

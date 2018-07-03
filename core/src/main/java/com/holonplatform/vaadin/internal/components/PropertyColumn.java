@@ -23,6 +23,7 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.components.ItemListing;
 import com.holonplatform.vaadin.components.ItemListing.CellStyleGenerator;
 import com.holonplatform.vaadin.components.ItemListing.ColumnAlignment;
+import com.holonplatform.vaadin.components.builders.ItemListingBuilder.ColumnHeaderMode;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.Validator;
 import com.vaadin.data.ValueProvider;
@@ -51,6 +52,18 @@ public interface PropertyColumn<T, P> extends Serializable {
 	 * @param caption Column caption (header)
 	 */
 	void setCaption(Localizable caption);
+
+	/**
+	 * Get the header (caption) mode.
+	 * @return Column header mode, {@link ColumnHeaderMode#TEXT} by default
+	 */
+	ColumnHeaderMode getColumnHeaderMode();
+
+	/**
+	 * Set the header (caption) mode.
+	 * @param columnHeaderMode The column header mode to set
+	 */
+	void setColumnHeaderMode(ColumnHeaderMode columnHeaderMode);
 
 	/**
 	 * Gets column content alignment mode

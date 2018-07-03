@@ -517,6 +517,54 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		}
 
 		/**
+		 * Set the column header display mode for the column which corresponds to given property.
+		 * @param property Property for which to set the header mode (not null)
+		 * @param headerMode Column header mode
+		 * @return this
+		 */
+		B headerMode(P property, ColumnHeaderMode headerMode);
+
+		/**
+		 * Set the column header for given <code>property</code>, displaying it as HTML. The property/column
+		 * {@link ColumnHeaderMode} will be configured as {@link ColumnHeaderMode#HTML}.
+		 * <p>
+		 * By default, if the property is {@link Localizable}, the {@link Localizable#getMessage()} (and
+		 * {@link Localizable#getMessageCode()} if a {@link LocalizationContext} is available) is used as column header.
+		 * </p>
+		 * @param property Item property to set the header for (not null)
+		 * @param header Localizable column header (not null)
+		 * @return this
+		 * @see #headerMode(Object, ColumnHeaderMode)
+		 */
+		B headerHTML(P property, Localizable header);
+
+		/**
+		 * Set the column header for given <code>property</code>, displaying it as HTML. The property/column
+		 * {@link ColumnHeaderMode} will be configured as {@link ColumnHeaderMode#HTML}.
+		 * @param property Item property to set the header for (not null)
+		 * @param header Column header
+		 * @return this
+		 * @see #headerMode(Object, ColumnHeaderMode)
+		 */
+		default B headerHTML(P property, String header) {
+			return headerHTML(property, Localizable.builder().message(header).build());
+		}
+
+		/**
+		 * Set the column header for given <code>property</code>, displaying it as HTML. The property/column
+		 * {@link ColumnHeaderMode} will be configured as {@link ColumnHeaderMode#HTML}.
+		 * @param property Item property to set the header for (not null)
+		 * @param defaultHeader Default column header
+		 * @param headerMessageCode Column header translation message code
+		 * @return this
+		 * @see #headerMode(Object, ColumnHeaderMode)
+		 */
+		default B headerHTML(P property, String defaultHeader, String headerMessageCode) {
+			return headerHTML(property,
+					Localizable.builder().message(defaultHeader).messageCode(headerMessageCode).build());
+		}
+
+		/**
 		 * Sets whether the column which corresponds to given property is resizable by the user.
 		 * @param property Item property to set resizable or not (not null)
 		 * @param resizable <code>true</code> if the column which corresponds to given property is resizable by the user
@@ -1021,6 +1069,23 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		 * @param footer Footer row reference
 		 */
 		void updateFooter(ItemListing<T, P> listing, GridSection<ListingFooterRow<P>> footer);
+
+	}
+
+	/**
+	 * Grid column header mode.
+	 */
+	public enum ColumnHeaderMode {
+
+		/**
+		 * Display column header as simple text
+		 */
+		TEXT,
+
+		/**
+		 * Display column header as HTML
+		 */
+		HTML;
 
 	}
 

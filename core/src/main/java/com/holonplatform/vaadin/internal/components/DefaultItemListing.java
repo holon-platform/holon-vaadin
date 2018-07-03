@@ -32,6 +32,7 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.components.ItemListing;
 import com.holonplatform.vaadin.components.Selectable;
+import com.holonplatform.vaadin.components.builders.ItemListingBuilder.ColumnHeaderMode;
 import com.holonplatform.vaadin.data.ItemDataSource;
 import com.holonplatform.vaadin.data.ItemDataSource.ItemSort;
 import com.holonplatform.vaadin.internal.data.ItemDataProviderAdapter;
@@ -57,6 +58,7 @@ import com.vaadin.ui.components.grid.Editor;
 import com.vaadin.ui.components.grid.EditorCancelListener;
 import com.vaadin.ui.components.grid.EditorOpenListener;
 import com.vaadin.ui.components.grid.EditorSaveListener;
+import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.components.grid.MultiSelectionModel;
 import com.vaadin.ui.components.grid.MultiSelectionModel.SelectAllCheckBoxVisibility;
 import com.vaadin.ui.renderers.Renderer;
@@ -509,6 +511,15 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 			String header = LocalizationContext.translate(propertyColumn.getCaption(), true);
 			if (header != null) {
 				column.setCaption(header);
+
+				// check header mode
+				ColumnHeaderMode headerMode = propertyColumn.getColumnHeaderMode();
+				if (headerMode != null && headerMode == ColumnHeaderMode.HTML) {
+					HeaderRow row = getGrid().getDefaultHeaderRow();
+					if (row != null) {
+						row.getCell(column).setHtml(header);
+					}
+				}
 			}
 		}
 
