@@ -58,7 +58,7 @@
 		<bintray.package>holon-vaadin</bintray.package>
 
 		<!-- Holon core -->
-		<holon.core.version>5.1.1</holon.core.version>
+		<holon.core.version>5.1.2</holon.core.version>
 
 		<!-- Vaadin -->
 		<vaadin.version>8.4.2</vaadin.version>
