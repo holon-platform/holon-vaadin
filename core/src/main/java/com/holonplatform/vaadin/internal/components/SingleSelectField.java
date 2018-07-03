@@ -18,11 +18,13 @@ package com.holonplatform.vaadin.internal.components;
 import java.util.Collection;
 import java.util.Optional;
 
+import com.holonplatform.core.TypedExpression;
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.core.internal.utils.TypeUtils;
 import com.holonplatform.core.property.PathProperty;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
@@ -355,10 +357,15 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 				instance.setItems(items, captionFilter);
 			} else if (itemDataProvider != null) {
 				instance.setDataProvider(new ItemDataProviderAdapter<>(itemDataProvider, itemIdentifier),
-						filterProvider);
-			} else {
-				instance.setDataProvider(dataProvider, filterProvider);
+						getCaptionFilterProvider(true));
+			} else if (dataProvider != null) {
+				instance.setDataProvider(dataProvider, getCaptionFilterProvider(!dataProvider.isInMemory()));
 			}
+		}
+
+		@SuppressWarnings("unused")
+		protected SerializableFunction<String, ?> getCaptionFilterProvider(boolean useDefaultIfNotConfigured) {
+			return filterProvider;
 		}
 
 	}
@@ -697,6 +704,14 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 			getInstance().setItemCaptionGenerator(value -> String.valueOf(value.getValue(selectProperty)));
 		}
 
+		/**
+		 * Get the selection property
+		 * @return The selection property
+		 */
+		protected Property<T> getSelectProperty() {
+			return selectProperty;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.components.builders.PropertySelectInputBuilder#itemConverter(com.holonplatform.
@@ -742,9 +757,8 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 		 * com.holonplatform.vaadin.components.builders.PropertySelectInputBuilder#dataSource(com.holonplatform.core.
 		 * datastore.Datastore, com.holonplatform.core.datastore.DataTarget, com.holonplatform.core.property.Property[])
 		 */
-		@SuppressWarnings("unchecked")
 		@Override
-		public <P extends Property<?>> B dataSource(Datastore datastore, DataTarget<?> dataTarget, P... properties) {
+		public B dataSource(Datastore datastore, DataTarget<?> dataTarget, Property<?>... properties) {
 			SinglePropertySelectInputBuilder.super.dataSource(datastore, dataTarget, properties);
 			setupItemConverter(datastore, dataTarget, PropertySet.of(properties));
 			return builder();
@@ -777,6 +791,17 @@ public class SingleSelectField<T, ITEM> extends AbstractSelectField<T, T, ITEM, 
 				instance.setItemConverter(new DefaultPropertyBoxConverter<>(selectProperty));
 			}
 			super.preSetup(instance);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		protected SerializableFunction<String, ?> getCaptionFilterProvider(boolean useDefaultIfNotConfigured) {
+			if (filterProvider == null && useDefaultIfNotConfigured) {
+				if (getSelectProperty() != null && TypeUtils.isString(getSelectProperty().getType())) {
+					return text -> QueryFilter.contains((TypedExpression<String>) getSelectProperty(), text, true);
+				}
+			}
+			return filterProvider;
 		}
 
 		/*

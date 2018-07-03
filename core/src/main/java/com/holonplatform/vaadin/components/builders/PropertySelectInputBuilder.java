@@ -72,8 +72,7 @@ public interface PropertySelectInputBuilder<T, C extends Input<T>, S, B extends 
 	 * @param properties Item property set (not null)
 	 * @return this
 	 */
-	@SuppressWarnings("unchecked")
-	default <P extends Property<?>> B dataSource(Datastore datastore, DataTarget<?> dataTarget, P... properties) {
+	default B dataSource(Datastore datastore, DataTarget<?> dataTarget, Property<?>... properties) {
 		ObjectUtils.argumentNotNull(properties, "Properties must be not null");
 		return dataSource(datastore, dataTarget, PropertySet.of(properties));
 	}
