@@ -176,10 +176,8 @@ public interface PropertyListingBuilder<C extends ItemListing<PropertyBox, Prope
 		 * Add a virtual property to the listing. The returned {@link VirtualPropertyColumnBuilder} allows to configure
 		 * the column bound to the property and to add/append the column to listing columns.
 		 * <p>
-		 * To add the virtual property as listing column and return back to the parent listing builder, the
-		 * {@link VirtualPropertyColumnBuilder#add()}, {@link VirtualPropertyColumnBuilder#addBefore(Property)},
-		 * {@link VirtualPropertyColumnBuilder#addAfter(Property)} or {@link VirtualPropertyColumnBuilder#append()}
-		 * methods should be used.
+		 * The {@link VirtualPropertyColumnBuilder#add()} method can be used to add the the virtual property as a
+		 * listing column and return back to the parent listing builder.
 		 * </p>
 		 * @param <T> Property type
 		 * @param property The {@link VirtualProperty} to use to provide the property value (not null)
@@ -195,10 +193,8 @@ public interface PropertyListingBuilder<C extends ItemListing<PropertyBox, Prope
 		 * item. The returned {@link VirtualPropertyColumnBuilder} allows to configure the column bound to the property
 		 * and to add/append the column to listing columns.
 		 * <p>
-		 * To add the virtual property as listing column and return back to the parent listing builder, the
-		 * {@link VirtualPropertyColumnBuilder#add()}, {@link VirtualPropertyColumnBuilder#addBefore(Property)},
-		 * {@link VirtualPropertyColumnBuilder#addAfter(Property)} or {@link VirtualPropertyColumnBuilder#append()}
-		 * methods should be used.
+		 * The {@link VirtualPropertyColumnBuilder#add()} method can be used to add the the virtual property as a
+		 * listing column and return back to the parent listing builder.
 		 * </p>
 		 * @param <T> Property type
 		 * @param type Virtual property type (not null)
@@ -215,10 +211,8 @@ public interface PropertyListingBuilder<C extends ItemListing<PropertyBox, Prope
 		 * item. The returned {@link VirtualPropertyColumnBuilder} allows to configure the column bound to the property
 		 * and to add/append the column to listing columns.
 		 * <p>
-		 * To add the virtual property as listing column and return back to the parent listing builder, the
-		 * {@link VirtualPropertyColumnBuilder#add()}, {@link VirtualPropertyColumnBuilder#addBefore(Property)},
-		 * {@link VirtualPropertyColumnBuilder#addAfter(Property)} or {@link VirtualPropertyColumnBuilder#append()}
-		 * methods should be used.
+		 * The {@link VirtualPropertyColumnBuilder#add()} method can be used to add the the virtual property as a
+		 * listing column and return back to the parent listing builder.
 		 * </p>
 		 * @param <T> Property type
 		 * @param type Virtual property type (not null)
@@ -229,6 +223,46 @@ public interface PropertyListingBuilder<C extends ItemListing<PropertyBox, Prope
 		 */
 		<T> VirtualPropertyColumnBuilder<T, PropertyBox, Property, C, B> withVirtualProperty(Class<T> type, String name,
 				PropertyValueProvider<T> valueProvider);
+
+		/**
+		 * Add a {@link String} type virtual property to the listing, providing the {@link PropertyValueProvider} to
+		 * provide the virtual property value for each {@link PropertyBox} listing item. The returned
+		 * {@link VirtualPropertyColumnBuilder} allows to configure the column bound to the property and to add/append
+		 * the column to listing columns.
+		 * <p>
+		 * The {@link VirtualPropertyColumnBuilder#add()} method can be used to add the the virtual property as a
+		 * listing column and return back to the parent listing builder.
+		 * </p>
+		 * @param valueProvider Property value provider (not null)
+		 * @return The {@link VirtualPropertyColumnBuilder} for this virtual property
+		 * @see #withVirtualProperty(Class, PropertyValueProvider)
+		 * @since 5.1.4
+		 */
+		default VirtualPropertyColumnBuilder<String, PropertyBox, Property, C, B> withVirtualProperty(
+				PropertyValueProvider<String> valueProvider) {
+			return withVirtualProperty(String.class, valueProvider);
+		}
+
+		/**
+		 * Add a {@link String} type virtual property to the listing, providing the virtual property name and the
+		 * {@link PropertyValueProvider} to provide the virtual property value for each {@link PropertyBox} listing
+		 * item. The returned {@link VirtualPropertyColumnBuilder} allows to configure the column bound to the property
+		 * and to add/append the column to listing columns.
+		 * <p>
+		 * The {@link VirtualPropertyColumnBuilder#add()} method can be used to add the the virtual property as a
+		 * listing column and return back to the parent listing builder.
+		 * </p>
+		 * @param name Virtual property name, which will be used as column id (not null)
+		 * @param valueProvider Property value provider (not null)
+		 * @return The {@link VirtualPropertyColumnBuilder} for this virtual property
+		 * @see #withVirtualProperty(Class, PropertyValueProvider)
+		 * @since 5.1.4
+		 * @see #withVirtualProperty(Class, String, PropertyValueProvider)
+		 */
+		default VirtualPropertyColumnBuilder<String, PropertyBox, Property, C, B> withVirtualProperty(String name,
+				PropertyValueProvider<String> valueProvider) {
+			return withVirtualProperty(String.class, name, valueProvider);
+		}
 
 	}
 

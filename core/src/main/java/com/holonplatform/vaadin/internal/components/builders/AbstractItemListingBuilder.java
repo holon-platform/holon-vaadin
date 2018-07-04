@@ -44,6 +44,7 @@ import com.holonplatform.vaadin.data.ItemDataSource.CommitHandler;
 import com.holonplatform.vaadin.data.ItemDataSource.PropertySortGenerator;
 import com.holonplatform.vaadin.data.ItemIdentifierProvider;
 import com.holonplatform.vaadin.internal.components.DefaultItemListing;
+import com.holonplatform.vaadin.internal.components.PropertyColumn.DisplayPosition;
 import com.vaadin.ui.Component;
 
 /**
@@ -376,6 +377,56 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		ObjectUtils.argumentNotNull(cellStyleGenerator, "Style generator must be not null");
 		getInstance().getPropertyColumn(property).setStyle(cellStyleGenerator);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder#displayAsFirst(java.lang.Object)
+	 */
+	@Override
+	public B displayAsFirst(P property) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		getInstance().getPropertyColumn(property).setDisplayPosition(DisplayPosition.HEAD);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder#displayAsLast(java.lang.Object)
+	 */
+	@Override
+	public B displayAsLast(P property) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		getInstance().getPropertyColumn(property).setDisplayPosition(DisplayPosition.TAIL);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder#displayBefore(java.lang.Object,
+	 * java.lang.Object)
+	 */
+	@Override
+	public B displayBefore(P property, P beforeProperty) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		ObjectUtils.argumentNotNull(beforeProperty, "Before property must be not null");
+		getInstance().getPropertyColumn(property).setDisplayPosition(DisplayPosition.RELATIVE_BEFORE);
+		getInstance().getPropertyColumn(property).setDisplayRelativeTo(beforeProperty);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder#displayAfter(java.lang.Object,
+	 * java.lang.Object)
+	 */
+	@Override
+	public B displayAfter(P property, P afterProperty) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		ObjectUtils.argumentNotNull(afterProperty, "After property must be not null");
+		getInstance().getPropertyColumn(property).setDisplayPosition(DisplayPosition.RELATIVE_AFTER);
+		getInstance().getPropertyColumn(property).setDisplayRelativeTo(afterProperty);
 		return builder();
 	}
 

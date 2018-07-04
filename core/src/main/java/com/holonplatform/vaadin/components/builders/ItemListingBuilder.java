@@ -285,6 +285,62 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 	}
 
 	/**
+	 * Configure the column represented by given <code>property</code> id to be displayed before any other listing
+	 * column by default.
+	 * <p>
+	 * The default property/column display behaviour is applyed when the {@link #build()} method is used to construct
+	 * the item listing, whilst the default display behaviour is ignored when either {@link #build(Iterable)} or
+	 * {@link #build(Object...)} method is used, because the property/column ordering is explicitly provided.
+	 * </p>
+	 * @param property Property which represents the column to display as first (not null)
+	 * @return this
+	 */
+	B displayAsFirst(P property);
+
+	/**
+	 * Configure the column represented by given <code>property</code> id to be displayed after any other listing column
+	 * by default.
+	 * <p>
+	 * The default property/column display behaviour is applyed when the {@link #build()} method is used to construct
+	 * the item listing, whilst the default display behaviour is ignored when either {@link #build(Iterable)} or
+	 * {@link #build(Object...)} method is used, because the property/column ordering is explicitly provided.
+	 * </p>
+	 * @param property Property which represents the column to display as last (not null)
+	 * @return this
+	 */
+	B displayAsLast(P property);
+
+	/**
+	 * Configure the column represented by given <code>property</code> id to be displayed before the column which
+	 * corresponds to the id specified by the given <code>beforeProperty</code>.
+	 * <p>
+	 * The default property/column display behaviour is applyed when the {@link #build()} method is used to construct
+	 * the item listing, whilst the default display behaviour is ignored when either {@link #build(Iterable)} or
+	 * {@link #build(Object...)} method is used, because the property/column ordering is explicitly provided.
+	 * </p>
+	 * @param property Property which represents the column to display before the other property (not null)
+	 * @param beforeProperty Property which represents the column before which the first property has to be displayed
+	 *        (not null)
+	 * @return this
+	 */
+	B displayBefore(P property, P beforeProperty);
+
+	/**
+	 * Configure the column represented by given <code>property</code> id to be displayed after the column which
+	 * corresponds to the id specified by the given <code>beforeProperty</code>.
+	 * <p>
+	 * The default property/column display behaviour is applyed when the {@link #build()} method is used to construct
+	 * the item listing, whilst the default display behaviour is ignored when either {@link #build(Iterable)} or
+	 * {@link #build(Object...)} method is used, because the property/column ordering is explicitly provided.
+	 * </p>
+	 * @param property Property which represents the column to display after the other property (not null)
+	 * @param beforeProperty Property which represents the column after which the first property has to be displayed
+	 *        (not null)
+	 * @return this
+	 */
+	B displayAfter(P property, P afterProperty);
+
+	/**
 	 * Set the listing selection mode.
 	 * @param selectionMode Selection mode to set (not null). Use {@link SelectionMode#NONE} to disable selection.
 	 * @return this

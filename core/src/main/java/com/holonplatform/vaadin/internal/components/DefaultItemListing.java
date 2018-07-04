@@ -834,20 +834,26 @@ public class DefaultItemListing<T, P> extends CustomComponent
 		return Optional.ofNullable(visibleProperties);
 	}
 
+	/**
+	 * Calculate le property display position and add it to the visible properties list.
+	 * @param properties Visible properties lis
+	 * @param positions Property positions
+	 * @param property The property to process
+	 * @param stage The processing stage
+	 */
 	private void processPropertyPosition(LinkedList<P> properties, Map<P, PropertyPosition<P>> positions, P property,
 			List<P> stage) {
 		if (!properties.contains(property)) {
+
 			final PropertyPosition<P> position = positions.get(property);
-			boolean added = false;
+
 			if (position != null) {
 				switch (position.getPosition()) {
 				case HEAD:
 					properties.addFirst(property);
-					added = true;
 					break;
 				case TAIL:
 					properties.addLast(property);
-					added = true;
 					break;
 				case RELATIVE_AFTER: {
 					if (position.getRelativeTo().isPresent()) {
@@ -858,21 +864,12 @@ public class DefaultItemListing<T, P> extends CustomComponent
 							// cycle detected
 							LOGGER.warn("Cycle detected in property column positions - Property: [" + property
 									+ "] / Relative to: [" + relativeTo + "]");
-							break;
+							return;
 						}
 						List<P> newStage = new ArrayList<>(stage);
 						newStage.add(relativeTo);
 						processPropertyPosition(properties, positions, relativeTo, newStage);
-
-						int idx = properties.indexOf(relativeTo);
-						if (idx > -1) {
-							added = true;
-							if (idx == (properties.size() - 1)) {
-								properties.addLast(property);
-							} else {
-								properties.add(idx + 1, property);
-							}
-						}
+						safelyAdd(properties, property, properties.indexOf(relativeTo), true);
 					}
 				}
 					break;
@@ -885,31 +882,34 @@ public class DefaultItemListing<T, P> extends CustomComponent
 							// cycle detected
 							LOGGER.warn("Cycle detected in property column positions - Property: [" + property
 									+ "] / Relative to: [" + relativeTo + "]");
-							break;
+							return;
 						}
 						List<P> newStage = new ArrayList<>(stage);
 						newStage.add(relativeTo);
 						processPropertyPosition(properties, positions, relativeTo, newStage);
-
-						int idx = properties.indexOf(relativeTo);
-						if (idx > -1) {
-							added = true;
-							properties.add(idx, property);
-						}
+						safelyAdd(properties, property, properties.indexOf(relativeTo), false);
 					}
 				}
 					break;
 				case DEFAULT:
-					added = true;
 					break;
 				default:
 					break;
 				}
+			}
+		}
+	}
 
-				// fallback to last
-				if (!added) {
-					properties.addLast(property);
+	private static <P> void safelyAdd(List<P> properties, P property, int idx, boolean fallbackToLast) {
+		if (property != null && !properties.contains(property)) {
+			if (idx > -1 && idx < properties.size()) {
+				if (idx == (properties.size() - 1) && fallbackToLast) {
+					properties.add(property);
+				} else {
+					properties.add(idx, property);
 				}
+			} else {
+				properties.add(property);
 			}
 		}
 	}
