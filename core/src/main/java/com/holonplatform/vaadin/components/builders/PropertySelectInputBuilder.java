@@ -66,7 +66,6 @@ public interface PropertySelectInputBuilder<T, C extends Input<T>, S, B extends 
 
 	/**
 	 * Use given {@link Datastore} with given <code>dataTarget</code> as items data source.
-	 * @param <P> Property type
 	 * @param datastore Datastore to use (not null)
 	 * @param dataTarget Data target to use to load items (not null)
 	 * @param properties Item property set (not null)

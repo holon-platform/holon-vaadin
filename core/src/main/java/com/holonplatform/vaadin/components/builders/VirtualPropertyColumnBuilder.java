@@ -203,7 +203,6 @@ public interface VirtualPropertyColumnBuilder<T, I, P, C extends ItemListing<I, 
 	 * will be configured as {@link ColumnHeaderMode#HTML}.
 	 * @param header Localizable column header (not null)
 	 * @return this
-	 * @see #headerMode(ColumnHeaderMode)
 	 */
 	VirtualPropertyColumnBuilder<T, I, P, C, B> headerHTML(Localizable header);
 
@@ -212,7 +211,6 @@ public interface VirtualPropertyColumnBuilder<T, I, P, C extends ItemListing<I, 
 	 * {@link ColumnHeaderMode} will be configured as {@link ColumnHeaderMode#HTML}.
 	 * @param header Column header
 	 * @return this
-	 * @see #headerMode(ColumnHeaderMode)
 	 */
 	default VirtualPropertyColumnBuilder<T, I, P, C, B> headerHTML(String header) {
 		return headerHTML(Localizable.builder().message(header).build());
@@ -224,7 +222,6 @@ public interface VirtualPropertyColumnBuilder<T, I, P, C extends ItemListing<I, 
 	 * @param defaultHeader Default column header
 	 * @param headerMessageCode Column header translation message code
 	 * @return this
-	 * @see #headerMode(ColumnHeaderMode)
 	 */
 	default VirtualPropertyColumnBuilder<T, I, P, C, B> headerHTML(String defaultHeader, String headerMessageCode) {
 		return headerHTML(Localizable.builder().message(defaultHeader).messageCode(headerMessageCode).build());

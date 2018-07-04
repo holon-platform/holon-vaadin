@@ -738,7 +738,7 @@ public class DefaultItemListing<T, P> extends CustomComponent
 
 	/**
 	 * Set given properties as listing visibile columns.
-	 * @param visibleColumns Visible columns properties (not null)
+	 * @param columns Visible columns properties (not null)
 	 */
 	protected void setupVisibileColumns(Iterable<? extends P> columns) {
 

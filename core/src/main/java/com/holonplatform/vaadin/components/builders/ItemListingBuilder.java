@@ -334,8 +334,8 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 	 * {@link #build(Object...)} method is used, because the property/column ordering is explicitly provided.
 	 * </p>
 	 * @param property Property which represents the column to display after the other property (not null)
-	 * @param beforeProperty Property which represents the column after which the first property has to be displayed
-	 *        (not null)
+	 * @param afterProperty Property which represents the column after which the first property has to be displayed (not
+	 *        null)
 	 * @return this
 	 */
 	B displayAfter(P property, P afterProperty);
@@ -590,7 +590,6 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		 * @param property Item property to set the header for (not null)
 		 * @param header Localizable column header (not null)
 		 * @return this
-		 * @see #headerMode(Object, ColumnHeaderMode)
 		 */
 		B headerHTML(P property, Localizable header);
 
@@ -600,7 +599,6 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		 * @param property Item property to set the header for (not null)
 		 * @param header Column header
 		 * @return this
-		 * @see #headerMode(Object, ColumnHeaderMode)
 		 */
 		default B headerHTML(P property, String header) {
 			return headerHTML(property, Localizable.builder().message(header).build());
@@ -613,7 +611,6 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		 * @param defaultHeader Default column header
 		 * @param headerMessageCode Column header translation message code
 		 * @return this
-		 * @see #headerMode(Object, ColumnHeaderMode)
 		 */
 		default B headerHTML(P property, String defaultHeader, String headerMessageCode) {
 			return headerHTML(property,
