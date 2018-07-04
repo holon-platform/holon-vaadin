@@ -24,6 +24,7 @@ import org.springframework.context.ApplicationContext;
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.vaadin.internal.VaadinLogger;
 import com.holonplatform.vaadin.navigator.DefaultViewNavigationStrategy;
+import com.holonplatform.vaadin.navigator.ViewClassProvider;
 import com.holonplatform.vaadin.navigator.ViewNavigator;
 import com.holonplatform.vaadin.navigator.ViewWindowConfigurator;
 import com.holonplatform.vaadin.navigator.internal.AbstractNavigatorBuilder;
@@ -244,6 +245,16 @@ public class DefaultSpringViewNavigator extends SpringNavigator implements ViewN
 		if (removed != null) {
 			super.removeProvider(removed);
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.navigator.internal.ViewNavigatorAdapter#setViewClassProvider(com.vaadin.navigator.
+	 * ViewProvider, com.holonplatform.vaadin.navigator.ViewClassProvider)
+	 */
+	@Override
+	public void setViewClassProvider(ViewProvider provider, ViewClassProvider viewClassProvider) {
+		actuator.setViewClassProvider(provider, viewClassProvider);
 	}
 
 	/*
@@ -470,6 +481,16 @@ public class DefaultSpringViewNavigator extends SpringNavigator implements ViewN
 							LOGGER.info("Configured access denied view: " + type.getName());
 						}
 					}
+				}
+			}
+
+			// view class provider
+			if (viewProvider != null) {
+				if (!actuator.getViewClassProvider(viewProvider).isPresent()) {
+					final SpringViewClassProvider springViewClassProvider = new SpringViewClassProvider(
+							applicationContext);
+					springViewClassProvider.init();
+					setViewClassProvider(viewProvider, springViewClassProvider);
 				}
 			}
 

@@ -522,9 +522,8 @@ public class MultiSelectField<T, ITEM>
 		 * com.holonplatform.vaadin.components.builders.PropertySelectInputBuilder#dataSource(com.holonplatform.core.
 		 * datastore.Datastore, com.holonplatform.core.datastore.DataTarget, com.holonplatform.core.property.Property[])
 		 */
-		@SuppressWarnings("unchecked")
 		@Override
-		public <P extends Property<?>> B dataSource(Datastore datastore, DataTarget<?> dataTarget, P... properties) {
+		public B dataSource(Datastore datastore, DataTarget<?> dataTarget, Property<?>... properties) {
 			MultiPropertySelectInputBuilder.super.dataSource(datastore, dataTarget, properties);
 			setupItemConverter(datastore, dataTarget, PropertySet.of(properties));
 			return builder();

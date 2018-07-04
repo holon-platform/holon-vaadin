@@ -1014,13 +1014,65 @@ Each item _property_ to display is bound to a _column_, and a property *id* is u
 
 The `ItemListing` is a link:{apidir}/com/holonplatform/vaadin/components/Selectable.html[Selectable^] component, supporting *items selection* in single or multiple mode.
 
-The `ItemListing` API provides a set of methods to control the listing appearance, showing and hiding columns, sorting and refreshing the item set, and so on.
+The `ItemListing` API provides a set of methods to control the listing appearance, showing and hiding columns, sorting and refreshing the item set, and so on. See <<ItemListingConfiguration>>.
 
 Two `ItemListing` implementations are available to use this component:
 
 * link:{apidir}/com/holonplatform/vaadin/components/PropertyListing.html[PropertyListing^]: Uses a `PropertyBox` as item type and the listing column ids are the `Property` instances of the provided _property set_.
 
 * link:{apidir}/com/holonplatform/vaadin/components/BeanListing.html[BeanListing^]: Uses a *Java Bean* as item type and the listing column ids are the Bean property names.
+
+[[ItemListingProperties]]
+=== Item listing properties
+
+An link:{apidir}/com/holonplatform/vaadin/components/ItemListing.html[ItemListing^] component manages the its data as a set of _items_ and each item _attribute_ is identified by a _property_ which also acts as listing *column id*.
+
+The available _item_ attributes represent the item _property set_ and can be used to access and display the item data in the listing.
+
+Each concrete link:{apidir}/com/holonplatform/vaadin/components/ItemListing.html[ItemListing^] implementation is bound to a specific *item type* and *property type*.
+
+Since each _property id_ represents an item listing _column id_, it is used be the builder API to identify the listing columns and provide a set of column configuration methods. See <<ItemListingConfiguration>> for details.
+
+[[ItemListingVisibleProperties]]
+==== Visible properties
+
+By default, *all* the properties of the listing _property set_ are rendered as listing columns, *in the same order* they are provided by the property set itself. 
+
+The listing columns display can be changed as described below.
+
+*1. Explicit column selection and display order:*
+
+To explicitly select which properties are to be rendered as listing columns and to declare the columns order, the `ItemListing` builder API provides specialized versions of the `build()` method, which accept an array or an `Iterable` of _property ids_ (whose type will be the concrete type used by the specific `ItemListing` implementation) to declare the visible columns and their order.
+
+For example, when using the <<PropertyListing>> implementation, the item's _property ids_ will be represented using the link:holon-core.html#Property[Property^] abstraction and the visible item listing columns (and their order) can be configured as in the example below:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=propertyListing2,indent=0]
+----
+<1> The `PROPERTIES` property set is used as item property set. By default, the displayed column set and ordering would be: `ID`, `DESCRIPTION`, `ACTIVE`.
+<2> Change the listing visible columns and their order: the `DESCRIPTION` property first and then the `ID` property
+
+*2. Default column display ordering configuration:*
+
+The `ItemListing` builder API provides a set of methods to configure the *default column display ordering*, which is applied only when an explicit ordering is not provided using the specialized `build(...)` methods as described in the previous section.
+
+The available column position configuration methods are:
+
+* `displayAsFirst(P property)`: Display the column represented by given _property id_ before any other listing column.
+* `displayAsLast(P property)`: Display the column represented by given _property id_ after any other listing column.
+* `displayBefore(P property, P beforeProperty)`: Display the column represented by given _property id_ before the listing column represented by the `beforeProperty` _property id_.
+* `displayAfter(P property, P afterProperty)`: Display the column represented by given _property id_ after the listing column represented by the `afterProperty` _property id_.
+
+The property id type (`P`) depends on the concrete `ItemListing` implementation.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=propertyListing3,indent=0]
+----
+<1> Configure the column which corresponds to the `ACTIVE` property id to be displayed as first
+<2> Configure the `ID` column to be displayed before the `DESCRIPTION` column
+<3> Configure the `DESCRIPTION` column to be displayed after the `ACTIVE` column
 
 [[PropertyListing]]
 === PropertyListing
@@ -1042,18 +1094,6 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag
 <1> Create a `PropertyListing` using given `PROPERTIES` property set 
 
 NOTE: See the <<ItemListingConfiguration>> to learn about the item listing API operations and configuration options.
-
-==== Visible properties
-
-By default, all the properties of the listing _property set_ are rendered as listing columns, in the same order they are provided by the property set itself.
-
-To select which properties are to be rendered as listing columns and to declare the columns order, the `PropertyListing` builder API provides specialized version of the `build()` method, which accept an array or an Iterable of `Property` to declare the visible columns and their order.
-
-[source, java]
-----
-include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=propertyListing2,indent=0]
-----
-<1> Set the listing visible columns: the `DESCRIPTION` property first and then the `ID` property
 
 [[PropertySetIdentifiers]]
 ==== Items type and identifiers
@@ -1118,6 +1158,107 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag
 <1> Add a `QueryConfigurationProvider` to the `PropertyListing`
 
 [[VirtualPropertyColumns]]
+==== Using `VirtualProperty` for "generated" columns
+
+The link:holon-core.html#VirtualProperty[VirtualProperty^] abstraction can be used to declare _generated_ columns for a `PropertyListing` component, i.e. columns whose contents are not directly bound to an item property value, but are instead _generated_ using a function, for example relying on the item data (represented by a `PropertyBox`) for each listing row (i.e. for each item instance).
+
+Since the `VirtualProperty` provides its value through a `PropertyValueProvider`, the provider function is invoked when the listing column cells are rendered to obtain the column content to display, providing the current item/row value as a `PropertyBox` instance.
+
+The generated column content *type* will match the `VirtualProperty` type, so if it is not of `String` type a suitable _renderer_ should be configured to consistently display the column contents. See <<ItemListingColumnsRendering>> to learn how to configure column _renderers_ and <<VirtualPropertyComponents>>.
+
+A `VirtualProperty` type column can be added to a `PropertyListing` component in the following ways:
+
+*1. Include the `VirtualProperty` in the listing property set:*
+
+When one or more `VirtualProperty` type property is included in the default `PropertyListing` _property set_, a column bound to each `VirtualProperty` is included in the listing by default and no further configuration is required.
+
+In this scenario, the `VirtualProperty` will be part of the item property set and available as item property through the `PropertyBox` item representation.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=propertyListing4,indent=0]
+----
+<1> A `String` type `VirtualProperty` which uses the `ID` item property value to provide the generated value
+<2> The `DESCRIPTION` virtual property is included in the `PROPERTIES` listing property set, so it will be included and displayed as a column by default
+
+*2. Provide a `VirtualProperty` as a visible column:*
+
+When a `VirtualProperty` is declared within the _visible columns_ list through the appropriate `build(...)` methods, it will be automatically configured as listing column even if it is not part of the item listing property set.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=propertyListing5,indent=0]
+----
+<1> A `String` type `VirtualProperty` which uses the `ID` item property value to provide the generated value
+<2> The `DESCRIPTION` virtual property is included in the _visible properties_ list, so it will be automatically included and displayed as a column
+
+*3. Use the `withVirtualProperty(...)` builder API methods:*
+
+The `PropertyListing` builder API provide a set of convenience methods to add and configure a _generated_ column using a `VirtualProperty`.
+
+The `withVirtualProperty(...)` methods accept the *property type* and the *property value provider function* (or an explicit `VirtualProperty` reference) and provide a specific builder API to configure the column which corresponds to the virtual property before adding it to the listing through the `add()` method.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=propertyListing6,indent=0]
+----
+<1> Add a `String` type virtual property providing the property value provider function and using `add()` to include the generated column in the listing
+<2> For `String` type virtual properties, a convenience shorter method is available
+
+The virtual property column builder API provides a set of *configuration methods* to configure the column header, the width, the visibility, the style generator, the column renderer and the sorting behaviour:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=propertyListing7,indent=0]
+----
+<1> Declare a `String` type virtual property providing the property value provider function
+<2> Configure the column header
+<3> Configure the column header as HTML
+<4> Configure the column alignment
+<5> Configure the column width
+<6> Configure the column minimum width
+<7> Configure the column maximum width
+<8> Configure the column expand ratio
+<9> Set the column as resizable
+<10> Set the column as hidable
+<11> Set the column as not hidden
+<12> Configure the column hiding toggle caption
+<13> Provide a fixed column CSS style class name
+<14> Provide the column CSS style class provider
+<15> Set the column renderer
+<16> Declare to use the `ID` property to implement the column sorting behaviour 
+<17> Provide a column sorting generator
+<18> Add the virtual property column to the listing
+
+By default, the column added using the `withVirtualProperty(...)` methods are appended at the end of the listing columns. To *control the virtual property column positioning* within the listing columns, the following builder API methods can be used:
+
+* `displayAsFirst()`: Display the virtual property column before any other listing column.
+* `displayAsLast()`: Display the virtual property column after any other listing column.
+* `displayBefore(Property property)`: Display the virtual property column before the listing column represented by the `property` _property id_.
+* `displayAfter(Property property)`: Display the virtual property column after the listing column represented by the `property` _property id_.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=propertyListing8,indent=0]
+----
+<1> Declare a `String` type virtual property providing the property value provider function
+<2> Display the virtual property column before any other listing column
+<3> Display the virtual property column after any other listing column
+<4> Display the virtual property column before the listing column bound the `DESCRIPTION` property
+<5> Display the virtual property column after the listing column bound the `ID` property
+
+When a virtual property column has to be positioned relative to another virtual property column, you need a _property id_ to which to refer. For this reason, specialized `withVirtualProperty(...)` methods which accept the *virtual property name* are available.
+
+Furthermore, the `displayBeforeColumnId(String columnId)` and `displayAfterColumnId(String columnId)` builder API methods can be use to display a virtual property column before or after another virtual property column with an assigned name. 
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=propertyListing9,indent=0]
+----
+<1> Declare a `String` type virtual property providing the property value provider function and `_myid` as virtual property name
+<2> Declare another virtual property column and display it before the `_myid` virtual property
+
+[[VirtualPropertyComponents]]
 ==== Using `VirtualProperty` for `Component` type columns
 
 When a `Property` of the `PropertyListing` property set is declared as `com.vaadin.ui.Component` type, the listing configures by default a suitable _renderer_ to display the property value as a Vaadin Component, instead of a `String`.
@@ -1125,8 +1266,6 @@ When a `Property` of the `PropertyListing` property set is declared as `com.vaad
 When a listing `Component` type column has to be *dinamically generated* when the listing is rendered, the link:holon-core.html#VirtualProperty[VirtualProperty^] property type can be used. 
 
 Since the `VirtualProperty` provides its value through a `PropertyValueProvider`, the provider is invoked when the listing column cells are rendered to obtain the `Component` to display, providing the current row values as `PropertyBox`, which can be used for component generation.
-
-NOTE: Of course, a `VirtualProperty` can be used in a listing component not only to provide a `Component` value, but any other supported type.
 
 The `VirtualProperty` can be declared in the listing property set as any other Property, but when it is only used for a specific item listing column to render a `Component` it can be only declared as *visible column*, in the `build(...)` method. This way, it will not be part of the listing property set (and it will not be included in the row `PropertyBox` properties) and will only be used as _generated column_.
 
@@ -1237,6 +1376,7 @@ The item listing component _builder_ API provides a wide set of configuration me
 
 See the next sections for details.
 
+[[ItemListingColumnsConfiguration]]
 ==== Columns configuration
 
 The listing component columns can be configured in a number of ways. Below is provided an example which uses a `PropertyListing` and shows the available column configuration methods:
@@ -1246,21 +1386,25 @@ The listing component columns can be configured in a number of ways. Below is pr
 include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag=listing4,indent=0]
 ----
 <1> Set a custom header caption for the `ID` property/column
-<2> Set whether the listing columns can be hidden
-<3> Set that the `ID` property/column cannot be hidden
-<4> Set whether the listing columns can reordered
-<5> Set the `ID` property/column cell contents alignment
-<6> Set the `DESCRIPTION` property/column as hidden by default
-<7> Set the `ID` property/column as not resizable
-<8> Set the `ID` property/column width in pixels
-<9> Set the `DESCRIPTION` property/column expand ratio
-<10> Set the `DESCRIPTION` property/column minimum width
-<11> Set the `DESCRIPTION` property/column maximum width
-<12> Set the `ID` property/column CSS style generator
-<13> Add a listener to be notified when the listing columns order changes
-<14> Add a listener to be notified when a property/column is resized 
-<15> Add a listener to be notified when a property/column is shown or hidden 
+<2> Set the `ID` property/column _localizable_ header caption providing the default message and the localization _message code_ (See the link:holon-core.html#i18n[Internationalization] documentation for further information about localization)
+<3> Set a the header caption for the `ID` property/column using HTML markup
+<4> Set whether the listing columns can be hidden
+<5> Set that the `ID` property/column cannot be hidden
+<6> Set whether the listing columns can reordered
+<7> Set the `ID` property/column cell contents alignment
+<8> Set the `DESCRIPTION` property/column as hidden by default
+<9> Set the `ID` property/column as not resizable
+<10> Set the `ID` property/column width in pixels
+<11> Set the `DESCRIPTION` property/column expand ratio
+<12> Set the `DESCRIPTION` property/column minimum width
+<13> Set the `DESCRIPTION` property/column maximum width
+<14> Set to use the width of the contents in the column as `DESCRIPTION` property/column width
+<15> Set the `ID` property/column CSS style generator
+<16> Add a listener to be notified when the listing columns order changes
+<17> Add a listener to be notified when a property/column is resized 
+<18> Add a listener to be notified when a property/column is shown or hidden 
 
+[[ItemListingColumnsRendering]]
 ==== Columns rendering
 
 By default, the cells of a column bound to a `Property` are _rendered_ using the Holon Platform _presenters_ available from the default registry, to provide the `String` representation of the cell value. 
@@ -1278,6 +1422,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleListing.java[tag
 <1> Set a custom `NumberRenderer` for the `ID` property/column (which is of type `Long`)
 <2> Set a converter to convert the `Long` type value of the `ID` property/column into a `String` and a suitable render according to the new value type
 
+[[ItemListingComponentConfiguration]]
 ==== Item listing configuration
 
 The item listing component is highly configurable. Through the builders you can configure:

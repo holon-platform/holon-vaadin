@@ -15,10 +15,10 @@
  */
 package com.holonplatform.vaadin.internal.components;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import com.holonplatform.core.i18n.LocalizationContext;
-import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
@@ -34,7 +33,6 @@ import com.holonplatform.core.property.PropertyValueProvider;
 import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.components.Field;
 import com.holonplatform.vaadin.components.PropertyListing;
-import com.holonplatform.vaadin.internal.VaadinLogger;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.PropertyDefinition;
 import com.vaadin.data.PropertySet;
@@ -61,8 +59,6 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 
 	private static final long serialVersionUID = 681884060927291257L;
 
-	private static final Logger LOGGER = VaadinLogger.create();
-
 	/**
 	 * Grid property set
 	 */
@@ -77,6 +73,7 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 		super();
 		ObjectUtils.argumentNotNull(properties, "Listing property set must be not null");
 		propertySet = new GridPropertySet(properties);
+		setDefaultVisibleProperties(() -> getDefaultColumnIds());
 		initGrid(Grid.withPropertySet(propertySet));
 	}
 
@@ -150,30 +147,25 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.internal.components.DefaultItemListing#setupVisibileColumns(java.lang.Iterable)
+	 * @see com.holonplatform.vaadin.internal.components.DefaultItemListing#setupVisibleColumn(java.lang.Object)
 	 */
 	@Override
-	protected void setupVisibileColumns(Iterable<? extends Property> visibleColumns) {
-		ObjectUtils.argumentNotNull(visibleColumns, "Visible columns must be not null");
-
-		final List<String> ids = new LinkedList<>();
-		final Set<Property> propertySet = getPropertySet();
-
-		for (Property visibleColumn : visibleColumns) {
-			// check virtual columns
-			if (!propertySet.contains(visibleColumn)) {
-				// add as virtual column if it is a VirtualProperty
-				if (visibleColumn instanceof VirtualProperty) {
-					addColumn((VirtualProperty<?>) visibleColumn);
-				}
+	protected void setupVisibleColumn(Property property) {
+		// check virtual columns
+		if (!getPropertySet().contains(property)) {
+			// add as virtual column if it is a VirtualProperty
+			if (property instanceof VirtualProperty) {
+				addColumn((VirtualProperty<?>) property);
 			}
-
-			final String columnId = getColumnId(visibleColumn);
-			setupPropertyColumn(visibleColumn, getGrid().getColumn(columnId));
-			ids.add(columnId);
 		}
+	}
 
-		getGrid().setColumns(ids.toArray(new String[ids.size()]));
+	/**
+	 * Get the default column ids of this listing.
+	 * @return the default column ids
+	 */
+	protected List<? extends Property> getDefaultColumnIds() {
+		return new ArrayList<>(getPropertySet());
 	}
 
 	@SuppressWarnings("unchecked")

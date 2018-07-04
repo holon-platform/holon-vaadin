@@ -45,6 +45,14 @@ public interface ValueHolder<V> extends Serializable {
 	V getValue();
 
 	/**
+	 * Get the current value of this value holder, if available (i.e. not <code>null</code>).
+	 * @return Optional current value
+	 */
+	default Optional<V> getValueIfPresent() {
+		return Optional.ofNullable(getValue());
+	}
+
+	/**
 	 * Returns the value that represents an empty value.
 	 * @return the value that represents an empty value (<code>null</code> by default)
 	 */

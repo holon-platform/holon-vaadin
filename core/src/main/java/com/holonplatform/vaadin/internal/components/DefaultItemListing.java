@@ -18,22 +18,28 @@ package com.holonplatform.vaadin.internal.components;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
+import com.holonplatform.core.internal.Logger;
+import com.holonplatform.core.internal.utils.ConversionUtils;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.components.ItemListing;
 import com.holonplatform.vaadin.components.Selectable;
+import com.holonplatform.vaadin.components.builders.ItemListingBuilder.ColumnHeaderMode;
 import com.holonplatform.vaadin.data.ItemDataSource;
 import com.holonplatform.vaadin.data.ItemDataSource.ItemSort;
+import com.holonplatform.vaadin.internal.VaadinLogger;
+import com.holonplatform.vaadin.internal.components.PropertyColumn.DisplayPosition;
 import com.holonplatform.vaadin.internal.data.ItemDataProviderAdapter;
 import com.holonplatform.vaadin.internal.data.ItemDataSourceAdapter;
 import com.vaadin.data.Binder.BindingBuilder;
@@ -57,6 +63,7 @@ import com.vaadin.ui.components.grid.Editor;
 import com.vaadin.ui.components.grid.EditorCancelListener;
 import com.vaadin.ui.components.grid.EditorOpenListener;
 import com.vaadin.ui.components.grid.EditorSaveListener;
+import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.components.grid.MultiSelectionModel;
 import com.vaadin.ui.components.grid.MultiSelectionModel.SelectAllCheckBoxVisibility;
 import com.vaadin.ui.renderers.Renderer;
@@ -70,14 +77,20 @@ import com.vaadin.ui.renderers.TextRenderer;
  * 
  * @since 5.0.0
  */
-public class DefaultItemListing<T, P> extends CustomComponent implements ItemListing<T, P> {
+public class DefaultItemListing<T, P> extends CustomComponent
+		implements ItemListing<T, P>, PropertyColumnManager<T, P> {
 
 	private static final long serialVersionUID = -4573359150260491496L;
 
 	/**
+	 * Logger
+	 */
+	protected final static Logger LOGGER = VaadinLogger.create();
+
+	/**
 	 * Property column definitions
 	 */
-	private final Map<P, PropertyColumn<T, P>> propertyColumnDefinitions = new HashMap<>();
+	private final Map<P, PropertyColumn<T, P>> propertyColumnDefinitions = new LinkedHashMap<>();
 
 	/**
 	 * Selection mode
@@ -123,6 +136,11 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	 * The Grid
 	 */
 	private Grid<T> grid;
+
+	/**
+	 * Default visible properties supplier
+	 */
+	private Supplier<List<? extends P>> defaultVisibleProperties;
 
 	protected DefaultItemListing() {
 		super();
@@ -240,6 +258,39 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 	}
 
 	/**
+	 * Get the property column definitions.
+	 * @return The property column definitions
+	 */
+	@Override
+	public Map<P, PropertyColumn<T, P>> getColumnDefinitions() {
+		return propertyColumnDefinitions;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.internal.components.builders.PropertyColumnManager#hasColumnDefinition(java.lang.Object)
+	 */
+	@Override
+	public Optional<PropertyColumn<T, P>> hasColumnDefinition(P property) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		return Optional.ofNullable(propertyColumnDefinitions.get(property));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.internal.components.builders.PropertyColumnManager#addColumnDefinition(java.lang.Object,
+	 * com.holonplatform.vaadin.internal.components.PropertyColumn)
+	 */
+	@Override
+	public void addColumnDefinition(P property, PropertyColumn<T, P> propertyColumn) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		ObjectUtils.argumentNotNull(propertyColumn, "PropertyColumn must be not null");
+		propertyColumnDefinitions.put(property, propertyColumn);
+	}
+
+	/**
 	 * Get or create the {@link PropertyColumn} definition bound to given property.
 	 * @param property Property to get the definition for (not null)
 	 * @return Property column definition
@@ -248,7 +299,7 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		PropertyColumn<T, P> propertyColumn = propertyColumnDefinitions.get(property);
 		if (propertyColumn == null) {
-			propertyColumn = new DefaultPropertyColumn<>(property);
+			propertyColumn = new DefaultPropertyColumn<>(property, false);
 			propertyColumnDefinitions.put(property, propertyColumn);
 		}
 		return propertyColumn;
@@ -509,6 +560,15 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 			String header = LocalizationContext.translate(propertyColumn.getCaption(), true);
 			if (header != null) {
 				column.setCaption(header);
+
+				// check header mode
+				ColumnHeaderMode headerMode = propertyColumn.getColumnHeaderMode();
+				if (headerMode != null && headerMode == ColumnHeaderMode.HTML) {
+					HeaderRow row = getGrid().getDefaultHeaderRow();
+					if (row != null) {
+						row.getCell(column).setHtml(header);
+					}
+				}
 			}
 		}
 
@@ -678,19 +738,188 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 
 	/**
 	 * Set given properties as listing visibile columns.
-	 * @param visibleColumns Visible columns properties (not null)
+	 * @param columns Visible columns properties (not null)
 	 */
-	protected void setupVisibileColumns(Iterable<? extends P> visibleColumns) {
-		ObjectUtils.argumentNotNull(visibleColumns, "Visible columns must be not null");
-		List<String> ids = new LinkedList<>();
+	protected void setupVisibileColumns(Iterable<? extends P> columns) {
 
-		visibleColumns.forEach(property -> {
-			final String columnId = getColumnId(property);
-			setupPropertyColumn(property, getGrid().getColumn(columnId));
-			ids.add(getColumnId(property));
-		});
+		final List<? extends P> columnsList = ConversionUtils.iterableAsList(columns);
+		final List<? extends P> visibleColumns = (columnsList != null && !columnsList.isEmpty()) ? columnsList
+				: getDefaultVisibleProperties().orElse(Collections.emptyList());
 
-		getGrid().setColumns(ids.toArray(new String[ids.size()]));
+		if (!visibleColumns.isEmpty()) {
+
+			List<String> ids = new LinkedList<>();
+
+			visibleColumns.forEach(property -> {
+				setupVisibleColumn(property);
+				final String columnId = getColumnId(property);
+				setupPropertyColumn(property, getGrid().getColumn(columnId));
+				ids.add(getColumnId(property));
+			});
+
+			getGrid().setColumns(ids.toArray(new String[ids.size()]));
+
+		}
+	}
+
+	/**
+	 * Invoked by {@link #setupVisibileColumns(Iterable)} on each visible column property.
+	 * @param property Column property
+	 */
+	protected void setupVisibleColumn(P property) {
+		// noop
+	}
+
+	/**
+	 * Get the default visible property ids.
+	 * @return Default visible property ids
+	 */
+	protected Optional<List<? extends P>> getDefaultVisibleProperties() {
+		final List<? extends P> visibleProperties = (defaultVisibleProperties != null) ? defaultVisibleProperties.get()
+				: null;
+
+		if (visibleProperties != null && !visibleProperties.isEmpty()) {
+			// check positions
+			LinkedList<P> properties = new LinkedList<>();
+
+			LinkedList<P> toProcess = new LinkedList<>();
+
+			final Map<P, PropertyPosition<P>> positions = new LinkedHashMap<>(visibleProperties.size());
+
+			for (P property : visibleProperties) {
+				PropertyPosition<P> position = hasColumnDefinition(property).map(d -> {
+					if ((d.getDisplayPosition() == DisplayPosition.RELATIVE_BEFORE
+							|| d.getDisplayPosition() == DisplayPosition.RELATIVE_AFTER)
+							&& d.getDisplayRelativeToColumnId().isPresent() && !d.getDisplayRelativeTo().isPresent()) {
+						final P rt = getColumnProperty(d.getDisplayRelativeToColumnId().get());
+						if (rt != null) {
+							return new PropertyPosition<>(d.getDisplayPosition(), rt);
+						} else {
+							return new PropertyPosition<>(DisplayPosition.DEFAULT, (P) null);
+						}
+					}
+					if ((d.getDisplayPosition() == DisplayPosition.RELATIVE_BEFORE
+							|| d.getDisplayPosition() == DisplayPosition.RELATIVE_AFTER)
+							&& !d.getDisplayRelativeTo().isPresent()) {
+						// invalid
+						return new PropertyPosition<>(DisplayPosition.DEFAULT, (P) null);
+					}
+					return new PropertyPosition<>(d.getDisplayPosition(), d.getDisplayRelativeTo().orElse(null));
+				}).orElse(new PropertyPosition<>(DisplayPosition.DEFAULT, null));
+
+				// check consistency
+				if ((position.getPosition() == DisplayPosition.RELATIVE_BEFORE
+						|| position.getPosition() == DisplayPosition.RELATIVE_AFTER)
+						&& position.getRelativeTo().isPresent() && position.getRelativeTo().get() == property) {
+					position = new PropertyPosition<>(DisplayPosition.DEFAULT, null);
+				}
+
+				positions.put(property, position);
+
+				if (position.getPosition() == DisplayPosition.DEFAULT) {
+					properties.add(property);
+				} else {
+					toProcess.add(property);
+				}
+
+			}
+
+			for (P property : toProcess) {
+				processPropertyPosition(properties, positions, property, Collections.emptyList());
+			}
+
+			return Optional.ofNullable(properties);
+		}
+
+		return Optional.ofNullable(visibleProperties);
+	}
+
+	/**
+	 * Calculate le property display position and add it to the visible properties list.
+	 * @param properties Visible properties lis
+	 * @param positions Property positions
+	 * @param property The property to process
+	 * @param stage The processing stage
+	 */
+	private void processPropertyPosition(LinkedList<P> properties, Map<P, PropertyPosition<P>> positions, P property,
+			List<P> stage) {
+		if (!properties.contains(property)) {
+
+			final PropertyPosition<P> position = positions.get(property);
+
+			if (position != null) {
+				switch (position.getPosition()) {
+				case HEAD:
+					properties.addFirst(property);
+					break;
+				case TAIL:
+					properties.addLast(property);
+					break;
+				case RELATIVE_AFTER: {
+					if (position.getRelativeTo().isPresent()) {
+						final P relativeTo = position.getRelativeTo().get();
+
+						// check processed
+						if (stage.contains(relativeTo)) {
+							// cycle detected
+							LOGGER.warn("Cycle detected in property column positions - Property: [" + property
+									+ "] / Relative to: [" + relativeTo + "]");
+							return;
+						}
+						List<P> newStage = new ArrayList<>(stage);
+						newStage.add(relativeTo);
+						processPropertyPosition(properties, positions, relativeTo, newStage);
+						safelyAdd(properties, property, properties.indexOf(relativeTo), true);
+					}
+				}
+					break;
+				case RELATIVE_BEFORE: {
+					if (position.getRelativeTo().isPresent()) {
+						final P relativeTo = position.getRelativeTo().get();
+
+						// check processed
+						if (stage.contains(relativeTo)) {
+							// cycle detected
+							LOGGER.warn("Cycle detected in property column positions - Property: [" + property
+									+ "] / Relative to: [" + relativeTo + "]");
+							return;
+						}
+						List<P> newStage = new ArrayList<>(stage);
+						newStage.add(relativeTo);
+						processPropertyPosition(properties, positions, relativeTo, newStage);
+						safelyAdd(properties, property, properties.indexOf(relativeTo), false);
+					}
+				}
+					break;
+				case DEFAULT:
+					break;
+				default:
+					break;
+				}
+			}
+		}
+	}
+
+	private static <P> void safelyAdd(List<P> properties, P property, int idx, boolean fallbackToLast) {
+		if (property != null && !properties.contains(property)) {
+			if (idx > -1 && idx < properties.size()) {
+				if (idx == (properties.size() - 1) && fallbackToLast) {
+					properties.add(property);
+				} else {
+					properties.add(idx, property);
+				}
+			} else {
+				properties.add(property);
+			}
+		}
+	}
+
+	/**
+	 * Srt the default visible property ids supplier.
+	 * @param defaultVisibleProperties the default visible property ids supplier to set
+	 */
+	protected void setDefaultVisibleProperties(Supplier<List<? extends P>> defaultVisibleProperties) {
+		this.defaultVisibleProperties = defaultVisibleProperties;
 	}
 
 	/*
@@ -1345,6 +1574,29 @@ public class DefaultItemListing<T, P> extends CustomComponent implements ItemLis
 			throw new NotBufferedException("The item listing is not in buffered mode");
 		}
 		requireDataSource().discard();
+	}
+
+	// ----- support
+
+	private final static class PropertyPosition<P> {
+
+		private final DisplayPosition position;
+		private final P relativeTo;
+
+		PropertyPosition(DisplayPosition position, P relativeTo) {
+			super();
+			this.position = (position != null) ? position : DisplayPosition.DEFAULT;
+			this.relativeTo = relativeTo;
+		}
+
+		DisplayPosition getPosition() {
+			return position;
+		}
+
+		Optional<P> getRelativeTo() {
+			return Optional.ofNullable(relativeTo);
+		}
+
 	}
 
 }

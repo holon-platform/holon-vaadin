@@ -21,8 +21,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Stack;
+import java.util.WeakHashMap;
 import java.util.function.Consumer;
 
 import com.holonplatform.auth.AuthContext;
@@ -32,14 +34,17 @@ import com.holonplatform.core.Context;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.AnnotationUtils;
+import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.utils.SizedStack;
 import com.holonplatform.vaadin.VaadinHttpRequest;
 import com.holonplatform.vaadin.internal.VaadinLogger;
 import com.holonplatform.vaadin.navigator.DefaultViewNavigationStrategy;
 import com.holonplatform.vaadin.navigator.SubViewContainer;
+import com.holonplatform.vaadin.navigator.ViewClassProvider;
 import com.holonplatform.vaadin.navigator.ViewNavigator;
 import com.holonplatform.vaadin.navigator.ViewNavigator.ViewNavigationException;
 import com.holonplatform.vaadin.navigator.ViewWindowConfigurator;
+import com.holonplatform.vaadin.navigator.internal.ViewConfiguration.ViewConfigurationException;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -85,6 +90,11 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 	 * View providers adapters registered in navigator (duplicates similar but private property in Navigator superclass)
 	 */
 	protected final List<ViewProviderAdapter> viewProviders = new LinkedList<>();
+
+	/**
+	 * View class providers
+	 */
+	protected final Map<ViewProvider, ViewClassProvider> viewClassProviders = new WeakHashMap<>();
 
 	/**
 	 * Window references bound to window-displayed navigation states
@@ -281,6 +291,25 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 	}
 
 	/**
+	 * Set the {@link ViewClassProvider} bound to given {@link ViewProvider}.
+	 * @param provider View provider (not null)
+	 * @param viewClassProvider View class provider
+	 */
+	public void setViewClassProvider(ViewProvider provider, ViewClassProvider viewClassProvider) {
+		ObjectUtils.argumentNotNull(provider, "ViewProvider must be not null");
+		viewClassProviders.put(provider, viewClassProvider);
+	}
+
+	/**
+	 * Get the {@link ViewClassProvider} bound to given {@link ViewProvider}, if available.
+	 * @param provider View provider
+	 * @return Optional view class provider
+	 */
+	public Optional<ViewClassProvider> getViewClassProvider(ViewProvider provider) {
+		return Optional.ofNullable(viewClassProviders.get(provider));
+	}
+
+	/**
 	 * FInd the {@link ViewProviderAdapter} which wraps given concrete <code>provider</code>
 	 * @param provider Concrete view provider
 	 * @return Associated ViewProviderAdapter, or <code>null</code> if not found
@@ -353,7 +382,7 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 			final ViewConfiguration viewConfiguration, final Window window) {
 		if (navigateBackOnWindowClose) {
 			// navigate back
-			navigateBack();
+			navigateBack(navigationState, viewConfiguration);
 		}
 	}
 
@@ -391,7 +420,7 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 			}
 
 			// track navigation state in history if current View is not volatile
-			if (navigator.getCurrentView() != null && !isVolatile(navigator.getCurrentView(), navigationState)) {
+			if (navigator.getCurrentView() != null && !isVolatile(navigator.getCurrentView())) {
 				trackInHistory(navigationState);
 			}
 
@@ -479,13 +508,33 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 	 * @throws ViewNavigationException Navigation error
 	 */
 	public boolean navigateBack() throws ViewNavigationException {
+		return navigateBack(null, null);
+	}
+
+	/**
+	 * Navigate to previous View, if available
+	 * @return true if back navigation succeded
+	 * @throws ViewNavigationException Navigation error
+	 */
+	protected boolean navigateBack(String currentState, ViewConfiguration currentViewConfiguration)
+			throws ViewNavigationException {
 
 		// check current View is displayed in Window
 		closeCurrentViewWindow();
 
-		// pop current if page not excluded from history
-		if (!getNavigationHistory().isEmpty() && !isVolatile(navigator.getCurrentView(), null)) {
-			getNavigationHistory().pop();
+		final boolean volatileView = (currentViewConfiguration != null) ? currentViewConfiguration.isVolatile()
+				: isVolatile(navigator.getCurrentView());
+
+		// pop current if view is not excluded from history
+		if (!getNavigationHistory().isEmpty()) {
+			if (!volatileView) {
+				getNavigationHistory().pop();
+			} else {
+				// check dirty state
+				if (Objects.equals(currentState, getNavigationHistory().peek())) {
+					getNavigationHistory().pop();
+				}
+			}
 		}
 
 		// peek previous
@@ -588,17 +637,17 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 		// Get view configuration
 		final ViewConfiguration viewConfiguration = getViewConfiguration(view.getClass());
 
-		Window window = buildViewWindow(navigationState, view, viewName, viewConfiguration, windowConfiguration);
-		viewWindows.put(navigationState, new WeakReference<>(window));
-		showInWindow = window;
-
 		try {
+			Window window = buildViewWindow(navigationState, view, viewName, viewConfiguration, windowConfiguration);
+			viewWindows.put(navigationState, new WeakReference<>(window));
+			showInWindow = window;
+
 			navigateTo(navigationState);
+
+			return window;
 		} catch (Exception e) {
 			throw new ViewNavigationException(viewName, e);
 		}
-
-		return window;
 
 	}
 
@@ -678,7 +727,7 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 			navigator.navigateToState(navigationState);
 		} else {
 			// track view in history to allow backward navigation
-			if (!isVolatile(viewConfiguration, navigationState)) {
+			if (!isVolatile(viewConfiguration)) {
 				trackInHistory(navigationState);
 			}
 		}
@@ -705,7 +754,7 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 			navigator.navigateToView(view, viewName, parameters);
 		} else {
 			// track view in history to allow backward navigation
-			if (!isVolatile(cfg, navigationState)) {
+			if (!isVolatile(cfg)) {
 				trackInHistory(navigationState);
 			}
 		}
@@ -800,12 +849,11 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 	/**
 	 * Check if given <code>view</code> is volatile, i.e. not to be tracked in navigation history
 	 * @param view View to check
-	 * @param navigationState Navigation state bound to View
 	 * @return <code>true</code> if given <code>view</code> is volatile
 	 */
-	protected boolean isVolatile(View view, String navigationState) {
+	protected boolean isVolatile(View view) {
 		if (view != null) {
-			return isVolatile(getViewConfiguration(view.getClass()), navigationState);
+			return isVolatile(getViewConfiguration(view.getClass()));
 		}
 		return false;
 	}
@@ -814,15 +862,9 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 	 * Check if the view bound to given <code>viewConfiguration</code> is volatile, i.e. not to be tracked in navigation
 	 * history
 	 * @param viewConfiguration ViewConfiguration to check
-	 * @param navigationState Navigation state
 	 * @return <code>true</code> if volatile
 	 */
-	protected boolean isVolatile(ViewConfiguration viewConfiguration, String navigationState) {
-
-		/*
-		 * if (navigationState != null && viewWindows.containsKey(navigationState)) { return false; }
-		 */
-
+	protected boolean isVolatile(ViewConfiguration viewConfiguration) {
 		if (viewConfiguration != null) {
 			return viewConfiguration.isVolatile();
 		}
@@ -869,6 +911,11 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 		return sb.toString();
 	}
 
+	/**
+	 * Get the {@link ViewConfiguration} which corresponds to given {@link View} class.
+	 * @param viewClass View class
+	 * @return The View configuration
+	 */
 	public ViewConfiguration getViewConfiguration(Class<? extends View> viewClass) {
 		ViewConfiguration cfg = getViewConfigurationCache().getViewConfiguration(viewClass);
 		if (cfg == null) {
@@ -877,6 +924,29 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 					ViewNavigationUtils.buildViewConfiguration(viewClass));
 		}
 		return cfg;
+	}
+
+	/**
+	 * Get the {@link ViewConfiguration} which corresponds to the {@link View} represented by the given
+	 * <code>navigationState</code>, if available.
+	 * @param navigationState Navigation state
+	 * @return Optional {@link ViewConfiguration}
+	 */
+	public Optional<ViewConfiguration> getViewConfiguration(String navigationState) {
+		ViewProvider viewProvider = getViewProvider(navigationState);
+		if (viewProvider != null) {
+			String viewName = viewProvider.getViewName(navigationState);
+			if (viewName != null) {
+				ViewProvider vp = (viewProvider instanceof ViewProviderAdapter)
+						? ((ViewProviderAdapter) viewProvider).getWrappedProvider()
+						: viewProvider;
+				ViewClassProvider viewClassProvider = viewClassProviders.get(vp);
+				if (viewClassProvider != null) {
+					return viewClassProvider.getViewClass(viewName).map(viewClass -> getViewConfiguration(viewClass));
+				}
+			}
+		}
+		return Optional.empty();
 	}
 
 	/**
@@ -928,18 +998,6 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 		}
 		return null;
 	}
-
-	/**
-	 * Get the View instance and the view name form given <code>navigationState</code>
-	 * @param navigationState Navigation state
-	 * @return View instance and view name
-	 */
-	/*
-	 * protected ViewAndName getViewAndName(String navigationState) { ViewAndName vn = new ViewAndName(); ViewProvider
-	 * longestViewNameProvider = getViewProvider(navigationState); if (longestViewNameProvider != null) { String
-	 * viewName = longestViewNameProvider.getViewName(navigationState); vn.name = viewName; if (viewName != null) {
-	 * vn.view = longestViewNameProvider.getView(viewName); } } return vn; }
-	 */
 
 	/**
 	 * Get View name and parameters from given navigation state
@@ -1028,6 +1086,18 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 		// default
 		if (defaultViewWindowConfigurator != null) {
 			defaultViewWindowConfigurator.accept(configurator);
+		}
+
+		// methods
+		if (viewConfiguration != null) {
+			viewConfiguration.getViewWindowConfigurationMethods().forEach(method -> {
+				try {
+					method.invoke(view, new Object[] { configurator });
+				} catch (Exception e) {
+					throw new ViewConfigurationException("Failed to fire ViewWindowConfiguration method "
+							+ method.getName() + " on view class " + view.getClass().getName(), e);
+				}
+			});
 		}
 
 		// provided
@@ -1157,8 +1227,14 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 	protected boolean checkAuthentication(final String navigationState, final ViewConfiguration viewConfiguration)
 			throws ViewNavigationException {
 		if (!suspendAuthenticationCheck) {
-			Authenticate authc = (viewConfiguration != null)
-					? viewConfiguration.getAuthentication().orElse(uiAuthenticate) : uiAuthenticate;
+
+			// view configuration
+			ViewConfiguration cfg = viewConfiguration;
+			if (cfg == null) {
+				cfg = getViewConfiguration(navigationState).orElse(null);
+			}
+
+			Authenticate authc = (cfg != null) ? cfg.getAuthentication().orElse(uiAuthenticate) : uiAuthenticate;
 			if (authc != null) {
 
 				// check auth context

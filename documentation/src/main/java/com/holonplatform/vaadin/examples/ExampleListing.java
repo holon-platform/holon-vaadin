@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
+import com.holonplatform.core.property.BooleanProperty;
 import com.holonplatform.core.property.NumericProperty;
 import com.holonplatform.core.property.PathProperty;
 import com.holonplatform.core.property.PropertyBox;
@@ -44,6 +45,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.renderers.TextRenderer;
 import com.vaadin.ui.themes.ValoTheme;
@@ -149,9 +151,111 @@ public class ExampleListing {
 
 	public void propertyListing2() {
 		// tag::propertyListing2[]
-		PropertyListing listing = Components.listing.properties(PROPERTIES) //
-				.build(DESCRIPTION, ID); // <1>
+		final NumericProperty<Long> ID = NumericProperty.longType("id");
+		final StringProperty DESCRIPTION = StringProperty.create("description");
+		final BooleanProperty ACTIVE = BooleanProperty.create("active");
+
+		final PropertySet<?> PROPERTIES = PropertySet.of(ID, DESCRIPTION, ACTIVE);
+
+		PropertyListing listing = Components.listing.properties(PROPERTIES) // <1>
+				.build(DESCRIPTION, ID); // <2>
 		// end::propertyListing2[]
+	}
+
+	public void propertyListing3() {
+		// tag::propertyListing3[]
+		final NumericProperty<Long> ID = NumericProperty.longType("id");
+		final StringProperty DESCRIPTION = StringProperty.create("description");
+		final BooleanProperty ACTIVE = BooleanProperty.create("active");
+
+		final PropertySet<?> PROPERTIES = PropertySet.of(ID, DESCRIPTION, ACTIVE);
+
+		PropertyListing listing = Components.listing.properties(PROPERTIES) //
+				.displayAsFirst(ACTIVE) // <1>
+				.displayBefore(ID, DESCRIPTION) // <2>
+				.displayAfter(DESCRIPTION, ACTIVE) // <3>
+				.build();
+		// end::propertyListing3[]
+	}
+
+	public void propertyListing4() {
+		// tag::propertyListing4[]
+		final NumericProperty<Long> ID = NumericProperty.longType("id");
+		final StringProperty TEXT = StringProperty.create("txt");
+
+		final VirtualProperty<String> DESCRIPTION = VirtualProperty.create(String.class,
+				item -> "ID: " + item.getValue(ID)); // <1>
+
+		PropertyListing listing = Components.listing.properties(ID, TEXT) //
+				.build(ID, TEXT, DESCRIPTION); // <2>
+		// end::propertyListing4[]
+	}
+
+	public void propertyListing5() {
+		// tag::propertyListing5[]
+		final NumericProperty<Long> ID = NumericProperty.longType("id");
+		final VirtualProperty<String> DESCRIPTION = VirtualProperty.create(String.class,
+				item -> "ID: " + item.getValue(ID)); // <1>
+
+		final PropertySet<?> PROPERTIES = PropertySet.of(ID, DESCRIPTION);
+
+		PropertyListing listing = Components.listing.properties(PROPERTIES).build(); // <2>
+		// end::propertyListing5[]
+	}
+
+	public void propertyListing6() {
+		// tag::propertyListing6[]
+		PropertyListing listing = Components.listing.properties(PROPERTIES) //
+				.withVirtualProperty(String.class, item -> "ID: " + item.getValue(ID)).add() // <1>
+				.withVirtualProperty(item -> "ID: " + item.getValue(ID)).add() // <2>
+				.build();
+		// end::propertyListing6[]
+	}
+
+	public void propertyListing7() {
+		// tag::propertyListing7[]
+		PropertyListing listing = Components.listing.properties(PROPERTIES) //
+				.withVirtualProperty(String.class, item -> "ID: " + item.getValue(ID)) // <1>
+				.header("The header") // <2>
+				.headerHTML("The <strong>header</strong>") // <3>
+				.alignment(ColumnAlignment.CENTER) // <4>
+				.width(100) // <5>
+				.minWidth(50) // <6>
+				.maxWidth(200) // <7>
+				.expandRatio(1) // <8>
+				.resizable(true) // <9>
+				.hidable(true) // <10>
+				.hidden(false) // <11>
+				.hidingToggleCaption("Show/hide") // <12>
+				.style("my-style") // <13>
+				.style((property, item) -> "stylename") // <14>
+				.render(new HtmlRenderer()) // <15>
+				.sortUsing(ID) // <16>
+				.sortGenerator((property, asc) -> QuerySort.of(ID, asc)) // <17>
+				.add() // <18>
+				.build();
+		// end::propertyListing7[]
+	}
+
+	public void propertyListing8() {
+		// tag::propertyListing8[]
+		PropertyListing listing = Components.listing.properties(PROPERTIES) //
+				.withVirtualProperty(String.class, item -> "ID: " + item.getValue(ID)) // <1>
+				.displayAsFirst() // <2>
+				.displayAsLast() // <3>
+				.displayBefore(DESCRIPTION) // <4>
+				.displayAfter(ID) // <5>
+				.add().build();
+		// end::propertyListing8[]
+	}
+
+	public void propertyListing9() {
+		// tag::propertyListing9[]
+		PropertyListing listing = Components.listing.properties(PROPERTIES) //
+				.withVirtualProperty(String.class, "_myid", item -> "ID: " + item.getValue(ID)).displayAfter(ID).add() // <1>
+				.withVirtualProperty(String.class, item -> "ID2: " + item.getValue(ID)).displayBeforeColumnId("_myid") // <2>
+				.add().build();
+		// end::propertyListing9[]
 	}
 
 	public void identifiers() {
@@ -224,22 +328,25 @@ public class ExampleListing {
 		// tag::listing4[]
 		PropertyListing listing = Components.listing.properties(PROPERTIES) //
 				.header(ID, "Custom ID header") // <1>
-				.columnHidingAllowed(true) // <2>
-				.hidable(ID, false) // <3>
-				.columnReorderingAllowed(true) // <4>
-				.alignment(ID, ColumnAlignment.RIGHT) // <5>
-				.hidden(DESCRIPTION, true) // <6>
-				.resizable(ID, false) // <7>
-				.width(ID, 100) // <8>
-				.expandRatio(DESCRIPTION, 1) // <9>
-				.minWidth(DESCRIPTION, 200) // <10>
-				.maxWidth(DESCRIPTION, 300) // <11>
-				.style(ID, (property, item) -> item.getValue(DESCRIPTION) != null ? "empty" : "not-empty") // <12>
-				.withPropertyReorderListener((properties, userOriginated) -> { // <13>
+				.header(ID, "Default header", "id-header-message-code") // <2>
+				.headerHTML(ID, "HTML <strong>header</strong>") // <3>
+				.columnHidingAllowed(true) // <4>
+				.hidable(ID, false) // <5>
+				.columnReorderingAllowed(true) // <6>
+				.alignment(ID, ColumnAlignment.RIGHT) // <7>
+				.hidden(DESCRIPTION, true) // <8>
+				.resizable(ID, false) // <9>
+				.width(ID, 100) // <10>
+				.expandRatio(DESCRIPTION, 1) // <11>
+				.minWidth(DESCRIPTION, 200) // <12>
+				.maxWidth(DESCRIPTION, 300) // <13>
+				.minimumWidthFromContent(DESCRIPTION, true) // <14>
+				.style(ID, (property, item) -> item.getValue(DESCRIPTION) != null ? "empty" : "not-empty") // <15>
+				.withPropertyReorderListener((properties, userOriginated) -> { // <16>
 					// ...
-				}).withPropertyResizeListener((property, widthInPixel, userOriginated) -> { // <14>
+				}).withPropertyResizeListener((property, widthInPixel, userOriginated) -> { // <17>
 					// ...
-				}).withPropertyVisibilityListener((property, hidden, userOriginated) -> { // <15>
+				}).withPropertyVisibilityListener((property, hidden, userOriginated) -> { // <18>
 					// ...
 				}).build();
 		// end::listing4[]

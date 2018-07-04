@@ -19,6 +19,7 @@ import java.util.function.Consumer;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.navigator.DefaultViewNavigationStrategy;
+import com.holonplatform.vaadin.navigator.ViewClassProvider;
 import com.holonplatform.vaadin.navigator.ViewNavigator.NavigatorBuilder;
 import com.holonplatform.vaadin.navigator.ViewWindowConfigurator;
 import com.vaadin.navigator.Navigator;
@@ -65,6 +66,17 @@ public abstract class AbstractNavigatorBuilder<B extends NavigatorBuilder<B>, C 
 	@Override
 	public B addProvider(ViewProvider provider) {
 		navigator.addProvider(provider);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.navigator.ViewNavigator.NavigatorBuilder#viewClassProvider(com.vaadin.navigator.
+	 * ViewProvider, com.holonplatform.vaadin.navigator.ViewClassProvider)
+	 */
+	@Override
+	public B viewClassProvider(ViewProvider provider, ViewClassProvider viewClassProvider) {
+		navigator.setViewClassProvider(provider, viewClassProvider);
 		return builder();
 	}
 

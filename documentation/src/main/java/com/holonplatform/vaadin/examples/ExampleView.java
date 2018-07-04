@@ -21,9 +21,11 @@ import java.util.Optional;
 import com.holonplatform.vaadin.device.DeviceInfo;
 import com.holonplatform.vaadin.navigator.ViewNavigator;
 import com.holonplatform.vaadin.navigator.ViewNavigator.ViewNavigatorChangeEvent;
+import com.holonplatform.vaadin.navigator.ViewWindowConfigurator;
 import com.holonplatform.vaadin.navigator.annotations.OnLeave;
 import com.holonplatform.vaadin.navigator.annotations.OnShow;
 import com.holonplatform.vaadin.navigator.annotations.ViewParameter;
+import com.holonplatform.vaadin.navigator.annotations.ViewWindowConfiguration;
 import com.holonplatform.vaadin.navigator.annotations.VolatileView;
 import com.holonplatform.vaadin.navigator.annotations.WindowView;
 import com.vaadin.navigator.View;
@@ -123,12 +125,49 @@ public class ExampleView {
 	}
 	// end::volatile[]
 
-	// tag::window[]
-	@WindowView(windowWidth = "50%")
-	class WindowViewExample implements View {
+	public void navigateInWindow() {
+		// tag::window1[]
+		ViewNavigator.require().navigateInWindow("myView"); // <1>
+		// end::window1[]
+	}
+
+	// tag::window2[]
+	@WindowView // <1>
+	class MyWindowView1 implements View {
 
 	}
-	// end::window[]
+
+	void openTheView() {
+		ViewNavigator.require().navigateTo("myView"); // <2>
+	}
+	// end::window2[]
+
+	public void navigateInWindow3() {
+		// tag::window3[]
+		ViewNavigator.require().navigateInWindow("myView", configurator -> {
+			configurator.fullWidth().caption("Title").closable(false).resizable(false); // <1>
+		});
+		// end::window3[]
+	}
+
+	// tag::window4[]
+	@WindowView(windowWidth = "50%", windowHeigth = "50%", closable = false, resizable = true) // <1>
+	class MyWindowView2 implements View {
+
+	}
+	// end::window4[]
+
+	// tag::window5[]
+	@WindowView
+	class MyWindowView3 implements View {
+
+		@ViewWindowConfiguration // <1>
+		public void configure(ViewWindowConfigurator configurator) {
+			configurator.fullWidth().caption("Title").closable(false).resizable(false);
+		}
+
+	}
+	// end::window5[]
 
 	private static final Component buildDefaultViewContent() {
 		return null;

@@ -240,16 +240,9 @@ public class DefaultPropertyViewGroup implements PropertyViewGroup, PropertyValu
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.PropertyViewGroup#getValue()
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public PropertyBox getValue() {
-		final PropertyBox propertyBox = PropertyBox.builder(properties).invalidAllowed(true).build();
-		if (value != null) {
-			properties.forEach(p -> {
-				value.getValueIfPresent(p).ifPresent(v -> propertyBox.setValue(p, v));
-			});
-		}
-		return propertyBox;
+		return value;
 	}
 
 	/*
@@ -338,7 +331,7 @@ public class DefaultPropertyViewGroup implements PropertyViewGroup, PropertyValu
 			}
 			return null;
 		}
-		if (propertyBox.containsValue(property)) {
+		if (propertyBox.contains(property)) {
 			return propertyBox.getValue(property);
 		}
 		return null;

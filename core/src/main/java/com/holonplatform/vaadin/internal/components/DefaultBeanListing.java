@@ -27,12 +27,10 @@ import java.util.stream.Stream;
 
 import com.holonplatform.core.beans.BeanPropertySet;
 import com.holonplatform.core.i18n.LocalizationContext;
-import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.PathProperty;
 import com.holonplatform.vaadin.components.BeanListing;
 import com.holonplatform.vaadin.components.Field;
-import com.holonplatform.vaadin.internal.VaadinLogger;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.PropertyDefinition;
 import com.vaadin.data.PropertySet;
@@ -60,8 +58,6 @@ public class DefaultBeanListing<T> extends DefaultItemListing<T, String> impleme
 
 	private static final long serialVersionUID = 2163943323958351369L;
 
-	private static final Logger LOGGER = VaadinLogger.create();
-
 	/**
 	 * Grid property set
 	 */
@@ -74,6 +70,7 @@ public class DefaultBeanListing<T> extends DefaultItemListing<T, String> impleme
 	public DefaultBeanListing(Class<T> beanType) {
 		super();
 		propertySet = new BeanGridPropertySet<>(beanType);
+		setDefaultVisibleProperties(() -> getDefaultColumnIds());
 		initGrid(Grid.withPropertySet(propertySet));
 	}
 
@@ -93,7 +90,7 @@ public class DefaultBeanListing<T> extends DefaultItemListing<T, String> impleme
 	 * virtual column.
 	 * @return the default column ids
 	 */
-	public List<String> getDefaultColumnIds() {
+	protected List<String> getDefaultColumnIds() {
 		return propertySet.getProperties().map(p -> p.getName()).collect(Collectors.toList());
 	}
 

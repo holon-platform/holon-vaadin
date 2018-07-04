@@ -66,14 +66,12 @@ public interface PropertySelectInputBuilder<T, C extends Input<T>, S, B extends 
 
 	/**
 	 * Use given {@link Datastore} with given <code>dataTarget</code> as items data source.
-	 * @param <P> Property type
 	 * @param datastore Datastore to use (not null)
 	 * @param dataTarget Data target to use to load items (not null)
 	 * @param properties Item property set (not null)
 	 * @return this
 	 */
-	@SuppressWarnings("unchecked")
-	default <P extends Property<?>> B dataSource(Datastore datastore, DataTarget<?> dataTarget, P... properties) {
+	default B dataSource(Datastore datastore, DataTarget<?> dataTarget, Property<?>... properties) {
 		ObjectUtils.argumentNotNull(properties, "Properties must be not null");
 		return dataSource(datastore, dataTarget, PropertySet.of(properties));
 	}

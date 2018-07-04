@@ -259,7 +259,7 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 	B hidable(P property, boolean hidable);
 
 	/**
-	 * Sets whether this column which corresponds to given property is hidden.
+	 * Sets whether the column which corresponds to given property is hidden.
 	 * @param property Item property to set hidden or not (not null)
 	 * @param hidden <code>true</code> if column is hidden
 	 * @return this
@@ -283,6 +283,62 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 	default B style(P property, String styleName) {
 		return style(property, (p, item) -> styleName);
 	}
+
+	/**
+	 * Configure the column represented by given <code>property</code> id to be displayed before any other listing
+	 * column by default.
+	 * <p>
+	 * The default property/column display behaviour is applyed when the {@link #build()} method is used to construct
+	 * the item listing, whilst the default display behaviour is ignored when either {@link #build(Iterable)} or
+	 * {@link #build(Object...)} method is used, because the property/column ordering is explicitly provided.
+	 * </p>
+	 * @param property Property which represents the column to display as first (not null)
+	 * @return this
+	 */
+	B displayAsFirst(P property);
+
+	/**
+	 * Configure the column represented by given <code>property</code> id to be displayed after any other listing column
+	 * by default.
+	 * <p>
+	 * The default property/column display behaviour is applyed when the {@link #build()} method is used to construct
+	 * the item listing, whilst the default display behaviour is ignored when either {@link #build(Iterable)} or
+	 * {@link #build(Object...)} method is used, because the property/column ordering is explicitly provided.
+	 * </p>
+	 * @param property Property which represents the column to display as last (not null)
+	 * @return this
+	 */
+	B displayAsLast(P property);
+
+	/**
+	 * Configure the column represented by given <code>property</code> id to be displayed before the column which
+	 * corresponds to the id specified by the given <code>beforeProperty</code>.
+	 * <p>
+	 * The default property/column display behaviour is applyed when the {@link #build()} method is used to construct
+	 * the item listing, whilst the default display behaviour is ignored when either {@link #build(Iterable)} or
+	 * {@link #build(Object...)} method is used, because the property/column ordering is explicitly provided.
+	 * </p>
+	 * @param property Property which represents the column to display before the other property (not null)
+	 * @param beforeProperty Property which represents the column before which the first property has to be displayed
+	 *        (not null)
+	 * @return this
+	 */
+	B displayBefore(P property, P beforeProperty);
+
+	/**
+	 * Configure the column represented by given <code>property</code> id to be displayed after the column which
+	 * corresponds to the id specified by the given <code>beforeProperty</code>.
+	 * <p>
+	 * The default property/column display behaviour is applyed when the {@link #build()} method is used to construct
+	 * the item listing, whilst the default display behaviour is ignored when either {@link #build(Iterable)} or
+	 * {@link #build(Object...)} method is used, because the property/column ordering is explicitly provided.
+	 * </p>
+	 * @param property Property which represents the column to display after the other property (not null)
+	 * @param afterProperty Property which represents the column after which the first property has to be displayed (not
+	 *        null)
+	 * @return this
+	 */
+	B displayAfter(P property, P afterProperty);
 
 	/**
 	 * Set the listing selection mode.
@@ -514,6 +570,51 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		default B hidingToggleCaption(P property, String hidingToggleCaption, String messageCode) {
 			return hidingToggleCaption(property,
 					Localizable.builder().message(hidingToggleCaption).messageCode(messageCode).build());
+		}
+
+		/**
+		 * Set the column header display mode for the column which corresponds to given property.
+		 * @param property Property for which to set the header mode (not null)
+		 * @param headerMode Column header mode
+		 * @return this
+		 */
+		B headerMode(P property, ColumnHeaderMode headerMode);
+
+		/**
+		 * Set the column header for given <code>property</code>, displaying it as HTML. The property/column
+		 * {@link ColumnHeaderMode} will be configured as {@link ColumnHeaderMode#HTML}.
+		 * <p>
+		 * By default, if the property is {@link Localizable}, the {@link Localizable#getMessage()} (and
+		 * {@link Localizable#getMessageCode()} if a {@link LocalizationContext} is available) is used as column header.
+		 * </p>
+		 * @param property Item property to set the header for (not null)
+		 * @param header Localizable column header (not null)
+		 * @return this
+		 */
+		B headerHTML(P property, Localizable header);
+
+		/**
+		 * Set the column header for given <code>property</code>, displaying it as HTML. The property/column
+		 * {@link ColumnHeaderMode} will be configured as {@link ColumnHeaderMode#HTML}.
+		 * @param property Item property to set the header for (not null)
+		 * @param header Column header
+		 * @return this
+		 */
+		default B headerHTML(P property, String header) {
+			return headerHTML(property, Localizable.builder().message(header).build());
+		}
+
+		/**
+		 * Set the column header for given <code>property</code>, displaying it as HTML. The property/column
+		 * {@link ColumnHeaderMode} will be configured as {@link ColumnHeaderMode#HTML}.
+		 * @param property Item property to set the header for (not null)
+		 * @param defaultHeader Default column header
+		 * @param headerMessageCode Column header translation message code
+		 * @return this
+		 */
+		default B headerHTML(P property, String defaultHeader, String headerMessageCode) {
+			return headerHTML(property,
+					Localizable.builder().message(defaultHeader).messageCode(headerMessageCode).build());
 		}
 
 		/**
@@ -1021,6 +1122,23 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		 * @param footer Footer row reference
 		 */
 		void updateFooter(ItemListing<T, P> listing, GridSection<ListingFooterRow<P>> footer);
+
+	}
+
+	/**
+	 * Grid column header mode.
+	 */
+	public enum ColumnHeaderMode {
+
+		/**
+		 * Display column header as simple text
+		 */
+		TEXT,
+
+		/**
+		 * Display column header as HTML
+		 */
+		HTML;
 
 	}
 

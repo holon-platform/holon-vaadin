@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.vaadin.navigator.ViewClassProvider;
 import com.holonplatform.vaadin.navigator.ViewNavigator;
 import com.holonplatform.vaadin.navigator.ViewWindowConfigurator;
 import com.vaadin.navigator.NavigationStateManager;
@@ -185,6 +186,16 @@ public class DefaultViewNavigator extends Navigator implements ViewNavigatorAdap
 		if (removed != null) {
 			super.removeProvider(removed);
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.navigator.internal.ViewNavigatorAdapter#setViewClassProvider(com.vaadin.navigator.
+	 * ViewProvider, com.holonplatform.vaadin.navigator.ViewClassProvider)
+	 */
+	@Override
+	public void setViewClassProvider(ViewProvider provider, ViewClassProvider viewClassProvider) {
+		actuator.setViewClassProvider(provider, viewClassProvider);
 	}
 
 	/*

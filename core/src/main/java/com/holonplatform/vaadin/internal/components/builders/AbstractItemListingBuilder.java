@@ -15,7 +15,6 @@
  */
 package com.holonplatform.vaadin.internal.components.builders;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -45,6 +44,7 @@ import com.holonplatform.vaadin.data.ItemDataSource.CommitHandler;
 import com.holonplatform.vaadin.data.ItemDataSource.PropertySortGenerator;
 import com.holonplatform.vaadin.data.ItemIdentifierProvider;
 import com.holonplatform.vaadin.internal.components.DefaultItemListing;
+import com.holonplatform.vaadin.internal.components.PropertyColumn.DisplayPosition;
 import com.vaadin.ui.Component;
 
 /**
@@ -157,10 +157,7 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 	 */
 	@Override
 	public B sortUsing(P property, final Path<?> sortPath) {
-		ObjectUtils.argumentNotNull(property, "Property must be not null");
-		dataSourceBuilder.sortable(property, true);
-		dataSourceBuilder.withPropertySortGenerator(property, (p, asc) -> QuerySort.of(sortPath, asc));
-		return builder();
+		return sortGenerator(property, (p, asc) -> QuerySort.of(sortPath, asc));
 	}
 
 	/*
@@ -172,8 +169,7 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 	public B sortGenerator(P property, PropertySortGenerator<P> generator) {
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		ObjectUtils.argumentNotNull(generator, "Sort generator must be not null");
-		dataSourceBuilder.sortable(property, true);
-		dataSourceBuilder.withPropertySortGenerator(property, generator);
+		getInstance().getPropertyColumn(property).setPropertySortGenerator(generator);
 		return builder();
 	}
 
@@ -386,6 +382,56 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder#displayAsFirst(java.lang.Object)
+	 */
+	@Override
+	public B displayAsFirst(P property) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		getInstance().getPropertyColumn(property).setDisplayPosition(DisplayPosition.HEAD);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder#displayAsLast(java.lang.Object)
+	 */
+	@Override
+	public B displayAsLast(P property) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		getInstance().getPropertyColumn(property).setDisplayPosition(DisplayPosition.TAIL);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder#displayBefore(java.lang.Object,
+	 * java.lang.Object)
+	 */
+	@Override
+	public B displayBefore(P property, P beforeProperty) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		ObjectUtils.argumentNotNull(beforeProperty, "Before property must be not null");
+		getInstance().getPropertyColumn(property).setDisplayPosition(DisplayPosition.RELATIVE_BEFORE);
+		getInstance().getPropertyColumn(property).setDisplayRelativeTo(beforeProperty);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.builders.ItemListingBuilder#displayAfter(java.lang.Object,
+	 * java.lang.Object)
+	 */
+	@Override
+	public B displayAfter(P property, P afterProperty) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		ObjectUtils.argumentNotNull(afterProperty, "After property must be not null");
+		getInstance().getPropertyColumn(property).setDisplayPosition(DisplayPosition.RELATIVE_AFTER);
+		getInstance().getPropertyColumn(property).setDisplayRelativeTo(afterProperty);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see
 	 * com.holonplatform.vaadin.components.builders.ItemListingBuilder#selectionMode(com.holonplatform.vaadin.components
 	 * .Selectable.SelectionMode)
@@ -551,17 +597,23 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 	protected C buildAndConfigure(Iterable<? extends P> visibleColumns) {
 		// build
 		final I listing = getInstance();
+
+		// localize
 		localize(listing);
+
+		// setup datasource properties
+		listing.getColumnDefinitions().entrySet().forEach(e -> {
+			e.getValue().getPropertySortGenerator().ifPresent(sg -> {
+				dataSourceBuilder.sortable(e.getKey(), true);
+				dataSourceBuilder.withPropertySortGenerator(e.getKey(), sg);
+			});
+		});
 
 		// data source
 		setupDataSource(listing);
 
-		// columns
-		Iterable<? extends P> columns = configureColumns(listing,
-				(visibleColumns != null) ? ConversionUtils.iterableAsList(visibleColumns) : Collections.emptyList());
-
 		// visible columns
-		listing.setPropertyColumns(columns);
+		listing.setPropertyColumns(ConversionUtils.iterableAsList(visibleColumns));
 
 		// additional configuration
 		configure(listing);
@@ -589,14 +641,6 @@ public abstract class AbstractItemListingBuilder<T, P, C extends ItemListing<T, 
 		final ItemDataSource<T, P> dataSource = dataSourceBuilder.build();
 		listing.setDataSource(dataSource);
 	}
-
-	/**
-	 * Configure the listing columns before setting the visible columns list.
-	 * @param instance Listing instance
-	 * @param visibleColumns Visible columns
-	 * @return the actual listing visible columns
-	 */
-	protected abstract Iterable<? extends P> configureColumns(I instance, List<? extends P> visibleColumns);
 
 	/**
 	 * Additional listing configuration

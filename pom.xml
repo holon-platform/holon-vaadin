@@ -12,6 +12,7 @@
 	<groupId>com.holon-platform.vaadin</groupId>
 	<artifactId>holon-vaadin-root</artifactId>
 	<version>5.2.0-SNAPSHOT</version>
+
 	<packaging>pom</packaging>
 
 	<name>${project.groupId}:${project.artifactId}</name>
@@ -61,15 +62,16 @@
 
 		<!-- Holon core -->
 		<holon.core.version>5.2.0-SNAPSHOT</holon.core.version>
-		
+
 		<!-- Vaadin -->
-		<vaadin.version>8.4.2</vaadin.version>
-		
+		<vaadin.version>8.4.4</vaadin.version>
+
 		<!-- Servlet API -->
 		<servlet.version>3.1.0</servlet.version>
 
 		<!-- Test datastores -->
 		<holon.jdbc.version>5.2.0-SNAPSHOT</holon.jdbc.version>
+
 	</properties>
 
 	<dependencyManagement>

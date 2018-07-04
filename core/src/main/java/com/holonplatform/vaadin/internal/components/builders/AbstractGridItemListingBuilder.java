@@ -17,6 +17,8 @@ package com.holonplatform.vaadin.internal.components.builders;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -28,6 +30,8 @@ import com.holonplatform.vaadin.components.ItemListing;
 import com.holonplatform.vaadin.components.ItemListing.ItemDetailsGenerator;
 import com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder;
 import com.holonplatform.vaadin.internal.components.DefaultItemListing;
+import com.holonplatform.vaadin.internal.components.PropertyColumn;
+import com.holonplatform.vaadin.internal.components.PropertyColumnManager;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
@@ -52,7 +56,8 @@ import com.vaadin.ui.components.grid.MultiSelectionModel.SelectAllCheckBoxVisibi
  * @since 5.0.0
  */
 public abstract class AbstractGridItemListingBuilder<T, P, C extends ItemListing<T, P>, I extends DefaultItemListing<T, P>, B extends BaseGridItemListingBuilder<T, P, C, B>>
-		extends AbstractItemListingBuilder<T, P, C, I, B, Grid<T>> implements BaseGridItemListingBuilder<T, P, C, B> {
+		extends AbstractItemListingBuilder<T, P, C, I, B, Grid<T>>
+		implements BaseGridItemListingBuilder<T, P, C, B>, PropertyColumnManager<T, P> {
 
 	private int frozenColumns = 0;
 
@@ -81,6 +86,36 @@ public abstract class AbstractGridItemListingBuilder<T, P, C extends ItemListing
 		if (editorCancelCaption != null) {
 			getInstance().setEditorCancelCaption(LocalizationContext.translate(editorCancelCaption, true));
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.internal.components.builders.PropertyColumnManager#getColumnDefinitions()
+	 */
+	@Override
+	public Map<P, PropertyColumn<T, P>> getColumnDefinitions() {
+		return getInstance().getColumnDefinitions();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.internal.components.builders.PropertyColumnManager#hasColumnDefinition(java.lang.Object)
+	 */
+	@Override
+	public Optional<PropertyColumn<T, P>> hasColumnDefinition(P property) {
+		return getInstance().hasColumnDefinition(property);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.internal.components.builders.PropertyColumnManager#addColumnDefinition(java.lang.Object,
+	 * com.holonplatform.vaadin.internal.components.PropertyColumn)
+	 */
+	@Override
+	public void addColumnDefinition(P property, PropertyColumn<T, P> propertyColumn) {
+		getInstance().addColumnDefinition(property, propertyColumn);
 	}
 
 	/*
@@ -219,6 +254,32 @@ public abstract class AbstractGridItemListingBuilder<T, P, C extends ItemListing
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		getInstance().getPropertyColumn(property).setHidingToggleCaption(hidingToggleCaption);
 		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder#headerMode(java.lang.
+	 * Object, com.holonplatform.vaadin.components.builders.ItemListingBuilder.ColumnHeaderMode)
+	 */
+	@Override
+	public B headerMode(P property, ColumnHeaderMode headerMode) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		getInstance().getPropertyColumn(property).setColumnHeaderMode(headerMode);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder#headerHTML(java.lang.
+	 * Object, com.holonplatform.core.i18n.Localizable)
+	 */
+	@Override
+	public B headerHTML(P property, Localizable header) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		getInstance().getPropertyColumn(property).setColumnHeaderMode(ColumnHeaderMode.HTML);
+		return header(property, header);
 	}
 
 	/*
