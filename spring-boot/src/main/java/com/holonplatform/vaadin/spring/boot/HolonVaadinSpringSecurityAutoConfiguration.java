@@ -25,8 +25,9 @@ import com.holonplatform.vaadin.internal.VaadinLogger;
 import com.holonplatform.vaadin.spring.config.EnableSecuredView;
 
 /**
- * @author BODSI08
+ * Spring security support for Vaadin views auto-configuration class.
  *
+ * @since 5.1.0
  */
 @Configuration
 @ConditionalOnWebApplication
