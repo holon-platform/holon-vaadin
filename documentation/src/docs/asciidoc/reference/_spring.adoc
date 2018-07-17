@@ -69,7 +69,7 @@ In addition to the `ViewNavigator` authentication support (see <<ViewAuthenticat
 
 The authorization support can be enabled using the link:{apidir}/com/holonplatform/vaadin/spring/config/EnableViewAuthorization.html[EnableViewAuthorization^] annotation and, just like the authentication support, relies on the current `AuthContext` to perform authorization control, so it must be available as a _context_ resource.
 
-TIP: By using the `@EnableBeanContext` configuration annotation, Spring beans can be automatically configured as _context_ resources. See the link:holon-core.html#SpringContextScope[SpringContextScope] documentation for further information.
+TIP: By using the `@EnableBeanContext` configuration annotation, Spring beans can be automatically configured as _context_ resources. See the link:holon-core.html#SpringContextScope[Spring context scope^] documentation for further information.
 
 NOTE: The default Vaadin Spring `ViewAccessControl` and `ViewInstanceAccessControl` view access control methods are fully supported too, and can be used along with the security annotations.
 

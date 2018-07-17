@@ -310,7 +310,7 @@ include::{examplesdir}/com/holonplatform/vaadin/examples/ExampleNavigator.java[t
 
 The `ViewNavigator` architecture provides support for `View` authentication, relying on the default Holon platform `AuthContext` API.
 
-TIP: See the link:holon-core.html#Realm[Realm] and link:holon-core.html#AuthContext[AuthContext] documentation for information about the Holon platform authentication and authorization architecture.
+TIP: See the link:holon-core.html#Realm[Realm^] and link:holon-core.html#AuthContext[AuthContext^] documentation for information about the Holon platform authentication and authorization architecture.
 
 In order for the authentication to work, an `AuthContext` instance must be available as a _context_ resource, and it will be used to perform user authentication and resource access control, relying on the `Realm` bound to the auth context. 
 
