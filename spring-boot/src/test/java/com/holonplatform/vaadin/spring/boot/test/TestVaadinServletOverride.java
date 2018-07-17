@@ -32,23 +32,23 @@ import com.holonplatform.vaadin.spring.boot.test.servlet.TestVaadinServlet;
 import com.vaadin.server.VaadinServlet;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class TestVaadinServletOverride {
 
 	@Configuration
-	@ComponentScan(basePackageClasses=TestVaadinServlet.class)
+	@ComponentScan(basePackageClasses = TestVaadinServlet.class)
 	@EnableAutoConfiguration
 	static class Config {
 
 	}
-	
+
 	@Autowired
 	private VaadinServlet servlet;
-	
+
 	@Test
 	public void testServlet() {
 		assertNotNull(servlet);
 		assertEquals(TestVaadinServlet.class, servlet.getClass());
 	}
-	
+
 }

@@ -144,9 +144,9 @@ public class ExampleSelectable {
 		final TestData ONE = new TestData(1);
 		final TestData TWO = new TestData(2);
 
-		SingleSelect<TestData> singleSelect = Components.input.singleSelect(TestData.class).dataSource(
-				ItemDataProvider.create(q -> 2, (q, o, l) -> Stream.of(ONE, TWO)),
-				filterText -> QueryFilter.startsWith(ConstantConverterExpression.create("description"), filterText, true))
+		SingleSelect<TestData> singleSelect = Components.input.singleSelect(TestData.class)
+				.dataSource(ItemDataProvider.create(q -> 2, (q, o, l) -> Stream.of(ONE, TWO)), filterText -> QueryFilter
+						.startsWith(ConstantConverterExpression.create("description"), filterText, true))
 				.build();
 		// end::selectable8[]
 	}

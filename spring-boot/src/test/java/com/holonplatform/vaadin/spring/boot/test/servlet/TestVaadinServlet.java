@@ -23,7 +23,7 @@ import com.vaadin.spring.server.SpringVaadinServlet;
 
 @SuppressWarnings("serial")
 @Component("vaadinServlet")
-@WebServlet(urlPatterns="/*")
+@WebServlet(urlPatterns = "/*")
 public class TestVaadinServlet extends SpringVaadinServlet {
 
 }

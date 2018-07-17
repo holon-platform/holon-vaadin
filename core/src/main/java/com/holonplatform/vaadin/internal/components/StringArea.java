@@ -319,7 +319,7 @@ public class StringArea extends TextArea implements Input<String>, Field<String>
 			getInstance().setBlankValuesAsNull(enable);
 			return builder();
 		}
-		
+
 		/*
 		 * (non-Javadoc)
 		 * @see

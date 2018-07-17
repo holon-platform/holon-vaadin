@@ -32,7 +32,7 @@ public interface ValueChangeModeConfigurator<B extends ValueChangeModeConfigurat
 	 * @return this
 	 */
 	B valueChangeMode(ValueChangeMode valueChangeMode);
-	
+
 	/**
 	 * Sets how often value change events are triggered when the {@link ValueChangeMode} is set to either
 	 * {@link ValueChangeMode#LAZY} or {@link ValueChangeMode#TIMEOUT}.

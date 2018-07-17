@@ -33,23 +33,23 @@ import com.holonplatform.vaadin.spring.boot.test.listeners.TestUI;
 import com.vaadin.server.VaadinServlet;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class TestVaadinSessionListeners {
 
 	@Configuration
-	@ComponentScan(basePackageClasses=TestUI.class)
+	@ComponentScan(basePackageClasses = TestUI.class)
 	@EnableAutoConfiguration
 	static class Config {
 
 	}
-	
+
 	@Autowired
 	private VaadinServlet servlet;
-	
+
 	@Test
 	public void testServlet() {
 		assertNotNull(servlet);
 		assertEquals(HolonVaadinServlet.class, servlet.getClass());
 	}
-	
+
 }

@@ -23,7 +23,8 @@ import com.vaadin.ui.UI;
 @SpringUI
 public class TestUI extends UI {
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see com.vaadin.ui.UI#init(com.vaadin.server.VaadinRequest)
 	 */
 	@Override

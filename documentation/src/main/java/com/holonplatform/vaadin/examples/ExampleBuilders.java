@@ -46,13 +46,14 @@ public class ExampleBuilders {
 			dragSource.addDragStartListener(e -> Notification.show("Drag event started"));
 		}).build();
 
-		VerticalLayout droppableLayout = Components.vl().fullWidth().caption("Drop things inside me").dropTarget((dropTarget, component) -> { // <3>
-			dropTarget.setDropEffect(DropEffect.MOVE); // <4>
-			dropTarget.addDropListener(dropEvent -> { // <5>
-				dropEvent.getDragSourceComponent().ifPresent(dragged -> component.addComponent(dragged));
-				Notification.show("DropEvent with data transfer text: " + dropEvent.getDataTransferText());
-			});
-		}).build();
+		VerticalLayout droppableLayout = Components.vl().fullWidth().caption("Drop things inside me")
+				.dropTarget((dropTarget, component) -> { // <3>
+					dropTarget.setDropEffect(DropEffect.MOVE); // <4>
+					dropTarget.addDropListener(dropEvent -> { // <5>
+						dropEvent.getDragSourceComponent().ifPresent(dragged -> component.addComponent(dragged));
+						Notification.show("DropEvent with data transfer text: " + dropEvent.getDataTransferText());
+					});
+				}).build();
 		// end::dnd[]
 	}
 

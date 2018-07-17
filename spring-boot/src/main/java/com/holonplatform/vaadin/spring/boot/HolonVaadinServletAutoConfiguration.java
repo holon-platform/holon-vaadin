@@ -36,8 +36,8 @@ import com.vaadin.spring.boot.internal.VaadinServletConfiguration;
 import com.vaadin.spring.server.SpringVaadinServlet;
 
 /**
- * Spring boot auto configuration class to use the {@link HolonVaadinServlet} as Vaadin servlet, allowing 
- * automatic {@link SessionInitListener} and {@link SessionDestroyListener} beans registration.
+ * Spring boot auto configuration class to use the {@link HolonVaadinServlet} as Vaadin servlet, allowing automatic
+ * {@link SessionInitListener} and {@link SessionDestroyListener} beans registration.
  *
  * @since 5.0.4
  */

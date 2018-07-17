@@ -32,7 +32,7 @@ public interface PropertyComponentSource {
 	 * @return Components stream
 	 */
 	Stream<Component> getComponents();
-	
+
 	/**
 	 * Return a {@link Stream} of the available {@link Property} and {@link Component}s bindings.
 	 * @return Property-Component {@link PropertyBinding} stream

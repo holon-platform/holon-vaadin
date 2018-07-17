@@ -31,7 +31,7 @@ import com.holonplatform.vaadin.components.Selectable.SelectionEvent;
 public class DefaultSelectionEvent<T> implements SelectionEvent<T> {
 
 	private static final long serialVersionUID = 8499428333309600901L;
-	
+
 	private final Set<T> selectedItems;
 	private final boolean userOriginated;
 

@@ -57,9 +57,9 @@ public class DefaultDialog extends AbstractDialog {
 	 */
 	@Override
 	protected void buildActions(HorizontalLayout actionsContainer) {
-		Button btn = Components.button().styleName(ValoTheme.BUTTON_PRIMARY)
-				.fullWidth().caption(Localizable.builder().message(DEFAULT_BUTTON_MESSAGE)
-						.messageCode(DEFAULT_BUTTON_MESSAGE_CODE).build())
+		Button btn = Components
+				.button().styleName(ValoTheme.BUTTON_PRIMARY).fullWidth().caption(Localizable.builder()
+						.message(DEFAULT_BUTTON_MESSAGE).messageCode(DEFAULT_BUTTON_MESSAGE_CODE).build())
 				.onClick(e -> onDialogButtonClick(e.getButton())).build();
 		// configurator
 		getOkButtonConfigurator().ifPresent(c -> c.configureDialogButton(Components.configure(btn)));

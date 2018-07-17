@@ -180,19 +180,19 @@ public class TestInput {
 		assertEquals(Long.valueOf(1), li.getValue());
 
 	}
-	
+
 	@Test
 	public void testFieldConverter() {
 		TextField tf = new TextField();
-		
+
 		Input<Integer> i = Input.from(tf, new StringToIntegerConverter("error"));
-		
+
 		i.setValue(1);
 		assertEquals("1", tf.getValue());
-		
+
 		tf.setValue("2");
 		assertEquals(Integer.valueOf(2), i.getValue());
-		
+
 	}
 
 }

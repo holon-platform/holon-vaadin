@@ -30,7 +30,7 @@ import com.vaadin.server.VaadinServlet;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class TestVaadinAutoConfig {
 
 	@Configuration
@@ -38,14 +38,14 @@ public class TestVaadinAutoConfig {
 	static class Config {
 
 	}
-	
+
 	@Autowired
 	private VaadinServlet servlet;
-	
+
 	@Test
 	public void testServlet() {
 		assertNotNull(servlet);
 		assertEquals(HolonVaadinServlet.class, servlet.getClass());
 	}
-	
+
 }

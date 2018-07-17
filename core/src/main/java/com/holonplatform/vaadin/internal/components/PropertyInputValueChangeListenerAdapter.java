@@ -31,7 +31,7 @@ import com.holonplatform.vaadin.components.ValueHolder.ValueChangeListener;
 public class PropertyInputValueChangeListenerAdapter<T> implements ValueChangeListener<T> {
 
 	private static final long serialVersionUID = 1977003312358192506L;
-	
+
 	private final PropertyInputBinder binder;
 	private final PropertyInputValueChangeListener<T> propertyInputValueChangeListener;
 

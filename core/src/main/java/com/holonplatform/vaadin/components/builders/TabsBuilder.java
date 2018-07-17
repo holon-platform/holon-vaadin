@@ -61,7 +61,7 @@ public interface TabsBuilder<C extends TabSheet> extends ComponentBuilder<C, Tab
 	default TabsBuilder<C> withTab(Component component, String caption) {
 		return withTab(component).caption(caption).add();
 	}
-	
+
 	/**
 	 * Convenience method to directly add a tab.
 	 * @param component the component to be added onto tab (not null)
@@ -72,7 +72,7 @@ public interface TabsBuilder<C extends TabSheet> extends ComponentBuilder<C, Tab
 	default TabsBuilder<C> withTab(Component component, Localizable caption, Resource icon) {
 		return withTab(component).caption(caption).icon(icon).add();
 	}
-	
+
 	/**
 	 * Convenience method to directly add a tab.
 	 * @param component the component to be added onto tab (not null)
