@@ -24,7 +24,9 @@ import static org.mockito.Mockito.when;
 import java.util.Locale;
 import java.util.Optional;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import com.holonplatform.vaadin.device.DeviceInfo;
 import com.holonplatform.vaadin.internal.test.AbstractVaadinTest;
@@ -35,6 +37,12 @@ import com.vaadin.server.WrappedSession;
 import com.vaadin.util.CurrentInstance;
 
 public class TestDeviceInfo extends AbstractVaadinTest {
+	
+	@BeforeClass
+	public static void setupLogger() {
+		SLF4JBridgeHandler.removeHandlersForRootLogger();
+		SLF4JBridgeHandler.install();
+	}
 
 	@Test
 	public void testFromHeaders() {
