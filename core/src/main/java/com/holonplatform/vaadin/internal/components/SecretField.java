@@ -105,6 +105,15 @@ public class SecretField extends PasswordField implements Input<String>, Field<S
 	public void setBlankValuesAsNull(boolean blankValuesAsNull) {
 		this.blankValuesAsNull = blankValuesAsNull;
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.vaadin.ui.AbstractTextField#setValue(java.lang.String)
+	 */
+	@Override
+	public void setValue(String value) {
+		super.setValue((value == null) ? "" : value);
+	}
 
 	/*
 	 * (non-Javadoc)

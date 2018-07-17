@@ -1,15 +1,18 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>com.holon-platform</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.0.11</version>
+		<version>1.0.12</version>
 	</parent>
 
 	<groupId>com.holon-platform.vaadin</groupId>
 	<artifactId>holon-vaadin-root</artifactId>
-	<version>5.1.5-SNAPSHOT</version>
+	<version>5.2.0-SNAPSHOT</version>
+
 	<packaging>pom</packaging>
 
 	<name>${project.groupId}:${project.artifactId}</name>
@@ -58,16 +61,16 @@
 		<bintray.package>holon-vaadin</bintray.package>
 
 		<!-- Holon core -->
-		<holon.core.version>5.1.2</holon.core.version>
+		<holon.core.version>5.2.0-SNAPSHOT</holon.core.version>
 
 		<!-- Vaadin -->
-		<vaadin.version>8.4.4</vaadin.version>
+		<vaadin.version>8.4.5</vaadin.version>
 
 		<!-- Servlet API -->
 		<servlet.version>3.1.0</servlet.version>
 
 		<!-- Test datastores -->
-		<holon.jdbc.version>5.1.3</holon.jdbc.version>
+		<holon.jdbc.version>5.2.0-SNAPSHOT</holon.jdbc.version>
 
 	</properties>
 
