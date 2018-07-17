@@ -410,6 +410,10 @@ public class DefaultSpringViewNavigator extends SpringNavigator implements ViewN
 									+ beanNames.length + "), no default view will be configured in Navigator.");
 						} else {
 							Class<?> type = applicationContext.getType(beanNames[0]);
+							if (type == null) {
+								throw new ViewConfigurationException(
+										"Failed to detect View type - bean name: " + beanNames[0]);
+							}
 							if (!View.class.isAssignableFrom(type)) {
 								throw new ViewConfigurationException(
 										"A bean annotated with @DefaultView was found but does "
@@ -471,10 +475,14 @@ public class DefaultSpringViewNavigator extends SpringNavigator implements ViewN
 									+ "), no access denied view will be configured in Navigator.");
 						} else {
 							Class<?> type = applicationContext.getType(beanNames[0]);
-							if (!View.class.isAssignableFrom(type)) {
+							if (type == null) {
 								throw new ViewConfigurationException(
-										"A bean annotated with @AccessDeniedView was found but does "
-												+ "not implement navigator View class: " + type.getName());
+										"Failed to detect View type - bean name: " + beanNames[0]);
+							}
+							if (!View.class.isAssignableFrom(type)) {
+								throw new ViewConfigurationException("A bean named [" + beanNames[0]
+										+ "] annotated with @AccessDeniedView was found but does "
+										+ "not implement navigator View class: " + type.getName());
 							}
 							// set error view
 							viewProvider.setAccessDeniedViewClass((Class<? extends View>) type);

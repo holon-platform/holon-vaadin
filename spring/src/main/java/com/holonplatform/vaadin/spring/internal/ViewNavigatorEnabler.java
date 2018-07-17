@@ -61,7 +61,7 @@ public class ViewNavigatorEnabler implements ImportBeanDefinitionRegistrar {
 				.getAnnotationAttributes(EnableViewNavigator.class.getName());
 
 		// Context data injection
-		if (attributes.containsKey("enableViewContextInjection")
+		if (attributes != null && attributes.containsKey("enableViewContextInjection")
 				&& ((boolean) attributes.get("enableViewContextInjection"))) {
 			GenericBeanDefinition definition = new GenericBeanDefinition();
 			definition.setBeanClass(ViewContextInjectionPostProcessor.class);
@@ -77,26 +77,26 @@ public class ViewNavigatorEnabler implements ImportBeanDefinitionRegistrar {
 		Class<? extends View> errorViewClass = null;
 		Class<? extends View> accessDeniedViewClass = null;
 
-		if (attributes.containsKey("maxNavigationHistorySize")) {
+		if (attributes != null && attributes.containsKey("maxNavigationHistorySize")) {
 			maxNavigationHistorySize = (int) attributes.get("maxNavigationHistorySize");
 		}
-		if (attributes.containsKey("defaultViewName")) {
+		if (attributes != null && attributes.containsKey("defaultViewName")) {
 			defaultViewName = (String) attributes.get("defaultViewName");
 			if (defaultViewName != null && defaultViewName.trim().equals("")) {
 				defaultViewName = null;
 			}
 		}
-		if (attributes.containsKey("navigateToDefaultViewWhenViewNotAvailable")) {
+		if (attributes != null && attributes.containsKey("navigateToDefaultViewWhenViewNotAvailable")) {
 			navigateToDefaultViewWhenViewNotAvailable = (boolean) attributes
 					.get("navigateToDefaultViewWhenViewNotAvailable");
 		}
-		if (attributes.containsKey("errorView")) {
+		if (attributes != null && attributes.containsKey("errorView")) {
 			errorViewClass = (Class<? extends View>) attributes.get("errorView");
 			if (errorViewClass != null && errorViewClass == View.class) {
 				errorViewClass = null;
 			}
 		}
-		if (attributes.containsKey("accessDeniedView")) {
+		if (attributes != null && attributes.containsKey("accessDeniedView")) {
 			accessDeniedViewClass = (Class<? extends View>) attributes.get("accessDeniedView");
 			if (accessDeniedViewClass != null && accessDeniedViewClass == View.class) {
 				accessDeniedViewClass = null;

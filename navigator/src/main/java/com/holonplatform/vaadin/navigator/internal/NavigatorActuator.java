@@ -545,8 +545,11 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 					// check View was displayed in a window
 					WeakReference<Window> windowRef = viewWindows.get(navigationState);
 					if (windowRef != null && windowRef.get() != null) {
+						final Window wnd = windowRef.get();
 						// if was displayed in Window, focus the Window
-						windowRef.get().focus();
+						if (wnd != null) {
+							wnd.focus();
+						}
 						// update navigation state and current view
 						String[] vnp = getViewNameAndParameters(navigationState);
 						ViewChangeEvent event = new ViewChangeEvent(navigator, null, null, vnp[0], vnp[1]);
@@ -1142,13 +1145,16 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 
 			// remove Window
 			WeakReference<Window> windowRef = viewWindows.get(entry.getKey());
-			if (windowRef != null && windowRef.get() != null && windowRef.get().getParent() != null) {
-				// if was displayed in Window, close the Window
-				try {
-					navigateBackOnWindowClose = false;
-					windowRef.get().close();
-				} finally {
-					navigateBackOnWindowClose = true;
+			if (windowRef != null) {
+				final Window wnd = windowRef.get();
+				if (wnd != null && wnd.getParent() != null) {
+					// if was displayed in Window, close the Window
+					try {
+						navigateBackOnWindowClose = false;
+						wnd.close();
+					} finally {
+						navigateBackOnWindowClose = true;
+					}
 				}
 			}
 
@@ -1173,13 +1179,16 @@ public class NavigatorActuator<N extends Navigator & ViewNavigatorAdapter> imple
 		if (currentState != null && viewWindows.containsKey(currentState)) {
 			synchronized (viewWindows) {
 				final WeakReference<Window> windowRef = viewWindows.get(currentState);
-				if (windowRef != null && windowRef.get() != null && windowRef.get().getParent() != null) {
-					// if was displayed in Window, close the Window
-					try {
-						navigateBackOnWindowClose = false;
-						windowRef.get().close();
-					} finally {
-						navigateBackOnWindowClose = true;
+				if (windowRef != null) {
+					final Window wnd = windowRef.get();
+					if (wnd != null && wnd.getParent() != null) {
+						// if was displayed in Window, close the Window
+						try {
+							navigateBackOnWindowClose = false;
+							wnd.close();
+						} finally {
+							navigateBackOnWindowClose = true;
+						}
 					}
 				}
 				viewWindows.remove(currentState);
