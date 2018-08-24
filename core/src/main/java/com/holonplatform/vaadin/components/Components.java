@@ -873,7 +873,7 @@ public interface Components {
 		 */
 		@SafeVarargs
 		@SuppressWarnings("rawtypes")
-		static <P extends Property> GridPropertyListingBuilder properties(PropertySet<?> properties,
+		static <P extends Property> GridPropertyListingBuilder properties(PropertySet<P> properties,
 				P... additionalProperties) {
 			ObjectUtils.argumentNotNull(properties, "Properties must be not null");
 			if (additionalProperties != null && additionalProperties.length > 0) {

@@ -507,9 +507,10 @@ public class MultiSelectField<T, ITEM>
 		 * datastore.Datastore, com.holonplatform.core.datastore.DataTarget, java.lang.Iterable,
 		 * com.holonplatform.core.query.QueryConfigurationProvider[])
 		 */
+		@SuppressWarnings("rawtypes")
 		@Override
-		public <P extends Property<?>> B dataSource(Datastore datastore, DataTarget<?> dataTarget,
-				Iterable<P> properties, QueryConfigurationProvider... queryConfigurationProviders) {
+		public <P extends Property> B dataSource(Datastore datastore, DataTarget<?> dataTarget, Iterable<P> properties,
+				QueryConfigurationProvider... queryConfigurationProviders) {
 			MultiPropertySelectInputBuilder.super.dataSource(datastore, dataTarget, properties,
 					queryConfigurationProviders);
 			setupItemConverter(datastore, dataTarget, properties);

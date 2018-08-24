@@ -27,6 +27,7 @@ import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.property.BooleanProperty;
 import com.holonplatform.core.property.NumericProperty;
 import com.holonplatform.core.property.PathProperty;
+import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.property.StringProperty;
@@ -55,7 +56,7 @@ public class ExampleListing {
 
 	private final static NumericProperty<Long> ID = NumericProperty.longType("id");
 	private final static PathProperty<String> DESCRIPTION = StringProperty.create("description");
-	private final static PropertySet<?> PROPERTIES = PropertySet.of(ID, DESCRIPTION);
+	private final static PropertySet<Property<?>> PROPERTIES = PropertySet.of(ID, DESCRIPTION);
 
 	// tag::beanListing1[]
 	private class TestData {

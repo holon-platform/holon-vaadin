@@ -56,7 +56,8 @@ public interface PropertySelectInputBuilder<T, C extends Input<T>, S, B extends 
 	 * @param queryConfigurationProviders Optional additional {@link QueryConfigurationProvider}s
 	 * @return this
 	 */
-	default <P extends Property<?>> B dataSource(Datastore datastore, DataTarget<?> dataTarget, Iterable<P> properties,
+	@SuppressWarnings("rawtypes")
+	default <P extends Property> B dataSource(Datastore datastore, DataTarget<?> dataTarget, Iterable<P> properties,
 			QueryConfigurationProvider... queryConfigurationProviders) {
 		ObjectUtils.argumentNotNull(properties, "Properties must be not null");
 		return dataSource(ItemDataProvider.create(datastore, dataTarget,
