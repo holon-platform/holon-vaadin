@@ -15,17 +15,15 @@
  */
 package com.holonplatform.vaadin.test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Locale;
 import java.util.Optional;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import com.holonplatform.vaadin.device.DeviceInfo;
@@ -38,7 +36,7 @@ import com.vaadin.util.CurrentInstance;
 
 public class TestDeviceInfo extends AbstractVaadinTest {
 	
-	@BeforeClass
+	@BeforeAll
 	public static void setupLogger() {
 		SLF4JBridgeHandler.removeHandlersForRootLogger();
 		SLF4JBridgeHandler.install();

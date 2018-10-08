@@ -24,7 +24,7 @@ import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 import com.vaadin.server.Constants;
 import com.vaadin.server.DefaultDeploymentConfiguration;
@@ -54,7 +54,7 @@ public abstract class AbstractVaadinTest {
 
 	protected UIProvider uiProvider;
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		vaadinSession = createVaadinSession(getClientLocale());
 

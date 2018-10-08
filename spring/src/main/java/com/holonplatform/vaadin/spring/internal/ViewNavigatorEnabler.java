@@ -122,10 +122,15 @@ public class ViewNavigatorEnabler implements ImportBeanDefinitionRegistrar {
 		definition.setFactoryBeanName("viewNavigatorFactory");
 		registry.registerBeanDefinition("viewNavigator", definition);
 
-		definition = new GenericBeanDefinition();
-		definition.setBeanClass(SpringViewDisplayPostProcessor.class);
-		definition.setAutowireCandidate(false);
-		registry.registerBeanDefinition("springViewDisplayPostProcessor", definition);
+		if (attributes != null && attributes.containsKey("registerSpringViewDisplayPostProcessor")
+				&& ((boolean) attributes.get("registerSpringViewDisplayPostProcessor"))) {
+
+			definition = new GenericBeanDefinition();
+			definition.setBeanClass(SpringViewDisplayPostProcessor.class);
+			definition.setAutowireCandidate(false);
+			registry.registerBeanDefinition("springViewDisplayPostProcessor", definition);
+
+		}
 
 	}
 

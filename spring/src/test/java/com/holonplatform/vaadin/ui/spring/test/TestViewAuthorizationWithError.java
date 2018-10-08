@@ -15,13 +15,14 @@
  */
 package com.holonplatform.vaadin.ui.spring.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Optional;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -87,12 +88,13 @@ public class TestViewAuthorizationWithError extends AbstractVaadinSpringTest {
 	private ViewNavigator navigator;
 	private Panel viewer;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setupLogger() {
 		SLF4JBridgeHandler.removeHandlersForRootLogger();
 		SLF4JBridgeHandler.install();
 	}
 
+	@BeforeEach
 	@Override
 	public void setup() throws Exception {
 		super.setup();

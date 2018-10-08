@@ -36,6 +36,7 @@ import com.vaadin.spring.VaadinConfiguration;
 import com.vaadin.spring.access.ViewAccessControl;
 import com.vaadin.spring.access.ViewInstanceAccessControl;
 import com.vaadin.spring.annotation.EnableVaadin;
+import com.vaadin.spring.annotation.SpringViewDisplay;
 
 /**
  * Annotation to be used on Spring Configuration classes to setup Vaadin integration and registering a UI-scoped
@@ -54,6 +55,12 @@ import com.vaadin.spring.annotation.EnableVaadin;
 @Inherited
 @Import({ VaadinConfiguration.class, ViewNavigatorEnabler.class })
 public @interface EnableViewNavigator {
+
+	/**
+	 * Whether to register a standard SpringViewDisplayPostProcessor to scan for {@link SpringViewDisplay} annotations
+	 * @return <code>true</code> to register a standard SpringViewDisplayPostProcessor
+	 */
+	boolean registerSpringViewDisplayPostProcessor() default true;
 
 	/**
 	 * Enable context data injection in navigation Views using {@link ViewContext} annotation.

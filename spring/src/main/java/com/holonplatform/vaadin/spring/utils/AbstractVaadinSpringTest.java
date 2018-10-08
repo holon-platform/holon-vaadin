@@ -22,14 +22,14 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -56,7 +56,7 @@ import com.vaadin.spring.server.SpringVaadinServletService;
  * 
  * @since 5.0.0
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration
 @WebAppConfiguration
 @DirtiesContext
@@ -82,7 +82,7 @@ public abstract class AbstractVaadinSpringTest extends AbstractVaadinTest {
 	@Autowired
 	protected HttpServletRequest request;
 
-	@Before
+	@BeforeEach
 	@Override
 	public void setup() throws Exception {
 		UIScopeImpl.setBeanStoreRetrievalStrategy(new TestSingletonBeanStoreRetrievalStrategy());

@@ -15,10 +15,11 @@
  */
 package com.holonplatform.vaadin.ui.spring.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,8 +27,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -38,7 +40,6 @@ import org.springframework.test.context.ContextConfiguration;
 import com.holonplatform.auth.AuthContext;
 import com.holonplatform.auth.Realm;
 import com.holonplatform.core.i18n.LocalizationContext;
-import com.holonplatform.core.internal.utils.TestUtils;
 import com.holonplatform.spring.EnableBeanContext;
 import com.holonplatform.vaadin.navigator.ViewNavigator;
 import com.holonplatform.vaadin.navigator.ViewNavigator.ViewNavigationException;
@@ -57,6 +58,7 @@ import com.holonplatform.vaadin.ui.spring.test.components.ViewThree;
 import com.holonplatform.vaadin.ui.spring.test.components.ViewTwo;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.spring.internal.SpringViewDisplayPostProcessor;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
@@ -105,12 +107,13 @@ public class TestNavigator extends AbstractVaadinSpringTest {
 
 	private UI ui;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setupLogger() {
 		SLF4JBridgeHandler.removeHandlersForRootLogger();
 		SLF4JBridgeHandler.install();
 	}
 
+	@BeforeEach
 	@Override
 	public void setup() throws Exception {
 		super.setup();
@@ -118,6 +121,11 @@ public class TestNavigator extends AbstractVaadinSpringTest {
 		viewer = applicationContext.getBean(ViewDisplayPanel.class);
 
 		ui = createUi(SpringTestUI.class, "http://localhost");
+	}
+	
+	@Test
+	public void testConfig() {
+		applicationContext.getBean(SpringViewDisplayPostProcessor.class);
 	}
 
 	@SuppressWarnings("serial")
@@ -288,6 +296,7 @@ public class TestNavigator extends AbstractVaadinSpringTest {
 
 	}
 
+	@SuppressWarnings("null")
 	@Test
 	public void testNavigateInWindow() {
 
@@ -395,7 +404,7 @@ public class TestNavigator extends AbstractVaadinSpringTest {
 
 		assertEquals("V", view.getParam());
 
-		TestUtils.expectedException(ViewNavigationException.class, () -> navigator.toView(VIEW_SEVEN).navigate());
+		assertThrows(ViewNavigationException.class, () -> navigator.toView(VIEW_SEVEN).navigate());
 	}
 
 }

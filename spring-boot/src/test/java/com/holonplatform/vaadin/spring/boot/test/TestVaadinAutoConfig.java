@@ -15,21 +15,21 @@
  */
 package com.holonplatform.vaadin.spring.boot.test;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.holonplatform.vaadin.spring.boot.internal.HolonVaadinServlet;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.spring.internal.SpringViewDisplayPostProcessor;
 
-import static org.junit.Assert.*;
-
-@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class TestVaadinAutoConfig {
 
@@ -41,6 +41,14 @@ public class TestVaadinAutoConfig {
 
 	@Autowired
 	private VaadinServlet servlet;
+	
+	@Autowired
+	protected ApplicationContext applicationContext;
+	
+	@Test
+	public void testConfig() {
+		applicationContext.getBean(SpringViewDisplayPostProcessor.class);
+	}
 
 	@Test
 	public void testServlet() {

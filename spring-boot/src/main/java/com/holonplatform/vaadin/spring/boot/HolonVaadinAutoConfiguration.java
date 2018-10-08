@@ -60,7 +60,7 @@ public class HolonVaadinAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(SpringViewNavigator.class)
 	@ConditionalOnMissingBean(SpringNavigator.class)
-	@EnableViewNavigator
+	@EnableViewNavigator(registerSpringViewDisplayPostProcessor = false)
 	@EnableViewAuthorization
 	static class EnableViewNavigatorConfiguration implements InitializingBean {
 		@Override
