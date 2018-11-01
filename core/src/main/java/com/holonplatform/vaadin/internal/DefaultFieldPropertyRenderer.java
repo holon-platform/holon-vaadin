@@ -61,7 +61,7 @@ public class DefaultFieldPropertyRenderer<T> implements PropertyRenderer<Field, 
 	 * @see com.holonplatform.vaadin.property.PropertyRenderer#render(com.holonplatform.core.property.Property)
 	 */
 	@Override
-	public Field render(Property<T> property) {
+	public Field render(Property<? extends T> property) {
 
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 
@@ -101,7 +101,7 @@ public class DefaultFieldPropertyRenderer<T> implements PropertyRenderer<Field, 
 	 * @param property Property to render
 	 * @return Field instance
 	 */
-	protected Field<T> renderString(Property<T> property) {
+	protected Field<T> renderString(Property<? extends T> property) {
 		return postProcessField(input.string().emptyValuesAsNull(true).asField(), property);
 	}
 
@@ -110,7 +110,7 @@ public class DefaultFieldPropertyRenderer<T> implements PropertyRenderer<Field, 
 	 * @param property Property to render
 	 * @return Field instance
 	 */
-	protected Field<T> renderBoolean(Property<T> property) {
+	protected Field<T> renderBoolean(Property<? extends T> property) {
 		return postProcessField(input.boolean_().nullValueAsFalse(true).asField(), property);
 	}
 
@@ -120,7 +120,7 @@ public class DefaultFieldPropertyRenderer<T> implements PropertyRenderer<Field, 
 	 * @return Field instance
 	 */
 	@SuppressWarnings("unchecked")
-	protected Field<T> renderEnum(Property<T> property) {
+	protected Field<T> renderEnum(Property<? extends T> property) {
 		Class<Enum> enumType = (Class<Enum>) property.getType();
 		return postProcessField(input.singleSelect(enumType).items(enumType.getEnumConstants()).asField(), property);
 	}
@@ -131,7 +131,7 @@ public class DefaultFieldPropertyRenderer<T> implements PropertyRenderer<Field, 
 	 * @return Field instance
 	 */
 	@SuppressWarnings("unchecked")
-	protected Field<T> renderTemporal(Property<T> property) {
+	protected Field<T> renderTemporal(Property<? extends T> property) {
 
 		TemporalInputBuilder builder = null;
 
@@ -158,7 +158,7 @@ public class DefaultFieldPropertyRenderer<T> implements PropertyRenderer<Field, 
 	 * @param property Property to render
 	 * @return Field instance
 	 */
-	protected Field<T> renderDate(Property<T> property) {
+	protected Field<T> renderDate(Property<? extends T> property) {
 		final TemporalType type = property.getConfiguration().getTemporalType().orElse(TemporalType.DATE);
 		return postProcessField(
 				input.date((type == TemporalType.DATE_TIME) ? Resolution.MINUTE : Resolution.DAY, false).asField(),
@@ -171,7 +171,7 @@ public class DefaultFieldPropertyRenderer<T> implements PropertyRenderer<Field, 
 	 * @return Field instance
 	 */
 	@SuppressWarnings("unchecked")
-	protected Field<T> renderNumber(Property<T> property) {
+	protected Field<T> renderNumber(Property<? extends T> property) {
 		// Number format
 
 		Class<? extends Number> type = (Class<? extends Number>) property.getType();
@@ -207,7 +207,7 @@ public class DefaultFieldPropertyRenderer<T> implements PropertyRenderer<Field, 
 	 * @return processed field
 	 */
 	@SuppressWarnings("unchecked")
-	protected <F> Field<F> postProcessField(Field field, Property<T> property) {
+	protected <F> Field<F> postProcessField(Field field, Property<? extends T> property) {
 		// caption
 		field.setCaption(LocalizationContext.translate(property, true));
 		return field;

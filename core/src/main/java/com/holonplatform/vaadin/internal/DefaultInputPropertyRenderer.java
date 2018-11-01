@@ -49,12 +49,15 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	 * @see com.holonplatform.vaadin.property.PropertyRenderer#render(com.holonplatform.core.property.Property)
 	 */
 	@Override
-	public Input render(Property<T> property) {
+	public Input render(Property<? extends T> property) {
 
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 
+		@SuppressWarnings("unchecked")
+		final Property<T> p = (Property<T>) property;
+
 		// try to render as Field and convert to Input
-		return PropertyRendererRegistry.get().getRenderer(Field.class, property).map(r -> r.render(property))
+		return PropertyRendererRegistry.get().getRenderer(Field.class, p).map(r -> r.render(p))
 				.map(field -> asInput(field)).orElse(null);
 	}
 

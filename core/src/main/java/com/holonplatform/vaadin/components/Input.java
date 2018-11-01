@@ -210,14 +210,14 @@ public interface Input<V> extends ValueHolder<V>, ValueComponent<V>, MaySupportV
 		 * @param property Property to render
 		 * @return property {@link HasValue} component
 		 */
-		F renderField(Property<T> property);
+		F renderField(Property<? extends T> property);
 
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.core.property.PropertyRenderer#render(com.holonplatform.core.property.Property)
 		 */
 		@Override
-		default Input<T> render(Property<T> property) {
+		default Input<T> render(Property<? extends T> property) {
 			return Input.from(renderField(property));
 		}
 
