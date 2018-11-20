@@ -51,6 +51,7 @@ import com.vaadin.data.ValueProvider;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.EditorCancelListener;
+import com.vaadin.ui.components.grid.EditorErrorGenerator;
 import com.vaadin.ui.components.grid.EditorOpenListener;
 import com.vaadin.ui.components.grid.EditorSaveListener;
 import com.vaadin.ui.components.grid.FooterCell;
@@ -715,6 +716,13 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 		 * @return this
 		 */
 		B withEditorOpenListener(EditorOpenListener<T> listener);
+
+		/**
+		 * Set the {@link EditorErrorGenerator} of the listing editor.
+		 * @param listener The error generator to add
+		 * @return this
+		 */
+		B editorErrorGenerator(EditorErrorGenerator<T> editorErrorGenerator);
 
 		/**
 		 * Adds an item {@link Validator} to item listing editor.

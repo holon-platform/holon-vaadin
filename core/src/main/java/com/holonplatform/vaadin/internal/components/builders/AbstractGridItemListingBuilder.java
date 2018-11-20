@@ -32,10 +32,12 @@ import com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridI
 import com.holonplatform.vaadin.internal.components.DefaultItemListing;
 import com.holonplatform.vaadin.internal.components.PropertyColumn;
 import com.holonplatform.vaadin.internal.components.PropertyColumnManager;
+import com.vaadin.data.Validator;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.EditorCancelListener;
+import com.vaadin.ui.components.grid.EditorErrorGenerator;
 import com.vaadin.ui.components.grid.EditorOpenListener;
 import com.vaadin.ui.components.grid.EditorSaveListener;
 import com.vaadin.ui.components.grid.FooterCell;
@@ -379,6 +381,30 @@ public abstract class AbstractGridItemListingBuilder<T, P, C extends ItemListing
 		ObjectUtils.argumentNotNull(listener, "EditorOpenListener must be not null");
 		getInstance().addEditorOpenListener(listener);
 		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder#editorErrorGenerator(
+	 * com.vaadin.ui.components.grid.EditorErrorGenerator)
+	 */
+	@Override
+	public B editorErrorGenerator(EditorErrorGenerator<T> editorErrorGenerator) {
+		getInstance().setEditorErrorGenerator(editorErrorGenerator);
+		return builder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.components.builders.ItemListingBuilder.BaseGridItemListingBuilder#withValidator(com.
+	 * vaadin.data.Validator)
+	 */
+	@Override
+	public B withValidator(Validator<T> validator) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/*

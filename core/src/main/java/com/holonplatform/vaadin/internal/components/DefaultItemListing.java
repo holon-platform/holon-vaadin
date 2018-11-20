@@ -61,6 +61,7 @@ import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.components.grid.Editor;
 import com.vaadin.ui.components.grid.EditorCancelListener;
+import com.vaadin.ui.components.grid.EditorErrorGenerator;
 import com.vaadin.ui.components.grid.EditorOpenListener;
 import com.vaadin.ui.components.grid.EditorSaveListener;
 import com.vaadin.ui.components.grid.HeaderRow;
@@ -1178,6 +1179,14 @@ public class DefaultItemListing<T, P> extends CustomComponent
 	 */
 	public Registration addEditorOpenListener(EditorOpenListener<T> listener) {
 		return getGrid().getEditor().addOpenListener(listener);
+	}
+
+	/**
+	 * Set the editor error generator.
+	 * @param editorErrorGenerator the editor error generator to set
+	 */
+	public void setEditorErrorGenerator(EditorErrorGenerator<T> editorErrorGenerator) {
+		getGrid().getEditor().setErrorGenerator(editorErrorGenerator);
 	}
 
 	/**
