@@ -376,7 +376,7 @@ public class ExampleListing {
 					VerticalLayout component = new VerticalLayout();
 					// ...
 					return component;
-				}).withItemClickListener((item, property, event) -> { // <7>
+				}).withItemClickListener((item, property, index, event) -> { // <7>
 					// ...
 				}).header(header -> { // <8>
 					header.getDefaultRow().setStyleName("my-header");
