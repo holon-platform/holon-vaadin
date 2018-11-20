@@ -18,6 +18,7 @@ package com.holonplatform.vaadin.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Set;
@@ -63,6 +64,21 @@ public class TestSelectInput {
 		assertTrue(mvalues.contains(new TestBean("2", "b")));
 		assertTrue(mvalues.contains(new TestBean("3", "c")));
 
+	}
+	
+	@Test
+	public void testClear() {
+		SingleSelect<TestEnum1> es = Components.input.enumSingle(TestEnum1.class).build();
+		assertTrue(es.isEmpty());
+		assertNull(es.getValue());
+		
+		es.setValue(TestEnum1.B);
+		assertFalse(es.isEmpty());
+		assertEquals(TestEnum1.B, es.getValue());
+		
+		es.clear();
+		assertTrue(es.isEmpty());
+		assertNull(es.getValue());
 	}
 
 }
