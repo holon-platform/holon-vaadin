@@ -1007,7 +1007,7 @@ public class DefaultItemListing<T, P> extends CustomComponent
 	public Registration addItemClickListener(final ItemClickListener<T, P> listener) {
 		ObjectUtils.argumentNotNull(listener, "Listener must be not null");
 		return getGrid().addItemClickListener(e -> listener.onItemClick(e.getItem(),
-				getColumnProperty(e.getColumn().getId()), e.getMouseEventDetails()));
+				getColumnProperty(e.getColumn().getId()), e.getRowIndex(), e.getMouseEventDetails()));
 	}
 
 	/**
@@ -1095,6 +1095,30 @@ public class DefaultItemListing<T, P> extends CustomComponent
 	@Override
 	public boolean isEditable() {
 		return getGrid().getEditor().isEnabled();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.ItemListing#editRow(int)
+	 */
+	@Override
+	public void editRow(int rowNumber) {
+		if (!isEditable()) {
+			throw new IllegalStateException("The listing is not editable");
+		}
+		getGrid().getEditor().editRow(rowNumber);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.components.ItemListing#cancelEditing()
+	 */
+	@Override
+	public void cancelEditing() {
+		if (!isEditable()) {
+			throw new IllegalStateException("The listing is not editable");
+		}
+		getGrid().getEditor().cancel();
 	}
 
 	/**

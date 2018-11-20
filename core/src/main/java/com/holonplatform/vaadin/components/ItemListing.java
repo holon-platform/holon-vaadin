@@ -213,6 +213,22 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, Component {
 	 */
 	boolean isEditable();
 
+	/**
+	 * Opens the editor interface for the provided row. Scrolls the listing to bring the row to view if it is not
+	 * already visible.
+	 * @param rowNumber the row number of the edited item
+	 * @throws IllegalStateException if the editor is not enabled or already editing a different item in buffered mode
+	 * @throws IllegalArgumentException if the <code>rowNumber</code> is not in the backing data provider
+	 */
+	void editRow(int rowNumber);
+
+	/**
+	 * If the listing {@link #isEditable()} adn the item editor is open, closes the editor discarding any unsaved
+	 * changes.
+	 * @throws IllegalStateException If the listing is not editable
+	 */
+	void cancelEditing();
+
 	// -------
 
 	/**
@@ -283,9 +299,22 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, Component {
 		 * Triggered when user clicks on an item.
 		 * @param item Item bound to clicked row
 		 * @param clickedProperty Clicked column property
+		 * @param rowIndex The clicked row index
 		 * @param clickEvent Event details to obtain informations on mouse button and clicked point
 		 */
-		void onItemClick(T item, P clickedProperty, MouseEventDetails clickEvent);
+		void onItemClick(T item, P clickedProperty, int rowIndex, MouseEventDetails clickEvent);
+
+		/**
+		 * Triggered when user clicks on an item.
+		 * @param item Item bound to clicked row
+		 * @param clickedProperty Clicked column property
+		 * @param clickEvent Event details to obtain informations on mouse button and clicked point
+		 * @deprecated Use {@link #onItemClick(Object, Object, int, MouseEventDetails)}
+		 */
+		@Deprecated
+		default void onItemClick(T item, P clickedProperty, MouseEventDetails clickEvent) {
+			onItemClick(item, clickedProperty, -1, clickEvent);
+		}
 
 	}
 
