@@ -56,7 +56,7 @@ public class DefaultPropertyBoxConverter<T> implements Converter<T, PropertyBox>
 	@Override
 	public Result<PropertyBox> convertToModel(T value, ValueContext context) {
 		if (value == null) {
-			return null;
+			return Result.ok(null);
 		}
 		if (PropertyBox.class.isAssignableFrom(value.getClass())) {
 			return Result.ok((PropertyBox) value);

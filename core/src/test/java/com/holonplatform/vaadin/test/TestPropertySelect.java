@@ -33,6 +33,7 @@ import com.holonplatform.core.property.PathProperty;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.property.PropertyValueConverter;
+import com.holonplatform.core.property.StringProperty;
 import com.holonplatform.datastore.jdbc.JdbcDatastore;
 import com.holonplatform.jdbc.DataSourceBuilder;
 import com.holonplatform.vaadin.components.Components;
@@ -55,7 +56,7 @@ public class TestPropertySelect {
 
 	private static final DataTarget<?> TARGET = DataTarget.named("testdata");
 
-	private static final PathProperty<String> CODE = PathProperty.create("code", String.class);
+	private static final StringProperty CODE = StringProperty.create("code");
 	private static final PathProperty<String> DESCRIPTION = PathProperty.create("description", String.class);
 	private static final PathProperty<Integer> SEQUENCE = PathProperty.create("sequence", Integer.class);
 	private static final PathProperty<Boolean> OBSOLETE = PathProperty.create("obsolete", Boolean.class)
@@ -86,7 +87,7 @@ public class TestPropertySelect {
 	@Test
 	public void testClear() {
 		SingleSelect<String> slt = Components.input.singleSelect(CODE).dataSource(datastore, TARGET, PROPERTIES)
-				.build();
+				.itemCaptionGenerator(v -> v.getValue(DESCRIPTION)).captionQueryFilter(t -> (t == null) ? null : CODE.startsWith(t)).build();
 
 		assertNull(slt.getValue());
 
