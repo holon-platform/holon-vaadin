@@ -719,7 +719,7 @@ public interface ItemListingBuilder<T, P, C extends ItemListing<T, P>, B extends
 
 		/**
 		 * Set the {@link EditorErrorGenerator} of the listing editor.
-		 * @param listener The error generator to add
+		 * @param editorErrorGenerator The error generator to add
 		 * @return this
 		 */
 		B editorErrorGenerator(EditorErrorGenerator<T> editorErrorGenerator);
