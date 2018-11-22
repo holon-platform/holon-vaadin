@@ -9,7 +9,7 @@
 
 	<groupId>com.holon-platform.vaadin</groupId>
 	<artifactId>holon-vaadin-root</artifactId>
-	<version>5.2.0-beta1-SNAPSHOT</version>
+	<version>5.2.0-alpha3-SNAPSHOT</version>
 
 	<packaging>pom</packaging>
 
