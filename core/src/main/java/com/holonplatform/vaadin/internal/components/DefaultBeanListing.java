@@ -71,7 +71,7 @@ public class DefaultBeanListing<T> extends DefaultItemListing<T, String> impleme
 		super();
 		propertySet = new BeanGridPropertySet<>(beanType);
 		setDefaultVisibleProperties(() -> getDefaultColumnIds());
-		initGrid(Grid.withPropertySet(propertySet));
+		initGrid(Grid.withPropertySet(propertySet), propertySet);
 	}
 
 	/**

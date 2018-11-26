@@ -74,7 +74,7 @@ public class DefaultPropertyListing extends DefaultItemListing<PropertyBox, Prop
 		ObjectUtils.argumentNotNull(properties, "Listing property set must be not null");
 		propertySet = new GridPropertySet(properties);
 		setDefaultVisibleProperties(() -> getDefaultColumnIds());
-		initGrid(Grid.withPropertySet(propertySet));
+		initGrid(Grid.withPropertySet(propertySet), propertySet);
 	}
 
 	/**

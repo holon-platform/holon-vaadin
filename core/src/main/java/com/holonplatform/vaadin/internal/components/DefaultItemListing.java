@@ -42,8 +42,11 @@ import com.holonplatform.vaadin.internal.VaadinLogger;
 import com.holonplatform.vaadin.internal.components.PropertyColumn.DisplayPosition;
 import com.holonplatform.vaadin.internal.data.ItemDataProviderAdapter;
 import com.holonplatform.vaadin.internal.data.ItemDataSourceAdapter;
+import com.vaadin.data.Binder;
 import com.vaadin.data.Binder.BindingBuilder;
+import com.vaadin.data.BinderValidationStatus;
 import com.vaadin.data.HasValue;
+import com.vaadin.data.PropertySet;
 import com.vaadin.data.SelectionModel.Multi;
 import com.vaadin.data.SelectionModel.Single;
 import com.vaadin.data.Validator;
@@ -148,19 +151,10 @@ public class DefaultItemListing<T, P> extends CustomComponent
 	}
 
 	/**
-	 * Constructor with internal Grid.
-	 * @param grid The Grid instance (not null)
-	 */
-	public DefaultItemListing(Grid<T> grid) {
-		super();
-		initGrid(grid);
-	}
-
-	/**
 	 * Init internal Grid.
 	 * @param grid Grid
 	 */
-	protected void initGrid(Grid<T> grid) {
+	protected void initGrid(Grid<T> grid, PropertySet<T> propertySet) {
 		this.grid = grid;
 
 		grid.setWidth(100, Unit.PERCENTAGE);
@@ -173,6 +167,7 @@ public class DefaultItemListing<T, P> extends CustomComponent
 
 		Editor<T> editor = grid.getEditor();
 		if (editor != null) {
+			editor.setBinder(new DefaultItemListingBinder<>(propertySet));
 			editor.addSaveListener(e -> {
 				if (isBuffered()) {
 					requireDataSource().update(e.getBean());
@@ -1607,6 +1602,22 @@ public class DefaultItemListing<T, P> extends CustomComponent
 			throw new NotBufferedException("The item listing is not in buffered mode");
 		}
 		requireDataSource().discard();
+	}
+
+	private static class DefaultItemListingBinder<T> extends Binder<T> {
+
+		private static final long serialVersionUID = -5155452231265408090L;
+
+		public DefaultItemListingBinder(PropertySet<T> propertySet) {
+			super(propertySet);
+		}
+
+		@Override
+		public BinderValidationStatus<T> validate() {
+			// noop
+			return new BinderValidationStatus<>(this, Collections.emptyList(), Collections.emptyList());
+		}
+
 	}
 
 	// ----- support
