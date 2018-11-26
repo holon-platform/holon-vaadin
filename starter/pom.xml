@@ -37,10 +37,10 @@
 			<version>${holon.core.version}</version>
 		</dependency>
 
-		<!-- Spring Boot web starter -->
+		<!-- Spring Boot starter tomcat -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
 		</dependency>
 
 		<!-- Vaadin -->
