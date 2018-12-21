@@ -2,7 +2,7 @@
 
 > Latest release: [5.1.4](#obtain-the-artifacts)
 
-This is the __Vaadin UI__ module of the [Holon Platform](https://holon-platform.com), which represents the platform support for the [Vaadin](https://vaadin.com) web applications framework, focusing on the user interface components and data binding features.
+This is the __Vaadin 8+ UI__ module of the [Holon Platform](https://holon-platform.com), which represents the platform support for the [Vaadin](https://vaadin.com) web applications framework, focusing on the user interface components and data binding features.
 
 The module main features are:
 
