@@ -87,7 +87,8 @@ public class TestPropertySelect {
 	@Test
 	public void testClear() {
 		SingleSelect<String> slt = Components.input.singleSelect(CODE).dataSource(datastore, TARGET, PROPERTIES)
-				.itemCaptionGenerator(v -> v.getValue(DESCRIPTION)).captionQueryFilter(t -> (t == null) ? null : CODE.startsWith(t)).build();
+				.itemCaptionGenerator(v -> v.getValue(DESCRIPTION))
+				.captionQueryFilter(t -> (t == null) ? null : CODE.startsWith(t)).build();
 
 		assertNull(slt.getValue());
 

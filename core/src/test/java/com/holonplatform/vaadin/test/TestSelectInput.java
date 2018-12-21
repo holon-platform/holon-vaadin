@@ -65,17 +65,17 @@ public class TestSelectInput {
 		assertTrue(mvalues.contains(new TestBean("3", "c")));
 
 	}
-	
+
 	@Test
 	public void testClear() {
 		SingleSelect<TestEnum1> es = Components.input.enumSingle(TestEnum1.class).build();
 		assertTrue(es.isEmpty());
 		assertNull(es.getValue());
-		
+
 		es.setValue(TestEnum1.B);
 		assertFalse(es.isEmpty());
 		assertEquals(TestEnum1.B, es.getValue());
-		
+
 		es.clear();
 		assertTrue(es.isEmpty());
 		assertNull(es.getValue());

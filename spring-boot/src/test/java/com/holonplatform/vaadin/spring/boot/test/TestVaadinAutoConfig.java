@@ -41,10 +41,10 @@ public class TestVaadinAutoConfig {
 
 	@Autowired
 	private VaadinServlet servlet;
-	
+
 	@Autowired
 	protected ApplicationContext applicationContext;
-	
+
 	@Test
 	public void testConfig() {
 		applicationContext.getBean(SpringViewDisplayPostProcessor.class);

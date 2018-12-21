@@ -34,21 +34,21 @@ public interface ComposableComponent extends Component {
 	 */
 	public enum ComponentsWidthMode {
 
-		/**
-		 * The width of each component will not be altered
-		 */
-		NONE,
+	/**
+	 * The width of each component will not be altered
+	 */
+	NONE,
 
-		/**
-		 * The width of each component will adjusted according to parent layout width: if the parent layout is 100%
-		 * wide, the components width will be setted to 100%
-		 */
-		AUTO,
+	/**
+	 * The width of each component will adjusted according to parent layout width: if the parent layout is 100% wide,
+	 * the components width will be setted to 100%
+	 */
+	AUTO,
 
-		/**
-		 * The width of each component will always be setted to 100%
-		 */
-		FULL;
+	/**
+	 * The width of each component will always be setted to 100%
+	 */
+	FULL;
 
 	}
 

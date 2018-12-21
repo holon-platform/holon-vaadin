@@ -62,13 +62,13 @@ public class ExampleSpringAuthz {
 				if ("username1".equals(id)) {
 					// setup the user password and assign the role 'role1'
 					return Optional.of(Account.builder(id).credentials(Credentials.builder().secret("s3cr3t").build())
-							.permission("role1").build());
+							.withPermission("role1").build());
 				}
 				return Optional.empty();
 			};
 			return AuthContext.create(Realm.builder()
 					// authenticator using the AccountProvider
-					.authenticator(Account.authenticator(ap))
+					.withAuthenticator(Account.authenticator(ap))
 					// default authorizer
 					.withDefaultAuthorizer().build());
 		}

@@ -835,13 +835,13 @@ public class DefaultItemDataSource<ITEM, PROPERTY>
 	 */
 	@Override
 	public ParameterSet getQueryParameters() {
-		final ParameterSet.Builder<?> builder = ParameterSet.builder().parameters(queryParameters);
+		final ParameterSet.Builder<?> builder = ParameterSet.builder().withParameters(queryParameters);
 
 		// externally provided
 		getQueryConfigurationProviders().forEach(p -> {
 			ParameterSet parameters = p.getQueryParameters();
 			if (parameters != null) {
-				builder.parameters(parameters);
+				builder.withParameters(parameters);
 			}
 		});
 

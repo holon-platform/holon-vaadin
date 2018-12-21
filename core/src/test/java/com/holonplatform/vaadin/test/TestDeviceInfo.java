@@ -35,7 +35,7 @@ import com.vaadin.server.WrappedSession;
 import com.vaadin.util.CurrentInstance;
 
 public class TestDeviceInfo extends AbstractVaadinTest {
-	
+
 	@BeforeAll
 	public static void setupLogger() {
 		SLF4JBridgeHandler.removeHandlersForRootLogger();

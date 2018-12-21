@@ -64,17 +64,17 @@ public class TestViewAuthorization extends AbstractVaadinSpringTest {
 			AccountProvider ap = id -> {
 				Account act = null;
 				if ("a1".equals(id)) {
-					act = Account.builder(id).credentials(Credentials.builder().secret("a1").build()).permission("r1")
-							.build();
+					act = Account.builder(id).credentials(Credentials.builder().secret("a1").build())
+							.withPermission("r1").build();
 				} else if ("a2".equals(id)) {
-					act = Account.builder(id).credentials(Credentials.builder().secret("a2").build()).permission("r2")
-							.build();
+					act = Account.builder(id).credentials(Credentials.builder().secret("a2").build())
+							.withPermission("r2").build();
 				}
 				return Optional.ofNullable(act);
 			};
 
-			return AuthContext
-					.create(Realm.builder().authenticator(Account.authenticator(ap)).withDefaultAuthorizer().build());
+			return AuthContext.create(
+					Realm.builder().withAuthenticator(Account.authenticator(ap)).withDefaultAuthorizer().build());
 		}
 
 		@Bean

@@ -45,25 +45,26 @@ public interface BaseSelectInputBuilder<T, C extends Input<T>, S, ITEM, B extend
 	 */
 	public enum RenderingMode {
 
-		/**
-		 * Renders as <em>native</em> select, i.e. using client browser native rendering.
-		 * <p>
-		 * This rendering mode is not suitable for multi-select mode. In this case, {@link #SELECT} will be used as
-		 * fallback.
-		 * </p>
-		 */
-		NATIVE_SELECT,
+			/**
+			 * Renders as <em>native</em> select, i.e. using client browser native rendering.
+			 * <p>
+			 * This rendering mode is not suitable for multi-select mode. In this case, {@link #SELECT} will be used as
+			 * fallback.
+			 * </p>
+			 */
+			NATIVE_SELECT,
 
-		/**
-		 * Renders as a select field (A ComboBox for single selection mode or a ListSelect for multiple selection mode)
-		 */
-		SELECT,
+			/**
+			 * Renders as a select field (A ComboBox for single selection mode or a ListSelect for multiple selection
+			 * mode)
+			 */
+			SELECT,
 
-		/**
-		 * Renders as an options group (A checkbox group for single selection mode or a radio buttons group for multiple
-		 * selection mode)
-		 */
-		OPTIONS
+			/**
+			 * Renders as an options group (A checkbox group for single selection mode or a radio buttons group for
+			 * multiple selection mode)
+			 */
+			OPTIONS
 
 	}
 

@@ -122,7 +122,7 @@ public class TestNavigator extends AbstractVaadinSpringTest {
 
 		ui = createUi(SpringTestUI.class, "http://localhost");
 	}
-	
+
 	@Test
 	public void testConfig() {
 		applicationContext.getBean(SpringViewDisplayPostProcessor.class);
