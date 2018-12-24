@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -63,10 +65,12 @@
 
 		<!-- Vaadin -->
 		<vaadin.version>8.6.3</vaadin.version>
+		<!-- Vaadin Spring -->
+		<vaadin.spring.version>3.1.1</vaadin.spring.version>
 
 		<!-- Servlet API -->
 		<servlet.version>3.1.0</servlet.version>
-		
+
 		<!-- Mockito (test) -->
 		<mockito.version>2.23.0</mockito.version>
 
@@ -74,19 +78,6 @@
 		<holon.jdbc.version>5.2.0-rc1</holon.jdbc.version>
 
 	</properties>
-
-	<dependencyManagement>
-		<dependencies>
-			<!-- Vaadin BOM -->
-			<dependency>
-				<groupId>com.vaadin</groupId>
-				<artifactId>vaadin-bom</artifactId>
-				<version>${vaadin.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 	<modules>
 		<module>core</module>
