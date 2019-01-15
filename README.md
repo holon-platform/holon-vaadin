@@ -19,10 +19,10 @@ See the [platform documentation](https://docs.holon-platform.com/current/referen
 
 ## Other Vaadin platform versions
 
+The Holon Platform Vaadin module si also available for:
+
 * [Vaadin Flow (10+)](https://github.com/holon-platform/holon-vaadin-flow)
 * [Vaadin 7](https://github.com/holon-platform/holon-vaadin7)
-
-NOTE: This module requires __Vaadin 8.1 or higher__, a Vaadin 7 compatible version of the module is available [here](https://github.com/holon-platform/holon-vaadin7). 
 
 ## Code structure
 
