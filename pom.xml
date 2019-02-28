@@ -62,7 +62,7 @@
 		<holon.core.version>5.2.0</holon.core.version>
 
 		<!-- Vaadin -->
-		<vaadin.version>8.6.4</vaadin.version>
+		<vaadin.version>8.7.0</vaadin.version>
 		<!-- Vaadin Spring -->
 		<vaadin.spring.version>3.1.1</vaadin.spring.version>
 
