@@ -1,6 +1,6 @@
 # Holon Vaadin module
 
-> Latest release: [5.2.1](#obtain-the-artifacts)
+> Latest release: [5.2.2](#obtain-the-artifacts)
 
 This is the __Vaadin 8+ UI__ module of the [Holon Platform](https://holon-platform.com), which represents the platform support for the [Vaadin](https://vaadin.com) web applications framework, focusing on the user interface components and data binding features.
 
@@ -56,7 +56,7 @@ _Maven BOM:_
     <dependency>
         <groupId>com.holon-platform.vaadin</groupId>
         <artifactId>holon-vaadin-bom</artifactId>
-        <version>5.2.1</version>
+        <version>5.2.2</version>
         <type>pom</type>
         <scope>import</scope>
     </dependency>
