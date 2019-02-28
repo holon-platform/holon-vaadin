@@ -42,13 +42,10 @@ import com.holonplatform.auth.AuthContext;
 import com.holonplatform.auth.Realm;
 import com.holonplatform.core.Context;
 import com.holonplatform.core.i18n.LocalizationContext;
-import com.holonplatform.test.TestUtils;
 import com.holonplatform.vaadin.internal.test.AbstractVaadinTest;
 import com.holonplatform.vaadin.navigator.ViewNavigator;
 import com.holonplatform.vaadin.navigator.ViewNavigator.ViewNavigationException;
-import com.holonplatform.vaadin.navigator.internal.DefaultViewConfigurationCache;
 import com.holonplatform.vaadin.navigator.internal.DefaultViewProvider;
-import com.holonplatform.vaadin.navigator.internal.ViewNavigationUtils;
 import com.holonplatform.vaadin.navigator.test.components.ContextTestData;
 import com.holonplatform.vaadin.navigator.test.components.NavigatorTestUI;
 import com.holonplatform.vaadin.navigator.test.components.ViewFive;
@@ -86,12 +83,6 @@ public class TestViewNavigator extends AbstractVaadinTest {
 	public static void setupLogger() {
 		SLF4JBridgeHandler.removeHandlersForRootLogger();
 		SLF4JBridgeHandler.install();
-	}
-
-	@Test
-	public void testUtils() {
-		TestUtils.checkUtilityClass(ViewNavigationUtils.class);
-		TestUtils.checkEnum(DefaultViewConfigurationCache.class);
 	}
 
 	@SuppressWarnings("serial")
