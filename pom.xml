@@ -62,7 +62,7 @@
 		<holon.core.version>5.2.1</holon.core.version>
 
 		<!-- Vaadin -->
-		<vaadin.version>8.7.0</vaadin.version>
+		<vaadin.version>8.7.1</vaadin.version>
 		<!-- Vaadin Spring -->
 		<vaadin.spring.version>3.1.1</vaadin.spring.version>
 
@@ -73,7 +73,7 @@
 		<mockito.version>2.23.0</mockito.version>
 
 		<!-- Test datastores -->
-		<holon.jdbc.version>5.2.1</holon.jdbc.version>
+		<holon.jdbc.version>5.2.2</holon.jdbc.version>
 
 	</properties>
 
