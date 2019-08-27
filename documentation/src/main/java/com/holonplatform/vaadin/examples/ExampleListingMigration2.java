@@ -29,7 +29,7 @@ public class ExampleListingMigration2 {
 	private final static PathProperty<Long> ID = PathProperty.create("id", Long.class);
 	private final static PathProperty<String> DESCRIPTION = PathProperty.create("description", String.class);
 
-	private final static PropertySet<?> PROPERTIES = PropertySet.builderOf(ID, DESCRIPTION).identifier(ID).build(); // <1>
+	private final static PropertySet<?> PROPERTIES = PropertySet.builderOf(ID, DESCRIPTION).withIdentifier(ID).build(); // <1>
 	// end::listing1[]
 
 	public void listing() {

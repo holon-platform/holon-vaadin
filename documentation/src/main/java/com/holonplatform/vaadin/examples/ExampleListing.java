@@ -264,7 +264,7 @@ public class ExampleListing {
 		final NumericProperty<Long> ID = NumericProperty.longType("id");
 		final StringProperty DESCRIPTION = StringProperty.create("description");
 
-		final PropertySet<?> PROPERTIES = PropertySet.builderOf(ID, DESCRIPTION).identifier(ID).build(); // <1>
+		final PropertySet<?> PROPERTIES = PropertySet.builderOf(ID, DESCRIPTION).withIdentifier(ID).build(); // <1>
 
 		PropertyListing listing = Components.listing.properties(PROPERTIES).build();
 		// end::identifiers[]
